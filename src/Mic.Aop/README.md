@@ -195,7 +195,7 @@
 		}
 
 	}
-#### 4、一些优先级和规则：就近原则，方法 > 类 > 接口方法 > 接口；忽略Aop：打上 [IgnoreAop] 标签    
+#### 4、一些优先级和规则
 ##### 1、优先级：就近原则，类方法上的标签 > 类上的标签 > 接口方法上的标签 > 接口上的标签
 ##### 2、忽略Aop：打上 [IgnoreAop] 标签
 ##### 3、如果一个方法打上多个Attribute，则按照管道的原则，先进后出，注意，只有最接近方法的 Attribute 才能调用 Next 方法。如果有 三个 Attribute，分别是 attribute1、attribute2、attribute3，则执行顺序是 attribute1.Before => attribute2.Before => attribute3.Before => attribute3.Next => attribute3.After => attribute2.After => attribute1.After
