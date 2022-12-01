@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net5.0;net6.0;net7.0</TargetFrameworks>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>1.0.1.7</Version>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile>Mic.Aop.xml</DocumentationFile>
+    <Description>通过 SourceGenerator 生成继承类实现Aop</Description>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net7.0' ">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+  </ItemGroup>
+  <!--nuget analyzers -->
+  <ItemGroup>
+    <None Include="NugetPackage\tools\*.*" PackagePath="tools" Pack="true" />
+    <None Include="NugetPackage\analyzers\dotnet\cs\**" PackagePath="analyzers\dotnet\cs" Pack="true" />
+  </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="dotnet publish ../Mic.Aop.Generator/Mic.Aop.Generator.csproj -c Release -o NugetPackage/analyzers/dotnet/cs" />
+  </Target>
+</Project>

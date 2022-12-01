@@ -1,0 +1,142 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Mic.Aop</name>
+    </assembly>
+    <members>
+        <member name="T:Mic.Aop.AopContext">
+            <summary>
+            Aop 上下文
+            </summary>
+        </member>
+        <member name="P:Mic.Aop.AopContext.IsTask">
+            <summary>
+            是否是异步
+            </summary>
+        </member>
+        <member name="P:Mic.Aop.AopContext.HasReturnValue">
+            <summary>
+            是否有返回值
+            </summary>
+        </member>
+        <member name="P:Mic.Aop.AopContext.MethodInputParam">
+            <summary>
+            方法输入参数
+            </summary>
+        </member>
+        <member name="P:Mic.Aop.AopContext.ActualMethod">
+            <summary>
+            实际方法执行结果，可能是 Task
+            </summary>
+        </member>
+        <member name="P:Mic.Aop.AopContext.ReturnValue">
+            <summary>
+            返回值，具体的值
+            </summary>
+        </member>
+        <member name="P:Mic.Aop.AopContext.Exception">
+            <summary>
+            异常信息
+            </summary>
+        </member>
+        <member name="P:Mic.Aop.AopContext.ServiceProvider">
+            <summary>
+            IServiceProvider
+            </summary>
+        </member>
+        <member name="M:Mic.Aop.AopContext.#ctor(System.IServiceProvider,System.Collections.Generic.Dictionary{System.String,System.Object},System.Boolean,System.Boolean,System.Func{System.Object})">
+            <summary>
+            初始化
+            </summary>
+            <param name="serviceProvider"></param>
+            <param name="methodInputParam"></param>
+            <param name="isTask"></param>
+            <param name="hasReturnValue"></param>
+            <param name="actualMethod"></param>
+        </member>
+        <member name="M:Mic.Aop.AopContext.InvokeAsync">
+            <summary>
+            执行实际方法 异步
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Aop.AopContext.Invoke">
+            <summary>
+            执行实际方法 同步
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Mic.Aop.AopInterceptor.HasBefore">
+            <summary>
+            是否执行 Before
+            </summary>
+        </member>
+        <member name="P:Mic.Aop.AopInterceptor.HasAfter">
+            <summary>
+            是否执行 After
+            </summary>
+        </member>
+        <member name="P:Mic.Aop.AopInterceptor.HasAopNext">
+            <summary>
+            是否执行 Aop 的 Next
+            </summary>
+        </member>
+        <member name="P:Mic.Aop.AopInterceptor.HasActualNext">
+            <summary>
+            是否执行实际的方法
+            </summary>
+        </member>
+        <member name="T:Mic.Aop.IAopInterceptor">
+            <summary>
+            Aop 拦截器
+            </summary>
+        </member>
+        <member name="M:Mic.Aop.IAopInterceptor.Before(Mic.Aop.AopContext)">
+            <summary>
+            执行前操作，同步方法调用
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Aop.IAopInterceptor.BeforeAsync(Mic.Aop.AopContext)">
+            <summary>
+            执行前操作，异步方法调用
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Aop.IAopInterceptor.After(Mic.Aop.AopContext)">
+            <summary>
+            执行后操作，同步方法调用
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Aop.IAopInterceptor.AfterAsync(Mic.Aop.AopContext)">
+            <summary>
+            执行后操作，异步方法调用
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Aop.IAopInterceptor.Next(Mic.Aop.AopContext)">
+            <summary>
+            执行方法，同步方法调用
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Aop.IAopInterceptor.NextAsync(Mic.Aop.AopContext)">
+            <summary>
+            执行方法，异步方法调用
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Mic.Aop.IgnoreAopAttribute">
+            <summary>
+            忽略 Aop
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFrameworks>net5.0;net6.0</TargetFrameworks>
+		<Nullable>annotations</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<LangVersion>10</LangVersion>
+		<ServerGarbageCollection>true</ServerGarbageCollection>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="5.0.17" />
+  </ItemGroup>
+
+  <!--<ItemGroup>
+    <ProjectReference Include="..\..\src\Mic.Aop\Mic.Aop.csproj" />
+  </ItemGroup>-->
+
+</Project>
