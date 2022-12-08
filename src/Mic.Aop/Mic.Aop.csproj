@@ -2,10 +2,13 @@
   <PropertyGroup>
     <TargetFrameworks>net5.0;net6.0;net7.0</TargetFrameworks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.0.1.7</Version>
+    <Version>1.0.1.8</Version>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <DocumentationFile>Mic.Aop.xml</DocumentationFile>
     <Description>通过 SourceGenerator 生成继承类实现Aop</Description>
+    <PackageProjectUrl>https://github.com/ad313/mic</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ad313/mic</RepositoryUrl>
+    <Authors>ad313</Authors>
   </PropertyGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
