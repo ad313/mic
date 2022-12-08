@@ -1,4 +1,4 @@
-﻿using Mic.Aop.TestWeb.AopSpace;
+﻿using Mic.BenchmarkDotNet.AopTest.MicAop;
 using Microsoft.Extensions.ObjectPool;
 
 namespace Mic.BenchmarkDotNet.AopTest.Pool

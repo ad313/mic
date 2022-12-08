@@ -37,6 +37,7 @@ using System.IO.Compression;
 using Mic.Aop.TestWeb.AopSpace;
 using Mic.BenchmarkDotNet.AopTest;
 using Microsoft.Extensions.DependencyInjection;
+using Mic.BenchmarkDotNet.AopTest.MicAop;
 
 #if NETCOREAPP3_0_OR_GREATER
 using System.Text.Encodings.Web;
@@ -58,33 +59,9 @@ namespace Mic.BenchmarkDotNet
 
         public static void Main(string[] args)
         {
-            IServiceCollection services = new ServiceCollection();
-            services.AddTransient<LogAttribute>();
-            services.AddTransient<Log2Attribute>();
-            services.AddTransient<Log3Attribute>();
-
-            services.AddSingleton<TestService>();
-            services.AddSingleton<TestService_Aop>();
-            ServiceProvider = services.BuildServiceProvider();
-
-            //var service = ServiceProvider.GetRequiredService<TestService_Aop>();
-            //var result = service.HasReturnSync();
-
-
-            //PollHelper.Init();
-            //var ser = new TestService_Aop2(null);
-            //ser.HasReturnSync();
-            //ser.HasReturnSync();
-            //ser.HasReturnSync();
-            //ser.HasReturnSync();
-            //ser.HasReturnSync();
-            //ser.HasReturnSync();
-            //ser.HasReturnSync();
-            //ser.HasReturnSync();
-
-            //var ss = new AopBenchmark();
-            //ss.AopService_HasReturnSync();
-            //ss.DirectService_HasReturnSync();
+            var serviceProvider = Register();
+            var ser = serviceProvider.GetService<TestService>();
+            ser.GetDateTimeSync();
 
             var summary = BenchmarkRunner.Run<AopBenchmark>();
             
@@ -102,5 +79,22 @@ namespace Mic.BenchmarkDotNet
         //ab -n100000 -c80 http://192.168.0.124:5020/WeatherForecast/HasReturnSync
         //ab -n100000 -c80 http://192.168.0.124:5020/WeatherForecast/NoReturnSync
 
+
+        public static IServiceProvider Register()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddSingleton<TestService>();
+            services.AddSingleton<TestService_Aop>();
+
+            services.AddTransient<CacheAttribute>();
+            services.AddTransient<SampleAttribute>();
+            services.AddMemoryCache();
+
+
+            return services.BuildServiceProvider();
+        }
+
     }
+
+    
 }

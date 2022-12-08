@@ -23,7 +23,7 @@ namespace Mic.Aop.Generator.MetaData
             Param = param;
 
             HasReturnValue = !string.IsNullOrWhiteSpace(returnValue) && returnValue != "void" && returnValue != "Task";
-            IsTask = returnValue?.StartsWith("Task") == true;
+            IsTask = returnValue?.StartsWith("Task") == true || returnValue?.StartsWith("ValueTask") == true;
 
             CanOverride = !string.IsNullOrWhiteSpace(perfix) && perfix.Contains(" ") && new List<string>() { "virtual", "override" }.Contains(perfix
                 .Replace("public", "").Trim()

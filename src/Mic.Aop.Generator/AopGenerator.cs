@@ -107,7 +107,8 @@ namespace Mic.Aop.Generator
                 }
                 else
                 {
-                    sb.AppendLine($"\t\t\tservices.AddScoped<{builder._metaData.NameSpace}.{builder.ClassName}>();");
+                    //sb.AppendLine($"\t\t\tservices.AddScoped<{builder._metaData.NameSpace}.{builder.ClassName}>();");
+                    sb.AppendLine($"\t\t\tservices.AddScoped<{builder._metaData.NameSpace}.{builder._metaData.Name}, {builder._metaData.NameSpace}.{builder.ClassName}>();");
                 }
             }
 

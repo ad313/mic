@@ -25,6 +25,8 @@ namespace Mic.Aop.TestWeb
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mic.Aop.TestWeb", Version = "v1" });
             });
+
+            services.AddMemoryCache();
             
             services.RegisterAopClass();
         }

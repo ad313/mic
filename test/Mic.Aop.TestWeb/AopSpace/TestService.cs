@@ -6,53 +6,75 @@ namespace Mic.Aop.TestWeb.AopSpace
     //[Log(Index = 1)]
     public interface ITestService
     {
-        string HasReturnSync();
-        void NoReturnSync(string name, int id);
-
-        Task<string> HasReturnAsync(string name);
+        [Cache(Key = "GetDateTimeSync", Seconds = 3600)]
+        DateTime GetDateTimeSync();
         
-        Task<string> HasReturnAsync(string name, int aaa);
+        DateTime GetDateTimeSyncDirect();
+        
 
-        Task<string> Test(string name, int a, AopContext aopContext);
+
+        [Cache(Key = "GetDateTimeAsync", Seconds = 3600)]
+        ValueTask<DateTime> GetDateTimeAsync();
+
+        ValueTask<DateTime> GetDateTimeAsyncDirect();
+
+        [Sample]
+        DateTime SampleSync();
+
+        [Sample]
+        ValueTask<DateTime> SampleAsync();
+
     }
     
-    [IgnoreAop]
     public class TestService : ITestService
     {
         public TestService()
         {
         }
 
-        [Cache]
-        public virtual string HasReturnSync()
+
+        public virtual DateTime GetDateTimeSync()
         {
-            //Console.WriteLine($"method: GetNameSync");
-            return "ad313";
+            return DateTime.Now;
         }
 
-        [Log]
-        public virtual void NoReturnSync(string name, int id)
+        public virtual DateTime GetDateTimeSyncDirect()
         {
-            //Console.WriteLine($"method:set name:{name}");
+            return DateTime.Now;
         }
 
-        [Cache]
-        public virtual Task<string> HasReturnAsync(string name)
+        public virtual async ValueTask<DateTime> GetDateTimeAsync()
         {
-            //Console.WriteLine("excuter.....");
-            return Task.FromResult($"ad313 async:{name}");
+            await ValueTask.CompletedTask;
+            return DateTime.Now;
         }
 
-        [Log]
-        public virtual async Task<string> HasReturnAsync(string name, int aaa)
+        public virtual async ValueTask<DateTime> GetDateTimeAsyncDirect()
         {
-            return await Task.FromResult($"ad313_2 async:{name}");
+            await ValueTask.CompletedTask;
+            return DateTime.Now;
         }
 
-        [Log]
-        public virtual Task<string> Test(string name, int a, AopContext aopContext1)
+        public virtual DateTime SampleSync()
         {
-            throw new NotImplementedException();
+            return DateTime.Now;
         }
+
+        public virtual async ValueTask<DateTime> SampleAsync()
+        {
+            await ValueTask.CompletedTask;
+            return DateTime.Now;
+        }
+    }
+
+    public class TestService2
+    {
+        [Cache(Key = "aaa")]
+        public virtual DateTime GetDateTimeSync()
+        {
+            return DateTime.Now;
+        }
+
+        
     }
 }

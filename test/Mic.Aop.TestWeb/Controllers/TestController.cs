@@ -10,41 +10,45 @@ namespace Mic.Aop.TestWeb.Controllers
     public class TestController : ControllerBase
     {
         private readonly ITestService _testService;
+        private readonly TestService2 _testService2;
 
-        public TestController(ITestService testService)
+        public TestController(ITestService testService, TestService2 testService2)
         {
             _testService = testService;
+            _testService2 = testService2;
         }
 
-        [HttpGet("HasReturnAsync")]
-        public async Task<string> HasReturnAsync()
+        [HttpGet("GetDateTimeSync")]
+        public DateTime GetDateTimeSync()
         {
-            //_testService.GetNameSync();
-            //_testService.SetNameSync("haha", 123);
-            var result = await _testService.HasReturnAsync("aop");
+            var result = _testService.GetDateTimeSync();
 
-            //Console.WriteLine($"---------------------{result}-------------------------------");
-            var rng = new Random();
+            _testService2.GetDateTimeSync();
+
             return result;
         }
 
-        [HttpGet("NoReturnSync")]
-        public async Task<string> NoReturnSync()
+        [HttpGet("GetDateTimeSyncDirect")]
+        public DateTime GetDateTimeSyncDirect()
         {
-            _testService.NoReturnSync("haha", 123);
-
-            //Console.WriteLine($"--------------------------------------------------------");
-            var rng = new Random();
-            return DateTime.Now.ToString();
+            var result = _testService.GetDateTimeSyncDirect();
+            return result;
         }
 
-        [HttpGet("HasReturnSync")]
-        public async Task<string> HasReturnSync()
-        {
-            var result = _testService.HasReturnSync();
 
-            //Console.WriteLine($"-----------------------------{result}---------------------------");
-            var rng = new Random();
+
+
+        [HttpGet("GetDateTimeAsync")]
+        public async Task<DateTime> GetDateTimeAsync()
+        {
+            var result = await _testService.GetDateTimeAsync();
+            return result;
+        }
+
+        [HttpGet("GetDateTimeAsyncDirect")]
+        public async Task<DateTime> GetDateTimeAsyncDirect()
+        {
+            var result = await _testService.GetDateTimeAsyncDirect();
             return result;
         }
     }

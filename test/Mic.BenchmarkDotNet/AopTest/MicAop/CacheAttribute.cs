@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Mic.Aop;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 
-namespace Mic.Aop.TestWeb.AopSpace
+namespace Mic.BenchmarkDotNet.AopTest.MicAop
 {
     /// <summary>
     /// 缓存
@@ -44,7 +45,7 @@ namespace Mic.Aop.TestWeb.AopSpace
                 HasAopNext = true;
                 HasActualNext = true;
             }
-            
+
             return context;
         }
 
@@ -68,7 +69,7 @@ namespace Mic.Aop.TestWeb.AopSpace
                 HasAopNext = true;
                 HasActualNext = true;
             }
-            
+
             return ValueTask.FromResult(context);
         }
 
@@ -77,7 +78,7 @@ namespace Mic.Aop.TestWeb.AopSpace
             //Console.WriteLine("cache Attribute Next");
 
             context = base.Next(context);
-            
+
             //加入缓存
             _memoryCache.Set(Key, (object)context.ReturnValue, DateTimeOffset.Now.AddSeconds(Seconds));
 
@@ -92,7 +93,7 @@ namespace Mic.Aop.TestWeb.AopSpace
 
             //加入缓存
             _memoryCache.Set(Key, (object)context.ReturnValue, DateTimeOffset.Now.AddSeconds(Seconds));
-            
+
             return context;
         }
     }
