@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Mic.Aop.Generator.MetaData;
 using Microsoft.CodeAnalysis;
@@ -73,12 +74,7 @@ namespace Mic.Aop.Generator
                         key = arr[0].Trim();
                         value = arr[1].Trim();
                     }
-
-                    if (key == "EnumParam")
-                    {
-
-                    }
-
+                    
                     attributeMetaData.AddParam(key, value);
                 }
             }
@@ -142,5 +138,22 @@ namespace Mic.Aop.Generator
         {
             return attributeMetaDatas.Where(d => aopAttributeList.Contains(d.Name.Replace("Attribute", "") + "Attribute")).ToList();
         }
-    }
+
+        public static string GetString(this Stream? stream)
+        {
+	        if (stream == null) return string.Empty;
+	        using (stream)
+	        {
+		        if (stream.Length <= 0) return string.Empty;
+		        if (stream.Position != 0) stream.Position = 0;
+
+		        var bytes = new byte[stream.Length];
+		        stream.Read(bytes, 0, bytes.Length);
+		        // 设置当前流的位置为流的开始 
+		        stream.Seek(0, SeekOrigin.Begin);
+		        stream.Dispose();
+		        return System.Text.Encoding.UTF8.GetString(bytes);
+	        }
+        }
+	}
 }

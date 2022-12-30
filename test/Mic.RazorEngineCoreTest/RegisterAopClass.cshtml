@@ -1,0 +1,26 @@
+﻿namespace Microsoft.Extensions.DependencyInjection
+{
+	internal static class AopClassExtensions
+	{
+		public static IServiceCollection RegisterAopClass(this IServiceCollection services)
+		{
+			@foreach (var aopAttribute in ((Mic.Aop.Generator.MetaData.AopMetaData)Model.AopMetaData).AopAttributeClassMetaDataList)
+            {
+				services.AddTransient<{aopAttribute.Key}>();
+            }
+
+			@foreach (var builder in (List<Mic.Aop.Generator.AopCodeBuilder>)Model.AopCodeBuilders)
+            {
+                if (builder._metaData.InterfaceMetaData.Any())
+                {
+                    services.AddScoped<{builder._metaData.InterfaceMetaData.First().Key}, {builder._metaData.NameSpace}.{builder.ClassName}>();
+                }
+                else
+                {
+                    services.AddScoped<{builder._metaData.NameSpace}.{builder._metaData.Name}, {builder._metaData.NameSpace}.{builder.ClassName}>();
+                }
+            }
+			return services;
+		}
+	}
+}

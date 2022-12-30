@@ -13,6 +13,7 @@ namespace Mic.Aop.TestWeb.AopSpace
         
 
 
+
         [Cache(Key = "GetDateTimeAsync", Seconds = 3600)]
         ValueTask<DateTime> GetDateTimeAsync();
 

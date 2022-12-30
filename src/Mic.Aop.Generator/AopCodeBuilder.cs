@@ -10,7 +10,7 @@ namespace Mic.Aop.Generator
     /// <summary>
     /// BizDictionary 代码构建器
     /// </summary>
-    sealed class AopCodeBuilder : IEquatable<AopCodeBuilder>
+    public class AopCodeBuilder : IEquatable<AopCodeBuilder>
     {
         /// <summary>
         /// 接口符号

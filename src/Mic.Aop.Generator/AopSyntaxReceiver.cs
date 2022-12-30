@@ -30,6 +30,12 @@ namespace Mic.Aop.Generator
         /// </summary>
         public List<ClassMetaData> AopAttributeClassMetaDataList = new List<ClassMetaData>();
 
+        public AopSyntaxReceiver(List<ClassDeclarationSyntax> classSyntaxList, List<InterfaceDeclarationSyntax> interfaceSyntaxList)
+        {
+            _classSyntaxList = classSyntaxList;
+            _interfaceSyntaxList = interfaceSyntaxList;
+        }
+
         /// <summary>
         /// 访问语法树 
         /// </summary>
