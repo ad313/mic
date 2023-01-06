@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Mic.Aop.TestWeb.AopSpace
 {
-    //[Log(Index = 1)]
+    //[IgnoreAop]
     public interface ITestService
     {
         [Cache(Key = "GetDateTimeSync", Seconds = 3600)]
@@ -20,15 +20,22 @@ namespace Mic.Aop.TestWeb.AopSpace
         ValueTask<DateTime> GetDateTimeAsyncDirect();
 
         [Sample]
-        DateTime SampleSync();
+        DateTime SampleSync(string aaa);
 
         [Sample]
         ValueTask<DateTime> SampleAsync();
 
     }
-    
+
+    //[IgnoreAop]
     public class TestService : ITestService
     {
+        /// <summary>
+        /// hahah
+        /// </summary>
+        [Cache]
+        public string Name { get; set; }
+
         public TestService()
         {
         }
@@ -56,7 +63,7 @@ namespace Mic.Aop.TestWeb.AopSpace
             return DateTime.Now;
         }
 
-        public virtual DateTime SampleSync()
+        public virtual DateTime SampleSync(string aaa)
         {
             return DateTime.Now;
         }

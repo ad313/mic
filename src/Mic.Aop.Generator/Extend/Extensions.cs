@@ -5,7 +5,7 @@ using Mic.Aop.Generator.MetaData;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Mic.Aop.Generator
+namespace Mic.Aop.Generator.Extend
 {
     public static class Extensions
     {
@@ -26,11 +26,29 @@ namespace Mic.Aop.Generator
 
             return attributes.Any(al => al.Attributes.Any(a => a.Name.ToString() == shortname || a.Name.ToString() == fullname));
         }
-        
+
+        public static bool HasAttribute(this List<AttributeMetaData> attributes, string name)
+        {
+            string fullname, shortname;
+            var attrLen = "Attribute".Length;
+            if (name.EndsWith("Attribute"))
+            {
+                fullname = name;
+                shortname = name.Remove(name.Length - attrLen, attrLen);
+            }
+            else
+            {
+                fullname = name + "Attribute";
+                shortname = name;
+            }
+
+            return attributes.Any(a => a.Name == shortname || a.Name == fullname);
+        }
+
         public static T FindParent<T>(this SyntaxNode node) where T : class
         {
             var current = node;
-            while(true)
+            while (true)
             {
                 current = current.Parent;
                 if (current == null || current is T)
@@ -74,7 +92,7 @@ namespace Mic.Aop.Generator
                         key = arr[0].Trim();
                         value = arr[1].Trim();
                     }
-                    
+
                     attributeMetaData.AddParam(key, value);
                 }
             }
@@ -82,7 +100,7 @@ namespace Mic.Aop.Generator
             return list;
         }
 
-        public static string? GetStringParam(this List<AttributeMetaData> attributeMetaData, string attributeName, string key)
+        public static string GetStringParam(this List<AttributeMetaData> attributeMetaData, string attributeName, string key)
         {
             if (!attributeMetaData.Any()) return null;
             return attributeMetaData.FirstOrDefault(d => d.Name == attributeName)?.GetStringParam(key);
@@ -114,7 +132,7 @@ namespace Mic.Aop.Generator
             return false;
         }
 
-        public static bool HasIgnore(this List<AttributeMetaData> attributeMetaDatas,string ignoreAttribute)
+        public static bool HasIgnore(this List<AttributeMetaData> attributeMetaDatas, string ignoreAttribute)
         {
             return attributeMetaDatas.Any(d => d.Name == ignoreAttribute || d.Name + "Attribute" == ignoreAttribute);
         }
@@ -129,7 +147,7 @@ namespace Mic.Aop.Generator
             return interfaceMetaData.AttributeMetaData.HasIgnore(ignoreAttribute);
         }
 
-        public static AttributeMetaData? GetAopAttribute(this List<AttributeMetaData> attributeMetaDatas, List<string> aopAttributeList)
+        public static AttributeMetaData GetAopAttribute(this List<AttributeMetaData> attributeMetaDatas, List<string> aopAttributeList)
         {
             return attributeMetaDatas.FirstOrDefault(d => aopAttributeList.Contains(d.Name) || aopAttributeList.Contains(d.Name + "Attribute"));
         }
@@ -138,22 +156,5 @@ namespace Mic.Aop.Generator
         {
             return attributeMetaDatas.Where(d => aopAttributeList.Contains(d.Name.Replace("Attribute", "") + "Attribute")).ToList();
         }
-
-        public static string GetString(this Stream? stream)
-        {
-	        if (stream == null) return string.Empty;
-	        using (stream)
-	        {
-		        if (stream.Length <= 0) return string.Empty;
-		        if (stream.Position != 0) stream.Position = 0;
-
-		        var bytes = new byte[stream.Length];
-		        stream.Read(bytes, 0, bytes.Length);
-		        // 设置当前流的位置为流的开始 
-		        stream.Seek(0, SeekOrigin.Begin);
-		        stream.Dispose();
-		        return System.Text.Encoding.UTF8.GetString(bytes);
-	        }
-        }
-	}
+    }
 }

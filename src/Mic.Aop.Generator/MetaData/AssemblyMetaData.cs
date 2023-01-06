@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using Mic.Aop.Generator.Extend;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Mic.Aop.Generator.MetaData
 {
     /// <summary>
-    /// Aop 扫描接口、类元数据
+    /// 扫描接口、类元数据
     /// </summary>
-    public class AopMetaData
+    public class AssemblyMetaData
     {
         /// <summary>
         /// 忽略Aop
@@ -14,17 +15,17 @@ namespace Mic.Aop.Generator.MetaData
         public string IgnoreAttribute { get; private set; }
 
         /// <summary>
-        /// 所有的AopInterceptor
+        /// AopInterceptor
         /// </summary>
         public List<string> AopAttributeList { get; private set; }
 
         /// <summary>
-        /// 所有的AopInterceptor
+        /// AopInterceptor 元数据
         /// </summary>
-        public List<ClassMetaData> AopAttributeClassMetaDataList = new List<ClassMetaData>();
+        public List<ClassMetaData> AopAttributeMetaDataList = new List<ClassMetaData>();
 
         /// <summary>
-        /// 接口元数据
+        /// Interface 元数据
         /// </summary>
         public List<InterfaceMetaData> InterfaceMetaDataList { get; private set; }
         /// <summary>
@@ -32,7 +33,7 @@ namespace Mic.Aop.Generator.MetaData
         /// </summary>
         public List<ClassMetaData> ClassMetaDataList { get; private set; }
 
-        public AopMetaData(List<string> aopAttributeList, string ignoreAttribute, List<InterfaceMetaData> interfaceMetaDataList, List<ClassMetaData> classMetaDataList)
+        public AssemblyMetaData(List<string> aopAttributeList, string ignoreAttribute, List<InterfaceMetaData> interfaceMetaDataList, List<ClassMetaData> classMetaDataList)
         {
             AopAttributeList = aopAttributeList;
             IgnoreAttribute = ignoreAttribute;
@@ -53,12 +54,6 @@ namespace Mic.Aop.Generator.MetaData
 
                 var methods = new List<MethodMetaData>();
                 var classHasIgnore = classMetaData.HasIgnore(IgnoreAttribute);
-
-                //实现的接口
-                classMetaData.Usings.Add(classMetaData.NameSpace);
-                classMetaData.InterfaceMetaData = InterfaceMetaDataList.Where(d => classMetaData.Interfaces.Contains(d.Key)
-                    || classMetaData.Interfaces.SelectMany(t => classMetaData.Usings.Select(u => $"{u.Replace("using ", "").Replace(";", "")}.{t.Split('.').Last()}")).Contains(d.Key)).ToList();
-                classMetaData.Usings.Remove(classMetaData.NameSpace);
 
                 //按照就近原则过滤
                 //foreach (var methodMetaData in classMetaData.MethodMetaData.Where(d => d.CanOverride))
@@ -157,22 +152,22 @@ namespace Mic.Aop.Generator.MetaData
         public List<KeyValueModel> Constructor { get; set; }
 
         /// <summary>
-        /// 应用
+        /// 引用
         /// </summary>
-        public List<string> Usings { get; set; }
+        public List<string> Using { get; set; }
 
         /// <summary>
         /// 继承的接口
         /// </summary>
         public List<InterfaceMetaData> InterfaceMetaData { get; set; }
 
-        public AopCodeBuilderMetaData(string nameSpace, string name, List<MethodMetaData> methodMetaDatas, List<KeyValueModel> constructor, List<string> usings, List<InterfaceMetaData> interfaceMetaData)
+        public AopCodeBuilderMetaData(string nameSpace, string name, List<MethodMetaData> methodMetaDatas, List<KeyValueModel> constructor, List<string> @using, List<InterfaceMetaData> interfaceMetaData)
         {
             NameSpace = nameSpace;
             Name = name;
             MethodMetaDatas = methodMetaDatas;
             Constructor = constructor;
-            Usings = usings;
+            Using = @using;
             InterfaceMetaData = interfaceMetaData;
         }
     }

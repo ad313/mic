@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Mic.Aop.Generator.Extend;
 
 namespace Mic.Aop.Generator.MetaData
 {
@@ -7,7 +6,7 @@ namespace Mic.Aop.Generator.MetaData
     {
         public PropertyMetaData(string name, List<AttributeMetaData> attributeMetaData, List<string> originalDescription) : base(name, attributeMetaData)
         {
-            Description = AttributeMetaData.GetStringParam("Display", "Name");
+            //Description = AttributeMetaData.GetStringParam("Display", "Name");
             OriginalDescription = originalDescription;
 
             //Code = AttributeMetaData.GetStringParam("BizDictionary", "Code");

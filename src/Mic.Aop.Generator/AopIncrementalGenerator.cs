@@ -1,13 +1,17 @@
 ﻿using Mic.Aop.Generator.MetaData;
+using Mic.Aop.Generator.Renders;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using RazorEngineCore;
+using System.Text.RegularExpressions;
 
 namespace Mic.Aop.Generator
 {
@@ -17,6 +21,8 @@ namespace Mic.Aop.Generator
     [Generator]
     public class IncrementalGenerator : IIncrementalGenerator
     {
+        private readonly Assembly _currentAssembly = Assembly.GetExecutingAssembly();
+
         /// <summary>
         /// 初始化
         /// </summary>
@@ -25,7 +31,7 @@ namespace Mic.Aop.Generator
         {
             //Debugger.Launch();
 
-            //IncrementalValuesProvider<AdditionalText> textFiles = context.AdditionalTextsProvider.Where(file => file.Path.EndsWith(".cs"));
+            var textFiles = context.AdditionalTextsProvider.Where(file => file.Path.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)).Collect();
 
             // 找到对什么文件感兴趣
             IncrementalValueProvider<Compilation> compilations =
@@ -34,7 +40,10 @@ namespace Mic.Aop.Generator
                     // public static IncrementalValueProvider<TResult> Select<TSource,TResult>(this IncrementalValueProvider<TSource> source, Func<TSource,CancellationToken,TResult> selector)
                     .Select((compilation, cancellationToken) => compilation);
 
-            context.RegisterSourceOutput(compilations, Execute);
+            context.RegisterSourceOutput(compilations.Combine(textFiles), (context, compilation) =>
+            {
+                Execute(context, compilation.Left, compilation.Right);
+            });
         }
 
         /// <summary>
@@ -42,8 +51,12 @@ namespace Mic.Aop.Generator
         /// </summary>
         /// <param name="context"></param>
         /// <param name="compilation"></param>
-        public void Execute(SourceProductionContext context, Compilation compilation)
+        /// <param name="additionalTexts">附加文本文件</param>
+        public void Execute(SourceProductionContext context, Compilation compilation, ImmutableArray<AdditionalText> additionalTexts)
         {
+            var watch = Stopwatch.StartNew();
+            watch.Start();
+
             var classDeclarationSyntax = compilation.SyntaxTrees.SelectMany(d => d.GetRoot(context.CancellationToken)
                 .DescendantNodes()
                 .OfType<ClassDeclarationSyntax>()).ToList();
@@ -52,130 +65,229 @@ namespace Mic.Aop.Generator
                 .DescendantNodes()
                 .OfType<InterfaceDeclarationSyntax>()).ToList();
 
-            if(!classDeclarationSyntax.Any() && !interfaceDeclarationSyntax.Any())
+            if (!classDeclarationSyntax.Any() && !interfaceDeclarationSyntax.Any())
                 return;
-            
-            var sb = new StringBuilder();
+
+            if (context.CancellationToken.IsCancellationRequested) return;
+
+            AssemblyMetaData meta = null;
             var receiver = new AopSyntaxReceiver(classDeclarationSyntax, interfaceDeclarationSyntax);
             try
             {
-                var aopMateData = receiver
-                    .FindAopInterceptor()
-                    .GetAopMetaData(compilation);
+                meta = receiver
+                    .FindAopInterceptors()
+                    .GetMetaData(compilation);
 
-                var builders = aopMateData
+                var builders = meta
                     .GetAopCodeBuilderMetaData()
                     .Select(i => new AopCodeBuilder(i))
                     .Distinct()
                     .ToList();
 
-                foreach (var builder in builders)
-                {
-                    context.AddSource(builder.SourceCodeName, builder.ToSourceText());
-                }
+                if (context.CancellationToken.IsCancellationRequested)
+                    return;
 
-                foreach (var builder in builders)
-                {
-                    builder.ToTraceStringBuilder(sb);
-                }
-
-                context.AddSource("AopClassExtensions", ToRegisterCode(builders, aopMateData).ToString());
-                context.AddSource("error", "");
-			}
+                BuildAop(context, meta, builders);
+            }
             catch (Exception e)
             {
-                context.AddSource("error", ToError(e).ToString());
+                context.AddSource("Error", TemplateRender.ToError(_currentAssembly, e).ToString());
             }
 
-            context.AddSource("remark", sb.ToString());
+            watch.Stop();
+
+            var timesBuilder = new StringBuilder();
+            timesBuilder.AppendLine($"//Aop：{DateTime.Now} - {watch.ElapsedMilliseconds} 毫秒");
+            watch.Restart();
+
+            BuildExtend(context, additionalTexts, meta);
+
+            watch.Stop();
+            timesBuilder.AppendLine($"//BuildExtend：{DateTime.Now} - {watch.ElapsedMilliseconds} 毫秒");
+            context.AddSource("Times", timesBuilder.ToString());
         }
 
-        private StringBuilder ToError(Exception e)
+        /// <summary>
+        /// 构建Aop代码
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="meta"></param>
+        /// <param name="builders"></param>
+        private void BuildAop(SourceProductionContext context, AssemblyMetaData meta, List<AopCodeBuilder> builders)
         {
-            var sb = new StringBuilder();
-            sb.AppendLine($"// Message：{e.Message}");
-            sb.AppendLine($"// InnerException：{e.InnerException?.Message}");
+            foreach (var builder in builders)
+            {
+                context.AddSource(builder.SourceCodeName, builder.ToSourceText());
+            }
 
-            var trace = e.StackTrace?.Replace("\r\n", "\r\n//");
-            sb.Append($"// StackTrace：{trace}");
-
-            sb.AppendLine();
-
-            var interTrace = e.InnerException?.StackTrace?.Replace("\r\n", "\r\n//");
-            sb.Append($"// InnerException.StackTrace：{interTrace}");
-            return sb;
+            context.AddSource("Remark", TemplateRender.ToTrace(_currentAssembly, builders, meta).ToString());
+            context.AddSource("AopClassExtensions", TemplateRender.ToRegisterCode(_currentAssembly, builders, meta).ToString());
+            context.AddSource("Error", "");
         }
 
-        private StringBuilder ToRegisterCode(List<AopCodeBuilder> builders, AopMetaData mateData)
+        /// <summary>
+        /// 构建扩展代码
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="additionalTexts"></param>
+        /// <param name="meta"></param>
+        private void BuildExtend(SourceProductionContext context, ImmutableArray<AdditionalText> additionalTexts, AssemblyMetaData meta)
         {
-	        var sb = new StringBuilder();
-
-	        var currentAssembly = Assembly.GetExecutingAssembly();
-	        var name = currentAssembly.GetName().Name;
-	        name += ".Template.RegisterAopClass.cshtml";
-			var stream = currentAssembly.GetManifestResourceStream(name);
-	        var code = stream.GetString();
-            
-			IRazorEngine razorEngine = new RazorEngine();
-            var template = razorEngine.Compile<AopBuildModel>(code, d =>
+            try
             {
-				d.AddAssemblyReference(typeof(System.Collections.IList));
-				d.AddAssemblyReference(currentAssembly);
-            });
+                var extendMapModels = GetExtendMapModels(additionalTexts);
+                extendMapModels.ForEach(item => item.AopMetaDataModel = meta);
+                RenderExtend(context, meta, extendMapModels);
 
-            string result = template.Run(d =>
+                context.AddSource("BuildExtendError", "");
+            }
+            catch (Exception e)
             {
-                d.AopMetaDataModel = mateData;
-                d.AopCodeBuilderModel = builders;
-            });
-
-            sb.Append(result);
-            return sb;
+                context.AddSource("BuildExtendError", TemplateRender.ToError(_currentAssembly, e).ToString());
+            }
         }
 
-		//private StringBuilder ToRegisterCode(List<AopCodeBuilder> builders, AopMetaData mateData)
-		//{
-		//    var sb = new StringBuilder();
-		//    sb.AppendLine("namespace Microsoft.Extensions.DependencyInjection");
-		//    sb.AppendLine("{");
-		//    sb.AppendLine($"\tinternal static class AopClassExtensions");
-		//    sb.AppendLine("\t{");
-		//    sb.AppendLine("\t\tpublic static IServiceCollection RegisterAopClass(this IServiceCollection services)");
-		//    sb.AppendLine("\t\t{");
+        private List<ExtendTemplateModel> GetExtendMapModels(ImmutableArray<AdditionalText> additionalTexts)
+        {
+            var mapText = additionalTexts.FirstOrDefault(d => d.Path.EndsWith("Map.txt", StringComparison.OrdinalIgnoreCase))?.GetText()?.ToString();
+            if (string.IsNullOrWhiteSpace(mapText))
+                return new List<ExtendTemplateModel>();
 
-		//    foreach (var aopAttribute in mateData.AopAttributeClassMetaDataList)
-		//    {
-		//        sb.AppendLine($"\t\t\tservices.AddTransient<{aopAttribute.Key}>();");
-		//    }
+            return Regex.Split(mapText, "#")
+                 .Select(txt =>
+                 {
+                     if (string.IsNullOrWhiteSpace(txt))
+                         return null;
 
-		//    sb.AppendLine();
+                     var arr = Regex.Split(txt.Trim(), "\r\n");
+                     if (arr.Length < 4)
+                         return null;
 
-		//    foreach (var builder in builders)
-		//    {
-		//        if (builder._metaData.InterfaceMetaData.Any())
-		//        {
-		//            sb.AppendLine($"\t\t\tservices.AddScoped<{builder._metaData.InterfaceMetaData.First().Key}, {builder._metaData.NameSpace}.{builder.ClassName}>();");
-		//        }
-		//        else
-		//        {
-		//            //sb.AppendLine($"\t\t\tservices.AddScoped<{builder._metaData.NameSpace}.{builder.ClassName}>();");
-		//            sb.AppendLine($"\t\t\tservices.AddScoped<{builder._metaData.NameSpace}.{builder._metaData.Name}, {builder._metaData.NameSpace}.{builder.ClassName}>();");
-		//        }
-		//    }
+                     var model = new ExtendTemplateModel();
+                     foreach (var line in arr)
+                     {
+                         if (line.IndexOf(":", StringComparison.OrdinalIgnoreCase) <= -1 || line.StartsWith("//"))
+                             continue;
 
-		//    sb.AppendLine("\t\t\treturn services;");
-		//    sb.AppendLine("\t\t}");
-		//    sb.AppendLine("\t}");
-		//    sb.AppendLine("}");
+                         var split = line.Split(':');
+                         switch (split[0].ToLower())
+                         {
+                             case "type":
+                                 model.Type = (ExtendTemplateType)(int.TryParse(split[1], out int v) ? v : 0);
+                                 break;
+                             case "name":
+                                 model.Name = split[1];
+                                 break;
+                             case "code":
+                                 model.Code = split[1];
+                                 break;
+                             case "templates":
+                                 model.Templates = split[1].Split(',').Where(d => !string.IsNullOrWhiteSpace(d)).Select(d => d.Trim()).ToList();
+                                 break;
+                             default:
+                                 break;
+                         }
+                     }
 
-		//    return sb;
-		//}
-	}
+                     if (model.Templates.Any())
+                     {
+                         foreach (var template in model.Templates)
+                         {
+                             var file = additionalTexts.FirstOrDefault(d => d.Path.EndsWith($"\\{template}", StringComparison.OrdinalIgnoreCase));
+                             if (file == null) continue;
 
-    public class AopBuildModel : RazorEngineTemplateBase
-    {
-	    public List<AopCodeBuilder> AopCodeBuilderModel { get; set; }
+                             model.TemplateDictionary ??= new ConcurrentDictionary<string, string>();
+                             model.TemplateDictionary.TryAdd(template, file.GetText()?.ToString());
+                         }
+                     }
 
-	    public AopMetaData AopMetaDataModel { get; set; }
+                     return model;
+                 }).Where(d => d != null).ToList();
+        }
+
+        private void RenderExtend(SourceProductionContext context, AssemblyMetaData meta, List<ExtendTemplateModel> extendMapModels)
+        {
+            foreach (var extendMapModel in extendMapModels)
+            {
+                if (context.CancellationToken.IsCancellationRequested)
+                    return;
+
+                switch (extendMapModel.Type)
+                {
+                    case ExtendTemplateType.ClassTarget:
+                        RenderExtendByClassMetaData(context, meta, extendMapModel);
+                        break;
+                    case ExtendTemplateType.InterfaceTarget:
+                        RenderExtendByInterfaceMetaData(context, meta, extendMapModel);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        private void RenderExtendByClassMetaData(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
+        {
+            foreach (var classMetaData in meta.ClassMetaDataList)
+            {
+                if (context.CancellationToken.IsCancellationRequested)
+                    return;
+
+                extendMapModel.ClassMetaData = classMetaData;
+
+                TemplateRender.RenderExtend(extendMapModel, d =>
+                {
+                    d.AddAssemblyReference(typeof(System.Collections.IList));
+                    d.AddAssemblyReference(typeof(System.Linq.Enumerable));
+                    d.AddAssemblyReference(typeof(System.Linq.IQueryable));
+                    d.AddAssemblyReference(typeof(System.Collections.Generic.IEnumerable<>));
+                    d.AddAssemblyReference(typeof(System.Collections.Generic.List<>));
+                    d.AddAssemblyReference(typeof(System.Diagnostics.Debug));
+                    d.AddAssemblyReference(typeof(System.Diagnostics.CodeAnalysis.SuppressMessageAttribute));
+                    d.AddAssemblyReference(typeof(System.Runtime.Versioning.ComponentGuaranteesAttribute));
+                    d.AddAssemblyReference(typeof(System.Linq.Expressions.BinaryExpression));
+
+                    d.AddAssemblyReference(_currentAssembly);
+                }, d =>
+                {
+                    d.Model = extendMapModel;
+                });
+
+                foreach (var kv in extendMapModel.TemplateResult)
+                {
+                    context.AddSource($"{kv.Key.Replace(".txt", "")}.cs", kv.Value);
+                }
+
+                extendMapModel.TemplateResult.Clear();
+            }
+        }
+
+        private void RenderExtendByInterfaceMetaData(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
+        {
+            foreach (var interfaceMetaData in meta.InterfaceMetaDataList)
+            {
+                if (context.CancellationToken.IsCancellationRequested)
+                    return;
+
+                extendMapModel.InterfaceMetaData = interfaceMetaData;
+
+                TemplateRender.RenderExtend(extendMapModel, d =>
+                {
+                    d.AddAssemblyReference(typeof(System.Collections.IList));
+                    d.AddAssemblyReference(typeof(Enumerable));
+                    d.AddAssemblyReference(_currentAssembly);
+                }, d =>
+                {
+                    d.Model = extendMapModel;
+                });
+
+                foreach (var kv in extendMapModel.TemplateResult)
+                {
+                    context.AddSource($"{kv.Key.Replace(".txt", "")}.cs", kv.Value);
+                }
+
+                extendMapModel.TemplateResult.Clear();
+            }
+        }
     }
 }

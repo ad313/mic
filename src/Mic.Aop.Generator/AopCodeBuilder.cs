@@ -66,31 +66,7 @@ namespace Mic.Aop.Generator
             var code = this.ToString();
             return SourceText.From(code, Encoding.UTF8);
         }
-
-        public StringBuilder ToTraceStringBuilder(StringBuilder? builder)
-        {
-            builder ??= new StringBuilder();
-
-            builder.AppendLine($"// -------------------------------------------------");
-            builder.AppendLine($"//命名空间：{Namespace}");
-            builder.AppendLine($"//文件名称：{SourceCodeName}");
-            builder.AppendLine($"//接口：{string.Join("、", _metaData.InterfaceMetaData.Select(d => d.Key))}");
-            builder.AppendLine($"//类名：{ClassName}");
-
-            foreach (var methodData in _metaData.MethodMetaDatas)
-            {
-                builder.AppendLine();
-                builder.AppendLine($"//方法名称：{methodData.Name}");
-                builder.AppendLine($"//Key名称：{methodData.Key}");
-                builder.AppendLine($"//Aop属性：{string.Join("、", methodData.AttributeMetaData.Select(d => d.Name))}");
-            }
-
-            builder.AppendLine();
-            builder.AppendLine();
-
-            return builder;
-        }
-
+        
         /// <summary>
         /// 转换为字符串
         /// </summary>
@@ -99,12 +75,12 @@ namespace Mic.Aop.Generator
         {
             foreach (var item in this.Using)
             {
-                if (!_metaData.Usings.Contains(item))
-                    _metaData.Usings.Add(item);
+                if (!_metaData.Using.Contains(item))
+                    _metaData.Using.Add(item);
             }
 
             var builder = new StringBuilder();
-            foreach (var item in _metaData.Usings.Distinct().Select(d => d.Split(' ').Last()).OrderBy(d => d))
+            foreach (var item in _metaData.Using.Distinct().Select(d => d.Split(' ').Last()).OrderBy(d => d))
             {
                 builder.AppendLine($"using {item}");
             }

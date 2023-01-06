@@ -1,0 +1,6 @@
+﻿//type 1：目标是所有的class；2：目标是所有的接口
+type:1
+name:枚举业务扩展
+code:BizEnumExtendBuilder
+templates:BizEnumExtend.txt
+#

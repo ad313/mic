@@ -1,0 +1,19 @@
+﻿@foreach (var builder in @AopCodeBuilderModel)
+{
+    @:// -------------------------------------------------");
+    @://命名空间：@builder.Namespace");
+    @://文件名称：@builder.SourceCodeName");
+    @://接口：@string.Join("、", builder._metaData.InterfaceMetaData.Select(d => d.Key))");
+    @://类名：@builder.ClassName");
+
+    @foreach (var methodData in builder._metaData.MethodMetaDatas)
+    {
+    @:
+    @://方法名称：@methodData.Name
+    @://Key名称：@methodData.Key
+    @://Aop属性：@string.Join("、", methodData.AttributeMetaData.Select(d => d.Name))
+    }
+    @:
+    @:
+    @:
+}

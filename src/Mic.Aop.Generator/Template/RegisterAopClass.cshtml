@@ -4,7 +4,7 @@
 	{
 		public static IServiceCollection RegisterAopClass(this IServiceCollection services)
 		{
-			@foreach (var aopAttribute in @AopMetaDataModel.AopAttributeClassMetaDataList)
+			@foreach (var aopAttribute in @MetaModel.AopAttributeMetaDataList)
             {
 			@:services.AddTransient<@aopAttribute.Key>();
             }

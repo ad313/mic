@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using Mic.Aop.Generator.Extend;
 using Mic.Aop.Generator.MetaData;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Mic.Aop.Generator
 {
@@ -16,11 +18,11 @@ namespace Mic.Aop.Generator
         /// <summary>
         /// 类列表
         /// </summary>
-        private readonly List<ClassDeclarationSyntax> _classSyntaxList = new List<ClassDeclarationSyntax>();
+        private readonly List<ClassDeclarationSyntax> _classSyntaxList;
         /// <summary>
         /// 接口列表
         /// </summary>
-        private readonly List<InterfaceDeclarationSyntax> _interfaceSyntaxList = new List<InterfaceDeclarationSyntax>();
+        private readonly List<InterfaceDeclarationSyntax> _interfaceSyntaxList;
         /// <summary>
         /// 所有的AopInterceptor
         /// </summary>
@@ -28,7 +30,7 @@ namespace Mic.Aop.Generator
         /// <summary>
         /// 所有的AopInterceptor
         /// </summary>
-        public List<ClassMetaData> AopAttributeClassMetaDataList = new List<ClassMetaData>();
+        public List<ClassMetaData> AopAttributeMetaDataList = new List<ClassMetaData>();
 
         public AopSyntaxReceiver(List<ClassDeclarationSyntax> classSyntaxList, List<InterfaceDeclarationSyntax> interfaceSyntaxList)
         {
@@ -54,10 +56,10 @@ namespace Mic.Aop.Generator
         }
 
         /// <summary>
-        /// 找出所有 AopInterceptor 
+        /// 找出所有 AopInterceptor class
         /// </summary>
         /// <returns></returns>
-        public AopSyntaxReceiver FindAopInterceptor()
+        public AopSyntaxReceiver FindAopInterceptors()
         {
             foreach (var classSyntax in this._classSyntaxList)
             {
@@ -82,8 +84,8 @@ namespace Mic.Aop.Generator
                             AopAttributeList.Add(classDeclarationSyntax.Identifier.Text);
 
                             var meta = GetClassMetaData(classSyntax);
-                            if (meta != null && AopAttributeClassMetaDataList.All(d => d.Name != meta.Name))
-                                AopAttributeClassMetaDataList.Add(meta);
+                            if (meta != null && AopAttributeMetaDataList.All(d => d.Name != meta.Name))
+                                AopAttributeMetaDataList.Add(meta);
                         }
                     }
                 }
@@ -95,44 +97,37 @@ namespace Mic.Aop.Generator
         }
 
         /// <summary>
-        /// 获取所有标记了 AopInterceptor 的接口和类
+        /// 获取所有接口和类
         /// </summary>
         /// <param name="compilation"></param>
         /// <returns></returns>
-        public AopMetaData GetAopMetaData(Compilation compilation)
+        public AssemblyMetaData GetMetaData(Compilation compilation)
         {
-            var result = new AopMetaData(AopAttributeList, IgnoreAttribute, new List<InterfaceMetaData>(), new List<ClassMetaData>());
-
-            if (!AopAttributeList.Any())
-                return result;
-
+            var result = new AssemblyMetaData(AopAttributeList, IgnoreAttribute, new List<InterfaceMetaData>(), new List<ClassMetaData>());
+            
             //处理接口
             foreach (var classSyntax in this._interfaceSyntaxList)
             {
                 var root = classSyntax.SyntaxTree.GetRoot();
-                var interfaceWithAttribute = root
+                var interfaceWithAttributeList = root
                     .DescendantNodes()
                     .OfType<InterfaceDeclarationSyntax>()
                     .ToList();
 
-                if (!interfaceWithAttribute.Any())
+                if (!interfaceWithAttributeList.Any())
                     continue;
 
-                foreach (var interfaceDeclaration in interfaceWithAttribute)
+                foreach (var interfaceDeclaration in interfaceWithAttributeList)
                 {
                     var namespaceName = interfaceDeclaration.FindParent<NamespaceDeclarationSyntax>().Name.ToString();
                     var className = interfaceDeclaration.Identifier.Text;
                     var properties = interfaceDeclaration.DescendantNodes().OfType<PropertyDeclarationSyntax>().ToList();
-                    var methodSyntaxs = interfaceDeclaration.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
-
-                    ////接口上没有标记，则跳过
-                    //if (!interfaceDeclaration.HasAopAttribute(AopAttributeList, IgnoreAttribute) && methodSyntaxs.All(d => !d.HasAopAttribute(AopAttributeList, IgnoreAttribute)))
-                    //    continue;
+                    var methodSyntax = interfaceDeclaration.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
 
                     //属性集合
-                    var props = properties.Select(d => new PropertyMetaData(d.Identifier.Text, d.GetAttributeMetaData())).ToList();
+                    var props = properties.Select(d => new PropertyMetaData(d.Identifier.Text, d.GetAttributeMetaData(), GetPropertyDescription(d))).ToList();
                     //方法集合
-                    var methods = methodSyntaxs.Select(GetMethodMetaData).ToList();
+                    var methods = methodSyntax.Select(GetMethodMetaData).ToList();
 
                     var interfaceMetaData = new InterfaceMetaData(namespaceName, className, interfaceDeclaration.GetAttributeMetaData(), props, methods);
                     if (interfaceMetaData.MethodMetaData.Any() && !result.InterfaceMetaDataList.Exists(d => d.Equals(interfaceMetaData)))
@@ -144,15 +139,15 @@ namespace Mic.Aop.Generator
             foreach (var classSyntax in this._classSyntaxList)
             {
                 var root = classSyntax.SyntaxTree.GetRoot();
-                var classesWithAttribute = root
+                var classesWithAttributeList = root
                     .DescendantNodes()
                     .OfType<ClassDeclarationSyntax>()
                     .ToList();
 
-                if (!classesWithAttribute.Any())
+                if (!classesWithAttributeList.Any())
                     continue;
 
-                foreach (var classDeclaration in classesWithAttribute)
+                foreach (var classDeclaration in classesWithAttributeList)
                 {
                     var classMetaData = GetClassMetaData(classDeclaration);
                     if (classMetaData == null)
@@ -161,12 +156,20 @@ namespace Mic.Aop.Generator
                     if (AopAttributeList.Contains(classMetaData.Name))
                         continue;
 
-                    if (classMetaData.MethodMetaData.Any() && !result.ClassMetaDataList.Exists(d => d.Equals(classMetaData)))
+                    if (!result.ClassMetaDataList.Exists(d => d.Equals(classMetaData)))
+                    {
+                        //实现的接口
+                        classMetaData.Usings.Add(classMetaData.NameSpace);
+                        classMetaData.InterfaceMetaData = result.InterfaceMetaDataList.Where(d => classMetaData.Interfaces.Contains(d.Key)
+                            || classMetaData.Interfaces.SelectMany(t => classMetaData.Usings.Select(u => $"{u.Replace("using ", "").Replace(";", "")}.{t.Split('.').Last()}")).Contains(d.Key)).ToList();
+                        classMetaData.Usings.Remove(classMetaData.NameSpace);
+                        
                         result.ClassMetaDataList.Add(classMetaData);
+                    }
                 }
             }
 
-            result.AopAttributeClassMetaDataList = AopAttributeClassMetaDataList;
+            result.AopAttributeMetaDataList = AopAttributeMetaDataList;
 
             return result;
         }
@@ -176,17 +179,17 @@ namespace Mic.Aop.Generator
             var namespaceName = classDeclaration.FindParent<NamespaceDeclarationSyntax>().Name.ToString();
             var className = classDeclaration.Identifier.Text;
             var properties = classDeclaration.DescendantNodes().OfType<PropertyDeclarationSyntax>().ToList();
-            var methodSyntaxs = classDeclaration.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
-
+            var methodSyntax = classDeclaration.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
+            
             //属性集合
-            var props = properties.Select(d => new PropertyMetaData(d.Identifier.Text, d.GetAttributeMetaData())).ToList();
+            var props = properties.Select(d => new PropertyMetaData(d.Identifier.Text, d.GetAttributeMetaData(), GetPropertyDescription(d))).ToList();
             //方法集合
-            var methods = methodSyntaxs.Select(GetMethodMetaData).ToList();
+            var methods = methodSyntax.Select(GetMethodMetaData).ToList();
             //实现的接口集合
             var interfaces = classDeclaration.BaseList?.ToString().Split(':').Last().Trim().Split(',').Where(d => d.Split('.').Last().StartsWith("I")).ToList() ?? new List<string>();
             //using 引用
             var usingDirectiveSyntax = classDeclaration.Parent?.Parent == null ? new SyntaxList<UsingDirectiveSyntax>() : ((CompilationUnitSyntax)classDeclaration.Parent.Parent).Usings;
-            var usings = usingDirectiveSyntax.Select(d => d.ToString()).ToList();
+            var usingList = usingDirectiveSyntax.Select(d => d.ToString()).ToList();
 
             //构造函数
             var constructorDictionary = new List<KeyValueModel>();
@@ -200,10 +203,9 @@ namespace Mic.Aop.Generator
                 }
             }
 
-            return new ClassMetaData(namespaceName, className, classDeclaration.GetAttributeMetaData(), props, methods, interfaces, constructorDictionary, usings);
+            return new ClassMetaData(namespaceName, className, classDeclaration.GetAttributeMetaData(), props, methods, interfaces, constructorDictionary, usingList);
         }
-
-
+        
         private MethodMetaData GetMethodMetaData(MethodDeclarationSyntax methodDeclarationSyntax)
         {
             var param = new List<KeyValueModel>();
@@ -220,6 +222,20 @@ namespace Mic.Aop.Generator
 
             return new MethodMetaData(methodDeclarationSyntax.Identifier.Text,
                 methodDeclarationSyntax.GetAttributeMetaData(), returnValue, param, methodDeclarationSyntax.Modifiers.ToString());
+        }
+
+        /// <summary>
+        /// 获取属性上的注释
+        /// </summary>
+        /// <param name="propertyDeclarationSyntax"></param>
+        /// <returns></returns>
+        private List<string> GetPropertyDescription(PropertyDeclarationSyntax propertyDeclarationSyntax)
+        {
+            return propertyDeclarationSyntax.DescendantTokens().OfType<SyntaxToken>()
+                .Where(t => t.HasLeadingTrivia && t.LeadingTrivia.Any(l => l.Kind() == SyntaxKind.SingleLineCommentTrivia))
+                .SelectMany(t => t.LeadingTrivia.Where(l => l.Kind() == SyntaxKind.SingleLineCommentTrivia))
+                .Select(t => t.ToString())
+                .ToList();
         }
     }
 }

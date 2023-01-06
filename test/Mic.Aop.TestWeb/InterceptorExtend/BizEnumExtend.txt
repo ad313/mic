@@ -1,0 +1,18 @@
+﻿@if (!Model.HasAttribute("BizDictionary") || !Model.PropertyHasAttribute("BizDictionary") || Model.LinqHelper.First(Model.Templates) == "")
+{
+    return;
+}
+else
+{
+    @:using System;
+
+    @:namespace Mic.Aop.TestWeb
+
+    @:{
+    
+    @:public class Class21111
+    @:{
+    @:public string Name { get; set; }
+    @:}
+    @:}
+}
