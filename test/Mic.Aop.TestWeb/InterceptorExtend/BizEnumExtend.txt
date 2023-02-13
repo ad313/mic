@@ -4,15 +4,20 @@
 }
 else
 {
+    @if(1==1){
+    
     @:using System;
 
-    @:namespace Mic.Aop.TestWeb
-
+    @:namespace Mic.Aop.TestWeb111332222
+    @:
     @:{
     
-    @:public class Class21111
+    @:public class Class2
+
     @:{
     @:public string Name { get; set; }
     @:}
     @:}
+    }
+    
 }

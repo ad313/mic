@@ -31,6 +31,13 @@ namespace Mic.Aop.Generator.Renders
         public ClassMetaData ClassMetaData { get; set; }
 
         public InterfaceMetaData InterfaceMetaData { get; set; }
+        
+
+        /// <summary>
+        /// class 过滤
+        /// </summary>
+        public string class_filter_expression { get; set; }
+        
 
         public string GetName(string template)
         {

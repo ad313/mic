@@ -29,21 +29,60 @@ namespace Mic.Aop.Generator
         /// <param name="context"></param>
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
+            Debugger.Launch();
+
+            //try
+            //{
+            //    var textFiles = context.AdditionalTextsProvider.Where(file => file.Path.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)).Collect();
+
+            //    // 找到对什么文件感兴趣
+            //    IncrementalValueProvider<Compilation> compilations =
+            //        context.CompilationProvider
+            //            // 这里的 Select 是仿照 Linq 写的，可不是真的 Linq 哦，只是一个叫 Select 的方法
+            //            // public static IncrementalValueProvider<TResult> Select<TSource,TResult>(this IncrementalValueProvider<TSource> source, Func<TSource,CancellationToken,TResult> selector)
+            //            .Select((compilation, cancellationToken) => compilation);
+
+            //    context.RegisterSourceOutput(compilations.Combine(textFiles), (context, compilation) =>
+            //    {
+            //        Execute(context, compilation.Left, compilation.Right);
+            //    });
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine(e);
+            //}
+
+
             //Debugger.Launch();
 
-            var textFiles = context.AdditionalTextsProvider.Where(file => file.Path.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)).Collect();
-
-            // 找到对什么文件感兴趣
-            IncrementalValueProvider<Compilation> compilations =
-                context.CompilationProvider
-                    // 这里的 Select 是仿照 Linq 写的，可不是真的 Linq 哦，只是一个叫 Select 的方法
-                    // public static IncrementalValueProvider<TResult> Select<TSource,TResult>(this IncrementalValueProvider<TSource> source, Func<TSource,CancellationToken,TResult> selector)
-                    .Select((compilation, cancellationToken) => compilation);
-
-            context.RegisterSourceOutput(compilations.Combine(textFiles), (context, compilation) =>
+            try
             {
-                Execute(context, compilation.Left, compilation.Right);
-            });
+                var textFiles = context.AdditionalTextsProvider.Where(file => file.Path.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)).Collect();
+
+                // 找到对什么文件感兴趣
+                IncrementalValueProvider<Compilation> compilations =
+                    context.CompilationProvider
+                        // 这里的 Select 是仿照 Linq 写的，可不是真的 Linq 哦，只是一个叫 Select 的方法
+                        // public static IncrementalValueProvider<TResult> Select<TSource,TResult>(this IncrementalValueProvider<TSource> source, Func<TSource,CancellationToken,TResult> selector)
+                        .Select((compilation, cancellationToken) => compilation);
+
+                context.RegisterSourceOutput(compilations.Combine(textFiles), (context, compilation) =>
+                {
+                    try
+                    {
+                        Execute(context, compilation.Left, compilation.Right);
+                    }
+                    catch (Exception e)
+                    {
+                        context.AddSource("aa",e.ToString());
+                    }
+                });
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         /// <summary>
@@ -91,7 +130,8 @@ namespace Mic.Aop.Generator
             }
             catch (Exception e)
             {
-                context.AddSource("Error", TemplateRender.ToError(_currentAssembly, e).ToString());
+                //context.AddSource("Error", TemplateRender.ToError(_currentAssembly, e).ToString());
+                context.AddSource("Error", e.ToString());
             }
 
             watch.Stop();
@@ -139,11 +179,12 @@ namespace Mic.Aop.Generator
                 extendMapModels.ForEach(item => item.AopMetaDataModel = meta);
                 RenderExtend(context, meta, extendMapModels);
 
-                context.AddSource("BuildExtendError", "");
+                context.AddSource("BuildExtendError1", "");
             }
             catch (Exception e)
             {
-                context.AddSource("BuildExtendError", TemplateRender.ToError(_currentAssembly, e).ToString());
+                context.AddSource("BuildExtendError2", e.ToString());
+                //context.AddSource("BuildExtendError", TemplateRender.ToError(_currentAssembly, e).ToString());
             }
         }
 
@@ -183,6 +224,9 @@ namespace Mic.Aop.Generator
                                  break;
                              case "templates":
                                  model.Templates = split[1].Split(',').Where(d => !string.IsNullOrWhiteSpace(d)).Select(d => d.Trim()).ToList();
+                                 break;
+                             case "class_filter_expression":
+                                 model.class_filter_expression = split[1];
                                  break;
                              default:
                                  break;
@@ -234,7 +278,7 @@ namespace Mic.Aop.Generator
                     return;
 
                 extendMapModel.ClassMetaData = classMetaData;
-
+                
                 TemplateRender.RenderExtend(extendMapModel, d =>
                 {
                     d.AddAssemblyReference(typeof(System.Collections.IList));

@@ -25,7 +25,7 @@ namespace Mic.Aop.Generator.MetaData
                 ParamDictionary.Add(name, value);
         }
 
-        public string? GetStringParam(string key)
+        public string GetStringParam(string key)
         {
             return ParamDictionary.TryGetValue(key, out string str) ? str : null;
         }

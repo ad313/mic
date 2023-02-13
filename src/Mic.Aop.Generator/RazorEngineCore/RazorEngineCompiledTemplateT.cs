@@ -16,6 +16,9 @@ namespace RazorEngineCore
 
             Assembly assembly = Assembly.Load(assemblyByteCode.ToArray());
             this.templateType = assembly.GetType($"{templateNamespace}.Template");
+
+            if (this.templateType == null)
+                throw new ArgumentNullException(assembly.FullName+"__"+ templateNamespace + "_" + templateType);
         }
 
         public static IRazorEngineCompiledTemplate<T> LoadFromFile(string fileName, string templateNamespace = "TemplateNamespace")
@@ -91,6 +94,9 @@ namespace RazorEngineCore
         
         public async Task<string> RunAsync(Action<T> initializer)
         {
+            if (this.templateType == null)
+                return string.Empty;
+
             T instance = (T) Activator.CreateInstance(this.templateType);
             initializer(instance);
 

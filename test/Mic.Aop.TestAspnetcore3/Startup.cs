@@ -1,11 +1,18 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Mic.Aop.TestWeb.AopSpace;
+using Mic.TestStardand.AopSpace;
 
-namespace Mic.Aop.TestWeb
+namespace Mic.Aop.TestAspnetcore3
 {
     public class Startup
     {
@@ -19,41 +26,20 @@ namespace Mic.Aop.TestWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mic.Aop.TestWeb", Version = "v1" });
-            });
 
-            services.AddMemoryCache();
-
-
-
-
-            
+            //services.AddScoped<SampleService, SampleService_Aop>();
+            services.AddScoped<SampleService2, SampleService2_Aop>();
             //services.RegisterAopClass();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,IHostApplicationLifetime lifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                
             }
-
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mic.Aop.TestWeb v1"));
-
-            //lifetime.ApplicationStarted.Register(async () =>
-            //{
-            //    var service = app.ApplicationServices.GetRequiredService<ITestService>();
-            //    service.GetNameSync();
-            //    service.SetNameSync("haha", 123);
-            //    await service.GetNameAsync("aop");
-            //});
 
             app.UseRouting();
 
@@ -65,5 +51,4 @@ namespace Mic.Aop.TestWeb
             });
         }
     }
-    
 }

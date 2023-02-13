@@ -96,6 +96,9 @@ namespace RazorEngineCore
                 model = new AnonymousTypeWrapper(model);
             }
 
+            if (this.templateType == null)
+                return string.Empty;
+
             IRazorEngineTemplate instance = (IRazorEngineTemplate) Activator.CreateInstance(this.templateType);
             instance.Model = model;
 

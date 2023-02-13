@@ -104,8 +104,20 @@ namespace Mic.Aop.Generator.Renders
             var sb = new StringBuilder();
             var result = TemplateRender.Render(assembly, "Template.Error.cshtml", d =>
             {
+                //d.AddAssemblyReference(typeof(System.Collections.IList));
+                //d.AddAssemblyReference(typeof(Enumerable));
+                //d.AddAssemblyReference(assembly);
+
                 d.AddAssemblyReference(typeof(System.Collections.IList));
-                d.AddAssemblyReference(typeof(Enumerable));
+                d.AddAssemblyReference(typeof(System.Linq.Enumerable));
+                d.AddAssemblyReference(typeof(System.Linq.IQueryable));
+                d.AddAssemblyReference(typeof(System.Collections.Generic.IEnumerable<>));
+                d.AddAssemblyReference(typeof(System.Collections.Generic.List<>));
+                d.AddAssemblyReference(typeof(System.Diagnostics.Debug));
+                d.AddAssemblyReference(typeof(System.Diagnostics.CodeAnalysis.SuppressMessageAttribute));
+                d.AddAssemblyReference(typeof(System.Runtime.Versioning.ComponentGuaranteesAttribute));
+                d.AddAssemblyReference(typeof(System.Linq.Expressions.BinaryExpression));
+
                 d.AddAssemblyReference(assembly);
             },
                 d =>
@@ -123,7 +135,14 @@ namespace Mic.Aop.Generator.Renders
             var result = TemplateRender.Render(assembly, "Template.RegisterAopClass.cshtml", d =>
             {
                 d.AddAssemblyReference(typeof(System.Collections.IList));
-                d.AddAssemblyReference(typeof(Enumerable));
+                d.AddAssemblyReference(typeof(System.Linq.Enumerable));
+                d.AddAssemblyReference(typeof(System.Linq.IQueryable));
+                d.AddAssemblyReference(typeof(System.Collections.Generic.IEnumerable<>));
+                d.AddAssemblyReference(typeof(System.Collections.Generic.List<>));
+                d.AddAssemblyReference(typeof(System.Diagnostics.Debug));
+                d.AddAssemblyReference(typeof(System.Diagnostics.CodeAnalysis.SuppressMessageAttribute));
+                d.AddAssemblyReference(typeof(System.Runtime.Versioning.ComponentGuaranteesAttribute));
+                d.AddAssemblyReference(typeof(System.Linq.Expressions.BinaryExpression));
                 d.AddAssemblyReference(assembly);
             },
                 d =>
@@ -142,7 +161,14 @@ namespace Mic.Aop.Generator.Renders
             var result = TemplateRender.Render(assembly, "Template.Trace.cshtml", d =>
             {
                 d.AddAssemblyReference(typeof(System.Collections.IList));
-                d.AddAssemblyReference(typeof(Enumerable));
+                d.AddAssemblyReference(typeof(System.Linq.Enumerable));
+                d.AddAssemblyReference(typeof(System.Linq.IQueryable));
+                d.AddAssemblyReference(typeof(System.Collections.Generic.IEnumerable<>));
+                d.AddAssemblyReference(typeof(System.Collections.Generic.List<>));
+                d.AddAssemblyReference(typeof(System.Diagnostics.Debug));
+                d.AddAssemblyReference(typeof(System.Diagnostics.CodeAnalysis.SuppressMessageAttribute));
+                d.AddAssemblyReference(typeof(System.Runtime.Versioning.ComponentGuaranteesAttribute));
+                d.AddAssemblyReference(typeof(System.Linq.Expressions.BinaryExpression));
                 d.AddAssemblyReference(assembly);
             },
                 d =>

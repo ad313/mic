@@ -3,4 +3,5 @@ type:1
 name:枚举业务扩展
 code:BizEnumExtendBuilder
 templates:BizEnumExtend.txt
+class_filter_expression:Model.HasAttribute("BizDictionary") && Model.PropertyHasAttribute("BizDictionary") && !string.IsNullOrWhiteSpace(Model.Templates.FirstOrDefault())
 #

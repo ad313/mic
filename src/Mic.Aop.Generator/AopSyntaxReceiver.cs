@@ -174,7 +174,7 @@ namespace Mic.Aop.Generator
             return result;
         }
 
-        private ClassMetaData? GetClassMetaData(ClassDeclarationSyntax classDeclaration)
+        private ClassMetaData GetClassMetaData(ClassDeclarationSyntax classDeclaration)
         {
             var namespaceName = classDeclaration.FindParent<NamespaceDeclarationSyntax>().Name.ToString();
             var className = classDeclaration.Identifier.Text;
@@ -232,8 +232,8 @@ namespace Mic.Aop.Generator
         private List<string> GetPropertyDescription(PropertyDeclarationSyntax propertyDeclarationSyntax)
         {
             return propertyDeclarationSyntax.DescendantTokens().OfType<SyntaxToken>()
-                .Where(t => t.HasLeadingTrivia && t.LeadingTrivia.Any(l => l.Kind() == SyntaxKind.SingleLineCommentTrivia))
-                .SelectMany(t => t.LeadingTrivia.Where(l => l.Kind() == SyntaxKind.SingleLineCommentTrivia))
+                .Where(t => t.HasLeadingTrivia && t.LeadingTrivia.Any(l => l != null && l.Kind() == SyntaxKind.SingleLineCommentTrivia))
+                .SelectMany(t => t.LeadingTrivia.Where(l => l != null && l.Kind() == SyntaxKind.SingleLineCommentTrivia))
                 .Select(t => t.ToString())
                 .ToList();
         }
