@@ -1,6 +1,5 @@
 ﻿using Mic.Aop.Generator.Extend;
 using Mic.Aop.Generator.MetaData;
-using RazorEngineCore;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ namespace Mic.Aop.Generator.Renders
     /// <summary>
     /// 扩展模板数据模型
     /// </summary>
-    public class ExtendTemplateModel : RazorEngineTemplateBase
+    public class ExtendTemplateModel //: RazorEngineTemplateBase
     {
         public ExtendTemplateType Type { get; set; }
 

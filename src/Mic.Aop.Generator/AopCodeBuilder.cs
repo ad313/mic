@@ -46,7 +46,7 @@ namespace Mic.Aop.Generator
         /// <summary>
         /// 类名
         /// </summary>
-        public string ClassName => this._metaData.Name+"_Aop";
+        public string ClassName => this._metaData.Name+"_g";
         
         /// <summary>
         /// 代码构建器

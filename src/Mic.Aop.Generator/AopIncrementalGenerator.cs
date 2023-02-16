@@ -2,8 +2,8 @@
 using Mic.Aop.Generator.Renders;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Scriban;
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace Mic.Aop.Generator
 {
@@ -29,7 +30,7 @@ namespace Mic.Aop.Generator
         /// <param name="context"></param>
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            Debugger.Launch();
+            //Debugger.Launch();
 
             //try
             //{
@@ -74,7 +75,7 @@ namespace Mic.Aop.Generator
                     }
                     catch (Exception e)
                     {
-                        context.AddSource("aa",e.ToString());
+                        //context.AddSource("aa",e.ToString());
                     }
                 });
 
@@ -131,7 +132,7 @@ namespace Mic.Aop.Generator
             catch (Exception e)
             {
                 //context.AddSource("Error", TemplateRender.ToError(_currentAssembly, e).ToString());
-                context.AddSource("Error", e.ToString());
+                //context.AddSource("Error", e.ToString());
             }
 
             watch.Stop();
@@ -140,12 +141,58 @@ namespace Mic.Aop.Generator
             timesBuilder.AppendLine($"//Aop：{DateTime.Now} - {watch.ElapsedMilliseconds} 毫秒");
             watch.Restart();
 
-            BuildExtend(context, additionalTexts, meta);
+            //BuildExtend(context, additionalTexts, meta);
 
             watch.Stop();
             timesBuilder.AppendLine($"//BuildExtend：{DateTime.Now} - {watch.ElapsedMilliseconds} 毫秒");
             context.AddSource("Times", timesBuilder.ToString());
+
+            //TestScriban(context);
+
         }
+
+//        public void TestScriban(SourceProductionContext context)
+//        {
+//            //var template = Scriban.Template.Parse("Hello {{name}}!");
+//            //var result = template.Render(new { Name = "World" }); // => "Hello World!"
+
+
+//            var template = Scriban.Template.Parse(@"
+//<ul id='products'>
+//  {{ for product in products }}
+//    <li>
+//      <h2>{{ product.name }}</h2>
+//           Price: {{ product.price }}
+//           {{ product.description | string.truncate 15 }}
+//    </li>
+//  {{ end }}
+//</ul>
+//");
+
+//            var ProductList = new List<dynamic>()
+//            {
+//                new {
+//                    name="name1",
+//                    price=123,
+//                    description="this is ProductList"
+//                },
+//                new {
+//                    name="name2",
+//                    price=98,
+//                    description="this is ProductList2"
+//                }
+//            };
+
+//            var result = template.Render(new { Products = ProductList });
+
+
+
+//            context.AddSource("TestScriban", DateTime.Now.ToString() + Environment.NewLine + result);
+
+
+
+
+//        }
 
         /// <summary>
         /// 构建Aop代码
@@ -160,33 +207,33 @@ namespace Mic.Aop.Generator
                 context.AddSource(builder.SourceCodeName, builder.ToSourceText());
             }
 
-            context.AddSource("Remark", TemplateRender.ToTrace(_currentAssembly, builders, meta).ToString());
-            context.AddSource("AopClassExtensions", TemplateRender.ToRegisterCode(_currentAssembly, builders, meta).ToString());
-            context.AddSource("Error", "");
+            //context.AddSource("Remark", TemplateRender.ToTrace(_currentAssembly, builders, meta).ToString());
+            //context.AddSource("AopClassExtensions", TemplateRender.ToRegisterCode(_currentAssembly, builders, meta).ToString());
+            //context.AddSource("Error", "");
         }
 
-        /// <summary>
-        /// 构建扩展代码
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="additionalTexts"></param>
-        /// <param name="meta"></param>
-        private void BuildExtend(SourceProductionContext context, ImmutableArray<AdditionalText> additionalTexts, AssemblyMetaData meta)
-        {
-            try
-            {
-                var extendMapModels = GetExtendMapModels(additionalTexts);
-                extendMapModels.ForEach(item => item.AopMetaDataModel = meta);
-                RenderExtend(context, meta, extendMapModels);
+        ///// <summary>
+        ///// 构建扩展代码
+        ///// </summary>
+        ///// <param name="context"></param>
+        ///// <param name="additionalTexts"></param>
+        ///// <param name="meta"></param>
+        //private void BuildExtend(SourceProductionContext context, ImmutableArray<AdditionalText> additionalTexts, AssemblyMetaData meta)
+        //{
+        //    try
+        //    {
+        //        var extendMapModels = GetExtendMapModels(additionalTexts);
+        //        extendMapModels.ForEach(item => item.AopMetaDataModel = meta);
+        //        RenderExtend(context, meta, extendMapModels);
 
-                context.AddSource("BuildExtendError1", "");
-            }
-            catch (Exception e)
-            {
-                context.AddSource("BuildExtendError2", e.ToString());
-                //context.AddSource("BuildExtendError", TemplateRender.ToError(_currentAssembly, e).ToString());
-            }
-        }
+        //        context.AddSource("BuildExtendError1", "");
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        context.AddSource("BuildExtendError2", e.ToString());
+        //        //context.AddSource("BuildExtendError", TemplateRender.ToError(_currentAssembly, e).ToString());
+        //    }
+        //}
 
         private List<ExtendTemplateModel> GetExtendMapModels(ImmutableArray<AdditionalText> additionalTexts)
         {
@@ -249,89 +296,89 @@ namespace Mic.Aop.Generator
                  }).Where(d => d != null).ToList();
         }
 
-        private void RenderExtend(SourceProductionContext context, AssemblyMetaData meta, List<ExtendTemplateModel> extendMapModels)
-        {
-            foreach (var extendMapModel in extendMapModels)
-            {
-                if (context.CancellationToken.IsCancellationRequested)
-                    return;
+        //private void RenderExtend(SourceProductionContext context, AssemblyMetaData meta, List<ExtendTemplateModel> extendMapModels)
+        //{
+        //    foreach (var extendMapModel in extendMapModels)
+        //    {
+        //        if (context.CancellationToken.IsCancellationRequested)
+        //            return;
 
-                switch (extendMapModel.Type)
-                {
-                    case ExtendTemplateType.ClassTarget:
-                        RenderExtendByClassMetaData(context, meta, extendMapModel);
-                        break;
-                    case ExtendTemplateType.InterfaceTarget:
-                        RenderExtendByInterfaceMetaData(context, meta, extendMapModel);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-        }
+        //        switch (extendMapModel.Type)
+        //        {
+        //            case ExtendTemplateType.ClassTarget:
+        //                RenderExtendByClassMetaData(context, meta, extendMapModel);
+        //                break;
+        //            case ExtendTemplateType.InterfaceTarget:
+        //                RenderExtendByInterfaceMetaData(context, meta, extendMapModel);
+        //                break;
+        //            default:
+        //                throw new ArgumentOutOfRangeException();
+        //        }
+        //    }
+        //}
 
-        private void RenderExtendByClassMetaData(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
-        {
-            foreach (var classMetaData in meta.ClassMetaDataList)
-            {
-                if (context.CancellationToken.IsCancellationRequested)
-                    return;
+        //private void RenderExtendByClassMetaData(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
+        //{
+        //    foreach (var classMetaData in meta.ClassMetaDataList)
+        //    {
+        //        if (context.CancellationToken.IsCancellationRequested)
+        //            return;
 
-                extendMapModel.ClassMetaData = classMetaData;
+        //        extendMapModel.ClassMetaData = classMetaData;
                 
-                TemplateRender.RenderExtend(extendMapModel, d =>
-                {
-                    d.AddAssemblyReference(typeof(System.Collections.IList));
-                    d.AddAssemblyReference(typeof(System.Linq.Enumerable));
-                    d.AddAssemblyReference(typeof(System.Linq.IQueryable));
-                    d.AddAssemblyReference(typeof(System.Collections.Generic.IEnumerable<>));
-                    d.AddAssemblyReference(typeof(System.Collections.Generic.List<>));
-                    d.AddAssemblyReference(typeof(System.Diagnostics.Debug));
-                    d.AddAssemblyReference(typeof(System.Diagnostics.CodeAnalysis.SuppressMessageAttribute));
-                    d.AddAssemblyReference(typeof(System.Runtime.Versioning.ComponentGuaranteesAttribute));
-                    d.AddAssemblyReference(typeof(System.Linq.Expressions.BinaryExpression));
+        //        TemplateRender.RenderExtend(extendMapModel, d =>
+        //        {
+        //            d.AddAssemblyReference(typeof(System.Collections.IList));
+        //            d.AddAssemblyReference(typeof(System.Linq.Enumerable));
+        //            d.AddAssemblyReference(typeof(System.Linq.IQueryable));
+        //            d.AddAssemblyReference(typeof(System.Collections.Generic.IEnumerable<>));
+        //            d.AddAssemblyReference(typeof(System.Collections.Generic.List<>));
+        //            d.AddAssemblyReference(typeof(System.Diagnostics.Debug));
+        //            d.AddAssemblyReference(typeof(System.Diagnostics.CodeAnalysis.SuppressMessageAttribute));
+        //            d.AddAssemblyReference(typeof(System.Runtime.Versioning.ComponentGuaranteesAttribute));
+        //            d.AddAssemblyReference(typeof(System.Linq.Expressions.BinaryExpression));
 
-                    d.AddAssemblyReference(_currentAssembly);
-                }, d =>
-                {
-                    d.Model = extendMapModel;
-                });
+        //            d.AddAssemblyReference(_currentAssembly);
+        //        }, d =>
+        //        {
+        //            d.Model = extendMapModel;
+        //        });
 
-                foreach (var kv in extendMapModel.TemplateResult)
-                {
-                    context.AddSource($"{kv.Key.Replace(".txt", "")}.cs", kv.Value);
-                }
+        //        foreach (var kv in extendMapModel.TemplateResult)
+        //        {
+        //            context.AddSource($"{kv.Key.Replace(".txt", "")}.cs", kv.Value);
+        //        }
 
-                extendMapModel.TemplateResult.Clear();
-            }
-        }
+        //        extendMapModel.TemplateResult.Clear();
+        //    }
+        //}
 
-        private void RenderExtendByInterfaceMetaData(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
-        {
-            foreach (var interfaceMetaData in meta.InterfaceMetaDataList)
-            {
-                if (context.CancellationToken.IsCancellationRequested)
-                    return;
+        //private void RenderExtendByInterfaceMetaData(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
+        //{
+        //    foreach (var interfaceMetaData in meta.InterfaceMetaDataList)
+        //    {
+        //        if (context.CancellationToken.IsCancellationRequested)
+        //            return;
 
-                extendMapModel.InterfaceMetaData = interfaceMetaData;
+        //        extendMapModel.InterfaceMetaData = interfaceMetaData;
 
-                TemplateRender.RenderExtend(extendMapModel, d =>
-                {
-                    d.AddAssemblyReference(typeof(System.Collections.IList));
-                    d.AddAssemblyReference(typeof(Enumerable));
-                    d.AddAssemblyReference(_currentAssembly);
-                }, d =>
-                {
-                    d.Model = extendMapModel;
-                });
+        //        TemplateRender.RenderExtend(extendMapModel, d =>
+        //        {
+        //            d.AddAssemblyReference(typeof(System.Collections.IList));
+        //            d.AddAssemblyReference(typeof(Enumerable));
+        //            d.AddAssemblyReference(_currentAssembly);
+        //        }, d =>
+        //        {
+        //            d.Model = extendMapModel;
+        //        });
 
-                foreach (var kv in extendMapModel.TemplateResult)
-                {
-                    context.AddSource($"{kv.Key.Replace(".txt", "")}.cs", kv.Value);
-                }
+        //        foreach (var kv in extendMapModel.TemplateResult)
+        //        {
+        //            context.AddSource($"{kv.Key.Replace(".txt", "")}.cs", kv.Value);
+        //        }
 
-                extendMapModel.TemplateResult.Clear();
-            }
-        }
+        //        extendMapModel.TemplateResult.Clear();
+        //    }
+        //}
     }
 }
