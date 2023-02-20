@@ -2,17 +2,13 @@
 using Mic.Aop.Generator.Renders;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Scriban;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
 
 namespace Mic.Aop.Generator
 {
@@ -22,7 +18,9 @@ namespace Mic.Aop.Generator
     [Generator]
     public class IncrementalGenerator : IIncrementalGenerator
     {
-        private readonly Assembly _currentAssembly = Assembly.GetExecutingAssembly();
+        public static readonly Assembly CurrentAssembly = Assembly.GetExecutingAssembly();
+        private readonly StringBuilder _errorBuilder = new StringBuilder();
+        private readonly StringBuilder _timeBuilder = new StringBuilder();
 
         /// <summary>
         /// 初始化
@@ -30,60 +28,33 @@ namespace Mic.Aop.Generator
         /// <param name="context"></param>
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            //Debugger.Launch();
+            Debugger.Launch();
 
-            //try
-            //{
-            //    var textFiles = context.AdditionalTextsProvider.Where(file => file.Path.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)).Collect();
+            var textFiles = context.AdditionalTextsProvider.Where(file => file.Path.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)).Collect();
 
-            //    // 找到对什么文件感兴趣
-            //    IncrementalValueProvider<Compilation> compilations =
-            //        context.CompilationProvider
-            //            // 这里的 Select 是仿照 Linq 写的，可不是真的 Linq 哦，只是一个叫 Select 的方法
-            //            // public static IncrementalValueProvider<TResult> Select<TSource,TResult>(this IncrementalValueProvider<TSource> source, Func<TSource,CancellationToken,TResult> selector)
-            //            .Select((compilation, cancellationToken) => compilation);
+            // 找到对什么文件感兴趣
+            IncrementalValueProvider<Compilation> compilations =
+                context.CompilationProvider
+                    // 这里的 Select 是仿照 Linq 写的，可不是真的 Linq 哦，只是一个叫 Select 的方法
+                    // public static IncrementalValueProvider<TResult> Select<TSource,TResult>(this IncrementalValueProvider<TSource> source, Func<TSource,CancellationToken,TResult> selector)
+                    .Select((compilation, cancellationToken) => compilation);
 
-            //    context.RegisterSourceOutput(compilations.Combine(textFiles), (context, compilation) =>
-            //    {
-            //        Execute(context, compilation.Left, compilation.Right);
-            //    });
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine(e);
-            //}
-
-
-            //Debugger.Launch();
-
-            try
+            context.RegisterSourceOutput(compilations.Combine(textFiles), (context, compilation) =>
             {
-                var textFiles = context.AdditionalTextsProvider.Where(file => file.Path.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)).Collect();
-
-                // 找到对什么文件感兴趣
-                IncrementalValueProvider<Compilation> compilations =
-                    context.CompilationProvider
-                        // 这里的 Select 是仿照 Linq 写的，可不是真的 Linq 哦，只是一个叫 Select 的方法
-                        // public static IncrementalValueProvider<TResult> Select<TSource,TResult>(this IncrementalValueProvider<TSource> source, Func<TSource,CancellationToken,TResult> selector)
-                        .Select((compilation, cancellationToken) => compilation);
-
-                context.RegisterSourceOutput(compilations.Combine(textFiles), (context, compilation) =>
+                try
                 {
-                    try
-                    {
-                        Execute(context, compilation.Left, compilation.Right);
-                    }
-                    catch (Exception e)
-                    {
-                        //context.AddSource("aa",e.ToString());
-                    }
-                });
-
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+                    Execute(context, compilation.Left, compilation.Right);
+                }
+                catch (Exception e)
+                {
+                    TemplateRender.ToErrorStringBuilder("全局异常", _errorBuilder, e);
+                }
+                finally
+                {
+                    context.AddSource("Error", _errorBuilder.ToString());
+                    context.AddSource("Times", _timeBuilder.ToString());
+                }
+            });
         }
 
         /// <summary>
@@ -97,288 +68,140 @@ namespace Mic.Aop.Generator
             var watch = Stopwatch.StartNew();
             watch.Start();
 
-            var classDeclarationSyntax = compilation.SyntaxTrees.SelectMany(d => d.GetRoot(context.CancellationToken)
-                .DescendantNodes()
-                .OfType<ClassDeclarationSyntax>()).ToList();
+            var syntaxNodes = compilation.SyntaxTrees.SelectMany(d => d.GetRoot(context.CancellationToken).DescendantNodes()).ToList();
+            var classDeclarationSyntax = syntaxNodes.OfType<ClassDeclarationSyntax>().ToList();
+            var structDeclarationSyntax = syntaxNodes.OfType<StructDeclarationSyntax>().ToList();
+            var interfaceDeclarationSyntax = syntaxNodes.OfType<InterfaceDeclarationSyntax>().ToList();
+            var recordDeclarationSyntax = syntaxNodes.OfType<RecordDeclarationSyntax>().ToList();
 
-            var interfaceDeclarationSyntax = compilation.SyntaxTrees.SelectMany(d => d.GetRoot(context.CancellationToken)
-                .DescendantNodes()
-                .OfType<InterfaceDeclarationSyntax>()).ToList();
-
-            if (!classDeclarationSyntax.Any() && !interfaceDeclarationSyntax.Any())
-                return;
-
+            if (!classDeclarationSyntax.Any() && !interfaceDeclarationSyntax.Any()) return;
             if (context.CancellationToken.IsCancellationRequested) return;
-
-            AssemblyMetaData meta = null;
+            
             var receiver = new AopSyntaxReceiver(classDeclarationSyntax, interfaceDeclarationSyntax);
+            AssemblyMetaData meta = null;
+            List<AopCodeBuilder> builders;
+
+            #region 1、获取元数据
+
             try
             {
                 meta = receiver
                     .FindAopInterceptors()
                     .GetMetaData(compilation);
 
-                var builders = meta
+                builders = meta
                     .GetAopCodeBuilderMetaData()
                     .Select(i => new AopCodeBuilder(i))
                     .Distinct()
                     .ToList();
 
-                if (context.CancellationToken.IsCancellationRequested)
-                    return;
-
-                BuildAop(context, meta, builders);
+                TemplateRender.ToTimeStringBuilder("1、获取元数据", _timeBuilder, watch);
             }
             catch (Exception e)
             {
-                //context.AddSource("Error", TemplateRender.ToError(_currentAssembly, e).ToString());
-                //context.AddSource("Error", e.ToString());
+                TemplateRender.ToErrorStringBuilder("1、获取元数据", _errorBuilder, e);
+                return;
             }
-
-            watch.Stop();
-
-            var timesBuilder = new StringBuilder();
-            timesBuilder.AppendLine($"//Aop：{DateTime.Now} - {watch.ElapsedMilliseconds} 毫秒");
-            watch.Restart();
-
-            //BuildExtend(context, additionalTexts, meta);
-
-            watch.Stop();
-            timesBuilder.AppendLine($"//BuildExtend：{DateTime.Now} - {watch.ElapsedMilliseconds} 毫秒");
-            context.AddSource("Times", timesBuilder.ToString());
-
-            //TestScriban(context);
-
-        }
-
-//        public void TestScriban(SourceProductionContext context)
-//        {
-//            //var template = Scriban.Template.Parse("Hello {{name}}!");
-//            //var result = template.Render(new { Name = "World" }); // => "Hello World!"
-
-
-//            var template = Scriban.Template.Parse(@"
-//<ul id='products'>
-//  {{ for product in products }}
-//    <li>
-//      <h2>{{ product.name }}</h2>
-//           Price: {{ product.price }}
-//           {{ product.description | string.truncate 15 }}
-//    </li>
-//  {{ end }}
-//</ul>
-//");
-
-//            var ProductList = new List<dynamic>()
-//            {
-//                new {
-//                    name="name1",
-//                    price=123,
-//                    description="this is ProductList"
-//                },
-//                new {
-//                    name="name2",
-//                    price=98,
-//                    description="this is ProductList2"
-//                }
-//            };
-
-//            var result = template.Render(new { Products = ProductList });
-
-
-
-//            context.AddSource("TestScriban", DateTime.Now.ToString() + Environment.NewLine + result);
-
-
-
-
-//        }
-
-        /// <summary>
-        /// 构建Aop代码
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="meta"></param>
-        /// <param name="builders"></param>
-        private void BuildAop(SourceProductionContext context, AssemblyMetaData meta, List<AopCodeBuilder> builders)
-        {
-            foreach (var builder in builders)
+            finally
             {
-                context.AddSource(builder.SourceCodeName, builder.ToSourceText());
+                watch.Restart();
             }
 
-            //context.AddSource("Remark", TemplateRender.ToTrace(_currentAssembly, builders, meta).ToString());
-            //context.AddSource("AopClassExtensions", TemplateRender.ToRegisterCode(_currentAssembly, builders, meta).ToString());
-            //context.AddSource("Error", "");
+            #endregion
+
+            #region 2、生成Aop代码
+            try
+            {
+                if (context.CancellationToken.IsCancellationRequested)
+                    return;
+
+                foreach (var builder in builders)
+                {
+                    context.AddSource(builder.SourceCodeName, builder.ToSourceText());
+                }
+
+                TemplateRender.ToTimeStringBuilder("2、生成Aop代码", _timeBuilder, watch);
+            }
+            catch (Exception e)
+            {
+                TemplateRender.ToErrorStringBuilder("2、生成Aop代码", _errorBuilder, e);
+                return;
+            }
+            finally
+            {
+                watch.Restart();
+            }
+            #endregion
+
+            #region 3、生成Aop Trace
+            try
+            {
+                if (context.CancellationToken.IsCancellationRequested)
+                    return;
+
+                var traceBuilder = new StringBuilder();
+
+                foreach (var builder in builders)
+                {
+                    TemplateRender.ToTraceStringBuilder(traceBuilder, builder);
+                }
+
+                TemplateRender.ToTimeStringBuilder("3、生成Aop Trace", _timeBuilder, watch);
+
+                context.AddSource("Trace", traceBuilder.ToString());
+            }
+            catch (Exception e)
+            {
+                TemplateRender.ToErrorStringBuilder("3、生成Aop Trace", _errorBuilder, e);
+                return;
+            }
+            finally
+            {
+                watch.Restart();
+            }
+            #endregion
+
+            #region 4、生成 Register Code 注入服务扩展
+            try
+            {
+                if (context.CancellationToken.IsCancellationRequested)
+                    return;
+
+                var registerStringBuilder = TemplateRender.ToRegisterStringBuilder(null, builders, meta);
+                TemplateRender.ToTimeStringBuilder("4、生成 Register Code 注入服务扩展", _timeBuilder, watch);
+
+                context.AddSource("AopClassExtensions", registerStringBuilder.ToString());
+            }
+            catch (Exception e)
+            {
+                TemplateRender.ToErrorStringBuilder("4、生成 Register Code 注入服务扩展", _errorBuilder, e);
+                return;
+            }
+            finally
+            {
+                watch.Restart();
+            }
+            #endregion
+
+            #region 5、自定义模板生成代码
+            try
+            {
+                if (context.CancellationToken.IsCancellationRequested)
+                    return;
+
+                TemplateRender.BuildExtend(context, additionalTexts, meta, _errorBuilder);
+                TemplateRender.ToTimeStringBuilder("5、自定义模板生成代码", _timeBuilder, watch);
+            }
+            catch (Exception e)
+            {
+                TemplateRender.ToErrorStringBuilder("5、自定义模板生成代码", _errorBuilder, e);
+                return;
+            }
+            finally
+            {
+                watch.Restart();
+            } 
+            #endregion
         }
-
-        ///// <summary>
-        ///// 构建扩展代码
-        ///// </summary>
-        ///// <param name="context"></param>
-        ///// <param name="additionalTexts"></param>
-        ///// <param name="meta"></param>
-        //private void BuildExtend(SourceProductionContext context, ImmutableArray<AdditionalText> additionalTexts, AssemblyMetaData meta)
-        //{
-        //    try
-        //    {
-        //        var extendMapModels = GetExtendMapModels(additionalTexts);
-        //        extendMapModels.ForEach(item => item.AopMetaDataModel = meta);
-        //        RenderExtend(context, meta, extendMapModels);
-
-        //        context.AddSource("BuildExtendError1", "");
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        context.AddSource("BuildExtendError2", e.ToString());
-        //        //context.AddSource("BuildExtendError", TemplateRender.ToError(_currentAssembly, e).ToString());
-        //    }
-        //}
-
-        private List<ExtendTemplateModel> GetExtendMapModels(ImmutableArray<AdditionalText> additionalTexts)
-        {
-            var mapText = additionalTexts.FirstOrDefault(d => d.Path.EndsWith("Map.txt", StringComparison.OrdinalIgnoreCase))?.GetText()?.ToString();
-            if (string.IsNullOrWhiteSpace(mapText))
-                return new List<ExtendTemplateModel>();
-
-            return Regex.Split(mapText, "#")
-                 .Select(txt =>
-                 {
-                     if (string.IsNullOrWhiteSpace(txt))
-                         return null;
-
-                     var arr = Regex.Split(txt.Trim(), "\r\n");
-                     if (arr.Length < 4)
-                         return null;
-
-                     var model = new ExtendTemplateModel();
-                     foreach (var line in arr)
-                     {
-                         if (line.IndexOf(":", StringComparison.OrdinalIgnoreCase) <= -1 || line.StartsWith("//"))
-                             continue;
-
-                         var split = line.Split(':');
-                         switch (split[0].ToLower())
-                         {
-                             case "type":
-                                 model.Type = (ExtendTemplateType)(int.TryParse(split[1], out int v) ? v : 0);
-                                 break;
-                             case "name":
-                                 model.Name = split[1];
-                                 break;
-                             case "code":
-                                 model.Code = split[1];
-                                 break;
-                             case "templates":
-                                 model.Templates = split[1].Split(',').Where(d => !string.IsNullOrWhiteSpace(d)).Select(d => d.Trim()).ToList();
-                                 break;
-                             case "class_filter_expression":
-                                 model.class_filter_expression = split[1];
-                                 break;
-                             default:
-                                 break;
-                         }
-                     }
-
-                     if (model.Templates.Any())
-                     {
-                         foreach (var template in model.Templates)
-                         {
-                             var file = additionalTexts.FirstOrDefault(d => d.Path.EndsWith($"\\{template}", StringComparison.OrdinalIgnoreCase));
-                             if (file == null) continue;
-
-                             model.TemplateDictionary ??= new ConcurrentDictionary<string, string>();
-                             model.TemplateDictionary.TryAdd(template, file.GetText()?.ToString());
-                         }
-                     }
-
-                     return model;
-                 }).Where(d => d != null).ToList();
-        }
-
-        //private void RenderExtend(SourceProductionContext context, AssemblyMetaData meta, List<ExtendTemplateModel> extendMapModels)
-        //{
-        //    foreach (var extendMapModel in extendMapModels)
-        //    {
-        //        if (context.CancellationToken.IsCancellationRequested)
-        //            return;
-
-        //        switch (extendMapModel.Type)
-        //        {
-        //            case ExtendTemplateType.ClassTarget:
-        //                RenderExtendByClassMetaData(context, meta, extendMapModel);
-        //                break;
-        //            case ExtendTemplateType.InterfaceTarget:
-        //                RenderExtendByInterfaceMetaData(context, meta, extendMapModel);
-        //                break;
-        //            default:
-        //                throw new ArgumentOutOfRangeException();
-        //        }
-        //    }
-        //}
-
-        //private void RenderExtendByClassMetaData(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
-        //{
-        //    foreach (var classMetaData in meta.ClassMetaDataList)
-        //    {
-        //        if (context.CancellationToken.IsCancellationRequested)
-        //            return;
-
-        //        extendMapModel.ClassMetaData = classMetaData;
-                
-        //        TemplateRender.RenderExtend(extendMapModel, d =>
-        //        {
-        //            d.AddAssemblyReference(typeof(System.Collections.IList));
-        //            d.AddAssemblyReference(typeof(System.Linq.Enumerable));
-        //            d.AddAssemblyReference(typeof(System.Linq.IQueryable));
-        //            d.AddAssemblyReference(typeof(System.Collections.Generic.IEnumerable<>));
-        //            d.AddAssemblyReference(typeof(System.Collections.Generic.List<>));
-        //            d.AddAssemblyReference(typeof(System.Diagnostics.Debug));
-        //            d.AddAssemblyReference(typeof(System.Diagnostics.CodeAnalysis.SuppressMessageAttribute));
-        //            d.AddAssemblyReference(typeof(System.Runtime.Versioning.ComponentGuaranteesAttribute));
-        //            d.AddAssemblyReference(typeof(System.Linq.Expressions.BinaryExpression));
-
-        //            d.AddAssemblyReference(_currentAssembly);
-        //        }, d =>
-        //        {
-        //            d.Model = extendMapModel;
-        //        });
-
-        //        foreach (var kv in extendMapModel.TemplateResult)
-        //        {
-        //            context.AddSource($"{kv.Key.Replace(".txt", "")}.cs", kv.Value);
-        //        }
-
-        //        extendMapModel.TemplateResult.Clear();
-        //    }
-        //}
-
-        //private void RenderExtendByInterfaceMetaData(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
-        //{
-        //    foreach (var interfaceMetaData in meta.InterfaceMetaDataList)
-        //    {
-        //        if (context.CancellationToken.IsCancellationRequested)
-        //            return;
-
-        //        extendMapModel.InterfaceMetaData = interfaceMetaData;
-
-        //        TemplateRender.RenderExtend(extendMapModel, d =>
-        //        {
-        //            d.AddAssemblyReference(typeof(System.Collections.IList));
-        //            d.AddAssemblyReference(typeof(Enumerable));
-        //            d.AddAssemblyReference(_currentAssembly);
-        //        }, d =>
-        //        {
-        //            d.Model = extendMapModel;
-        //        });
-
-        //        foreach (var kv in extendMapModel.TemplateResult)
-        //        {
-        //            context.AddSource($"{kv.Key.Replace(".txt", "")}.cs", kv.Value);
-        //        }
-
-        //        extendMapModel.TemplateResult.Clear();
-        //    }
-        //}
     }
 }

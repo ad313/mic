@@ -15,6 +15,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="ExpressionParser\**" />
+	  <EmbeddedResource Remove="ExpressionParser\**" />
+	  <None Remove="ExpressionParser\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="Template\Error.cshtml" />
 	  <None Remove="Template\RegisterAopClass.cshtml" />
 	  <None Remove="Template\Trace.cshtml" />
@@ -37,8 +43,20 @@
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.1" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+		<!--<PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.25" />-->
 		<!--<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" />-->
+
+
+
+		<!--<PackageReference Include="FastExpressionCompiler" Version="3.3.3" />-->
+		<!--<PackageReference Include="FluentValidation" Version="11.2.2" />
+		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+		<PackageReference Include="System.Linq" Version="4.3.0" />-->
+		<!--<PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.22" />-->
+
+
 	</ItemGroup>
 
 </Project>
