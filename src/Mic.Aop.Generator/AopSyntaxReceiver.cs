@@ -125,11 +125,11 @@ namespace Mic.Aop.Generator
                     var methodSyntax = interfaceDeclaration.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
 
                     //属性集合
-                    var props = properties.Select(d => new PropertyMetaData(d.Identifier.Text, d.GetAttributeMetaData(), GetPropertyDescription(d))).ToList();
+                    var props = properties.Select(d => new PropertyMetaData(d.Identifier.Text, d.GetAttributeMetaData(), GetPropertyDescription(d), d.Modifiers.ToString(), d.Type?.ToString())).ToList();
                     //方法集合
                     var methods = methodSyntax.Select(GetMethodMetaData).ToList();
 
-                    var interfaceMetaData = new InterfaceMetaData(namespaceName, className, interfaceDeclaration.GetAttributeMetaData(), props, methods);
+                    var interfaceMetaData = new InterfaceMetaData(namespaceName, className, interfaceDeclaration.GetAttributeMetaData(), props, methods, interfaceDeclaration.Modifiers.ToString(), null);
                     if (interfaceMetaData.MethodMetaData.Any() && !result.InterfaceMetaDataList.Exists(d => d.Equals(interfaceMetaData)))
                         result.InterfaceMetaDataList.Add(interfaceMetaData);
                 }
@@ -159,10 +159,10 @@ namespace Mic.Aop.Generator
                     if (!result.ClassMetaDataList.Exists(d => d.Equals(classMetaData)))
                     {
                         //实现的接口
-                        classMetaData.Usings.Add(classMetaData.NameSpace);
+                        classMetaData.Usings.Add(classMetaData.Namespace);
                         classMetaData.InterfaceMetaData = result.InterfaceMetaDataList.Where(d => classMetaData.Interfaces.Contains(d.Key)
                             || classMetaData.Interfaces.SelectMany(t => classMetaData.Usings.Select(u => $"{u.Replace("using ", "").Replace(";", "")}.{t.Split('.').Last()}")).Contains(d.Key)).ToList();
-                        classMetaData.Usings.Remove(classMetaData.NameSpace);
+                        classMetaData.Usings.Remove(classMetaData.Namespace);
                         
                         result.ClassMetaDataList.Add(classMetaData);
                     }
@@ -182,7 +182,7 @@ namespace Mic.Aop.Generator
             var methodSyntax = classDeclaration.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
             
             //属性集合
-            var props = properties.Select(d => new PropertyMetaData(d.Identifier.Text, d.GetAttributeMetaData(), GetPropertyDescription(d))).ToList();
+            var props = properties.Select(d => new PropertyMetaData(d.Identifier.Text, d.GetAttributeMetaData(), GetPropertyDescription(d), d.Modifiers.ToString(), d.Type?.ToString())).ToList();
             //方法集合
             var methods = methodSyntax.Select(GetMethodMetaData).ToList();
             //实现的接口集合
@@ -203,7 +203,7 @@ namespace Mic.Aop.Generator
                 }
             }
 
-            return new ClassMetaData(namespaceName, className, classDeclaration.GetAttributeMetaData(), props, methods, interfaces, constructorDictionary, usingList);
+            return new ClassMetaData(namespaceName, className, classDeclaration.GetAttributeMetaData(), props, methods, interfaces, constructorDictionary, usingList, classDeclaration.Modifiers.ToString());
         }
         
         private MethodMetaData GetMethodMetaData(MethodDeclarationSyntax methodDeclarationSyntax)
@@ -221,7 +221,7 @@ namespace Mic.Aop.Generator
             var returnValue = methodDeclarationSyntax.ReturnType.ToString();
 
             return new MethodMetaData(methodDeclarationSyntax.Identifier.Text,
-                methodDeclarationSyntax.GetAttributeMetaData(), returnValue, param, methodDeclarationSyntax.Modifiers.ToString());
+                methodDeclarationSyntax.GetAttributeMetaData(), returnValue, param, methodDeclarationSyntax.Modifiers.ToString(), methodDeclarationSyntax.Modifiers.ToString(),null);
         }
 
         /// <summary>

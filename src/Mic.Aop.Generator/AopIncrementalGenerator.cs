@@ -28,7 +28,7 @@ namespace Mic.Aop.Generator
         /// <param name="context"></param>
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            Debugger.Launch();
+            //Debugger.Launch();
 
             var textFiles = context.AdditionalTextsProvider.Where(file => file.Path.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)).Collect();
 

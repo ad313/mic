@@ -59,12 +59,18 @@ namespace Mic.BenchmarkDotNet
 
         public static void Main(string[] args)
         {
-            var serviceProvider = Register();
-            var ser = serviceProvider.GetService<TestService>();
-            ser.GetDateTimeSync();
+            //var serviceProvider = Register();
+            //var ser = serviceProvider.GetService<TestService>();
+            //ser.GetDateTimeSync();
 
-            var summary = BenchmarkRunner.Run<AopBenchmark>();
-            
+            //var summary = BenchmarkRunner.Run<AopBenchmark>();
+
+            //Console.ReadLine();
+
+
+
+            var summary = BenchmarkRunner.Run<DictionaryBenchmark>();
+
             Console.ReadLine();
         }
 

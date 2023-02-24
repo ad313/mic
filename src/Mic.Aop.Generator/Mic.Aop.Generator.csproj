@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<LangVersion>8.0</LangVersion>
+		<LangVersion>9.0</LangVersion>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<EnforceExtendedAnalyzerRules>false</EnforceExtendedAnalyzerRules>
+		<DefineConstants>$(DefineConstants);SCRIBAN_PUBLIC</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -21,15 +22,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Template\Error.cshtml" />
-	  <None Remove="Template\RegisterAopClass.cshtml" />
-	  <None Remove="Template\Trace.cshtml" />
+	  <None Remove="Templates\Error.cshtml" />
+	  <None Remove="Templates\RegisterAopClass.cshtml" />
+	  <None Remove="Templates\Trace.cshtml" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Include="Template\Error.cshtml" />
-	  <EmbeddedResource Include="Template\RegisterAopClass.cshtml" />
-	  <EmbeddedResource Include="Template\Trace.cshtml" />
+	  <EmbeddedResource Include="Templates\Error.cshtml" />
+	  <EmbeddedResource Include="Templates\RegisterAopClass.cshtml" />
+	  <EmbeddedResource Include="Templates\Trace.cshtml" />
 	</ItemGroup>
 
 	<ItemGroup>

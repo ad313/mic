@@ -10,13 +10,23 @@ namespace Mic.Aop.Generator.MetaData
         /// </summary>
         public string Name { get; private set; }
         /// <summary>
+        /// 访问修饰符 public private 等
+        /// </summary>
+        public string AccessModifier { get; set; }
+        /// <summary>
+        /// 扩展修饰符 partial,virtual string,int 等
+        /// </summary>
+        public string ExtModifier { get; set; }
+        /// <summary>
         /// Attribute 参数
         /// </summary>
         public List<AttributeMetaData> AttributeMetaData { get; private set; }
 
-        public MetaDataBase(string name, List<AttributeMetaData> attributeMetaData)
+        public MetaDataBase(string name, string accessModifier, string extModifier, List<AttributeMetaData> attributeMetaData)
         {
             Name = name;
+            AccessModifier = accessModifier;
+            ExtModifier = extModifier;
             AttributeMetaData = attributeMetaData;
         }
 

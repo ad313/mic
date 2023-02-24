@@ -17,7 +17,9 @@ namespace Mic.Aop.Generator.MetaData
         /// <param name="returnValue">返回值</param>
         /// <param name="param">输入参数</param>
         /// <param name="perfix">方法修饰符</param>
-        public MethodMetaData(string name, List<AttributeMetaData> attributeMetaData, string returnValue, List<KeyValueModel> param, string perfix) : base(name, attributeMetaData)
+        /// <param name="accessModifier"></param>
+        /// <param name="extModifier"></param>
+        public MethodMetaData(string name, List<AttributeMetaData> attributeMetaData, string returnValue, List<KeyValueModel> param, string perfix, string accessModifier, string extModifier) : base(name,accessModifier,extModifier, attributeMetaData)
         {
             ReturnValue = returnValue;
             Param = param;

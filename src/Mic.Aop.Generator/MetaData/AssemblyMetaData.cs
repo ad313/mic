@@ -119,7 +119,7 @@ namespace Mic.Aop.Generator.MetaData
                 }
 
                 if (methods.Any())
-                    list.Add(new AopCodeBuilderMetaData(classMetaData.NameSpace, classMetaData.Name, methods, classMetaData.Constructor, classMetaData.Usings, classMetaData.InterfaceMetaData));
+                    list.Add(new AopCodeBuilderMetaData(classMetaData.Namespace, classMetaData.Name, methods, classMetaData.Constructor, classMetaData.Usings, classMetaData.InterfaceMetaData));
             }
 
             return list;

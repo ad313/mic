@@ -9,15 +9,17 @@ namespace Mic.Aop.Generator.MetaData
     {
         /// <summary>Initializes a new instance of the <see cref="T:System.Object"></see> class.</summary>
         public ClassMetaData(
-            string nameSpace,
+            string @namespace,
             string name,
             List<AttributeMetaData> attributeMetaData,
             List<PropertyMetaData> propertyMeta,
             List<MethodMetaData> methodMetaData,
             List<string> interfaces,
             List<KeyValueModel> constructor,
-            List<string> usings)
-            : base(nameSpace, name, attributeMetaData, propertyMeta, methodMetaData)
+            List<string> usings,
+            string accessModifier,
+            string extModifier = null)
+            : base(@namespace, name, attributeMetaData, propertyMeta, methodMetaData, accessModifier, extModifier)
         {
             Constructor = constructor;
             Usings = usings;

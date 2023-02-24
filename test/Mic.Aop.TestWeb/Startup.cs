@@ -27,12 +27,8 @@ namespace Mic.Aop.TestWeb
             });
 
             services.AddMemoryCache();
-
-
-
-
             
-            //services.RegisterAopClass();
+            services.RegisterAopClass();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

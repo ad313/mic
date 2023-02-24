@@ -1,99 +1,19 @@
 ﻿using Mic.Aop.Generator.MetaData;
 using Microsoft.CodeAnalysis;
+using Scriban;
+using Scriban.Runtime;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Mic.Aop.Generator.Renders
 {
-    internal class TemplateRender
+    internal partial class TemplateRender
     {
-        public static void ToErrorStringBuilder(string name, StringBuilder sb, Exception e)
-        {
-            sb ??= new StringBuilder();
-            sb.AppendLine($"// {name} 异常 =>");
-            sb.AppendLine($"// Message：{e.Message?.Replace("\r\n", "\r\n//")}");
-            sb.AppendLine($"// InnerException：{e.InnerException?.Message?.Replace("\r\n", "\r\n//")}");
-            sb.Append($"// StackTrace：{e.StackTrace?.Replace("\r\n", "\r\n//")}");
-            sb.AppendLine();
-            sb.Append($"// InnerException.StackTrace：{e.InnerException?.StackTrace?.Replace("\r\n", "\r\n//")}");
-            sb.AppendLine();
-            sb.AppendLine();
-        }
-
-        public static void ToTimeStringBuilder(string name, StringBuilder sb, Stopwatch watch)
-        {
-            sb ??= new StringBuilder();
-            sb.AppendLine($"// {name} =>");
-            sb.AppendLine($"// 耗时：{watch.ElapsedMilliseconds}");
-            watch.Restart();
-            sb.AppendLine();
-            sb.AppendLine();
-        }
-
-        public static void ToTraceStringBuilder(StringBuilder sb, AopCodeBuilder builder)
-        {
-            sb ??= new StringBuilder();
-            sb.AppendLine($"// -------------------------------------------------");
-            sb.AppendLine($"//命名空间：{builder.Namespace}");
-            sb.AppendLine($"//文件名称：{builder.SourceCodeName}");
-            sb.AppendLine($"//接口：{string.Join("、", builder._metaData.InterfaceMetaData.Select(d => d.Key))}");
-            sb.AppendLine($"//类名：{builder.ClassName}");
-
-            foreach (var methodData in builder._metaData.MethodMetaDatas)
-            {
-                sb.AppendLine();
-                sb.AppendLine($"//方法名称：{methodData.Name}");
-                sb.AppendLine($"//Key名称：{methodData.Key}");
-                sb.AppendLine($"//Aop属性：{string.Join("、", methodData.AttributeMetaData.Select(d => d.Name))}");
-            }
-
-            sb.AppendLine();
-            sb.AppendLine();
-        }
-
-        public static StringBuilder ToRegisterStringBuilder(StringBuilder sb, List<AopCodeBuilder> builders, AssemblyMetaData mateData)
-        {
-            sb ??= new StringBuilder();
-            sb.AppendLine("namespace Microsoft.Extensions.DependencyInjection");
-            sb.AppendLine("{");
-            sb.AppendLine($"\tinternal static class AopClassExtensions");
-            sb.AppendLine("\t{");
-            sb.AppendLine("\t\tpublic static IServiceCollection RegisterAopClass(this IServiceCollection services)");
-            sb.AppendLine("\t\t{");
-
-            foreach (var aopAttribute in mateData.AopAttributeMetaDataList)
-            {
-                sb.AppendLine($"\t\t\tservices.AddTransient<{aopAttribute.Key}>();");
-            }
-
-            sb.AppendLine();
-
-            foreach (var builder in builders)
-            {
-                if (builder._metaData.InterfaceMetaData.Any())
-                {
-                    sb.AppendLine($"\t\t\tservices.AddScoped<{builder._metaData.InterfaceMetaData.First().Key}, {builder._metaData.NameSpace}.{builder.ClassName}>();");
-                }
-                else
-                {
-                    sb.AppendLine($"\t\t\tservices.AddScoped<{builder._metaData.NameSpace}.{builder._metaData.Name}, {builder._metaData.NameSpace}.{builder.ClassName}>();");
-                }
-            }
-
-            sb.AppendLine("\t\t\treturn services;");
-            sb.AppendLine("\t\t}");
-            sb.AppendLine("\t}");
-            sb.AppendLine("}");
-
-            return sb;
-        }
-        
         /// <summary>
         /// 构建扩展代码
         /// </summary>
@@ -103,9 +23,11 @@ namespace Mic.Aop.Generator.Renders
         public static void BuildExtend(SourceProductionContext context, ImmutableArray<AdditionalText> additionalTexts, AssemblyMetaData meta, StringBuilder sb)
         {
             var extendMapModels = GetExtendMapModels(additionalTexts);
-            extendMapModels.ForEach(item => item.AopMetaDataModel = meta);
+            //extendMapModels.ForEach(item => item.AopMetaDataModel = meta);
             RenderExtend(context, meta, extendMapModels, sb);
         }
+
+        private static readonly ConcurrentDictionary<string, Template> TemplateDictionary = new ConcurrentDictionary<string, Template>();
 
         private static List<ExtendTemplateModel> GetExtendMapModels(ImmutableArray<AdditionalText> additionalTexts)
         {
@@ -130,22 +52,27 @@ namespace Mic.Aop.Generator.Renders
                              continue;
 
                          var split = line.Split(':');
-                         switch (split[0].ToLower())
+                         var key = split[0]?.Trim();
+                         var value = split[1]?.Trim();
+                         switch (key?.ToLower())
                          {
                              case "type":
-                                 model.Type = (ExtendTemplateType)(int.TryParse(split[1], out int v) ? v : 0);
+                                 model.Type = (ExtendTemplateType)(int.TryParse(value, out int v) ? v : 0);
                                  break;
                              case "name":
-                                 model.Name = split[1];
+                                 model.Name = value;
                                  break;
                              case "code":
-                                 model.Code = split[1];
+                                 model.Code = value;
                                  break;
                              case "templates":
-                                 model.Templates = split[1].Split(',').Where(d => !string.IsNullOrWhiteSpace(d)).Select(d => d.Trim()).ToList();
+                                 model.Templates = value.Split(',').Where(d => !string.IsNullOrWhiteSpace(d)).Select(d => d.Trim()).ToList();
                                  break;
-                             case "class_filter_expression":
-                                 model.class_filter_expression = split[1];
+                             case "class_attribute_filter_expression":
+                                 model.class_attribute_filter_expression = value;
+                                 break;
+                             case "class_property_attribute_filter_expression":
+                                 model.class_property_attribute_filter_expression = value;
                                  break;
                              default:
                                  break;
@@ -170,15 +97,6 @@ namespace Mic.Aop.Generator.Renders
 
         private static void RenderExtend(SourceProductionContext context, AssemblyMetaData meta, List<ExtendTemplateModel> extendMapModels, StringBuilder sb)
         {
-            //TestEx();
-            //var index = Class1.Test();
-            //context.AddSource("testcombi", "//" + index.ToString());
-
-            var index = Class1.Test2(meta);
-            context.AddSource("testcombi", "// count " + index.ToString());
-
-            return;
-
             foreach (var extendMapModel in extendMapModels)
             {
                 if (context.CancellationToken.IsCancellationRequested)
@@ -187,7 +105,7 @@ namespace Mic.Aop.Generator.Renders
                 switch (extendMapModel.Type)
                 {
                     case ExtendTemplateType.ClassTarget:
-                        //RenderExtendByClassMetaData(context, meta, extendMapModel);
+                        RenderExtendByClassMetaData(context, meta, extendMapModel);
                         break;
                     case ExtendTemplateType.InterfaceTarget:
                         //RenderExtendByInterfaceMetaData(context, meta, extendMapModel);
@@ -198,181 +116,194 @@ namespace Mic.Aop.Generator.Renders
             }
         }
 
+        private static void RenderExtendByClassMetaData(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
+        {
+            var classData = meta.ClassMetaDataList.Select(d => new TemplateClassMetaData(d.Namespace, d.Name,
+                d.AttributeMetaData, d.PropertyMeta, d.MethodMetaData, d.Interfaces, d.Constructor, d.Usings, d.AccessModifier)).ToList();
 
-        //private static void TestEx()
-        //{
-        //    var ruleParameters = new RuleParameter[] {
-        //        new RuleParameter("RequestType","Sales"),
-        //        new RuleParameter("RequestStatus", "Active"),
-        //        new RuleParameter("RegistrationStatus", "InProcess")
-        //    };
+            if (!string.IsNullOrWhiteSpace(extendMapModel.class_attribute_filter_expression))
+            {
+                classData = classData.Where(d => d.HasAttribute(extendMapModel.class_attribute_filter_expression)).ToList();
+            }
 
-        //    var mainRule = new Rule
-        //    {
-        //        RuleName = "rule1",
-        //        Operator = "And",
-        //        Rules = new List<Rule>()
-        //    };
+            foreach (var classMetaData in classData)
+            {
+                if (context.CancellationToken.IsCancellationRequested)
+                    return;
 
-        //    var dummyRule = new Rule
-        //    {
-        //        RuleName = "testRule1",
-        //        RuleExpressionType = RuleExpressionType.LambdaExpression,
-        //        Expression = "RequestType == \"vod\""
-        //    };
+                foreach (var kv in extendMapModel.TemplateDictionary)
+                {
+                    var scriptObject1 = new FilterFunctions();
+                    scriptObject1.Import(classMetaData);
+                    var scContext = new TemplateContext();
+                    scContext.PushGlobal(scriptObject1);
 
-        //    mainRule.Rules = mainRule.Rules.Append(dummyRule);
-        //    var parser = new RuleExpressionParser(new ReSettings());
-        //    var ruleDelegate = parser.Compile(dummyRule.Expression, ruleParameters);
+                    var template = TemplateDictionary.GetOrAdd(kv.Key, key => Template.Parse(kv.Value));
+                    var result = template.Render(scContext);
+                    extendMapModel.TemplateResult.TryAdd($"{kv.Key.Replace(".txt", "")}_{classMetaData.Name}_g.cs", result);
+                }
 
+                foreach (var keyValuePair in extendMapModel.TemplateResult)
+                {
+                    context.AddSource(keyValuePair.Key, keyValuePair.Value);
+                }
 
-
+                extendMapModel.TemplateResult.Clear();
+            }
         }
 
-        //public void TestScriban(SourceProductionContext context)
+
+
+        //        public static void TestScriban(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
+        //        {
+        //            var tem = @"
+        //{{- for using in Usings }}
+        //{{- using}}
+        //{{ end }}
+        //namespace {{ Namespace }}
         //{
-        //    //var template = Scriban.Template.Parse("Hello {{name}}!");
-        //    //var result = template.Render(new { Name = "World" }); // => "Hello World!"
+        //    {{ SplitString AccessModifier 0 }} partial class {{ Name }}
+        //    {
+        //    {{- for prop in (PropertyListAttributeFilter PropertyMeta 'BizDictionaryAttribute') }}
+        //        /// <summary>
+        //        /// {{ prop.Description }}
+        //        /// </summary>
+        //        {{ prop.AccessModifier}} string {{prop.Name}}Text { get; set; }
+        //    {{ end -}}
+        //    }
+        //}";
+        //            //Debugger.Launch();
+
+        //            //{{if PropertyHasAttribute prop 'BizDictionaryAttribute'}}{{prop.AccessModifier}} string {{prop.Name}}Text { get; set; }
 
 
-        //    var template = Scriban.Template.Parse(@"
-        //<ul id='products'>
-        //  {{ for product in products }}
-        //    <li>
-        //      <h2>{{ product.name }}</h2>
-        //           Price: {{ product.price }}
-        //           {{ product.description | string.truncate 15 }}
-        //    </li>
-        //  {{ end }}
-        //</ul>
-        //");
+        //            var scriptObject1 = new FilterFunctions();
+        //            var scContext = new TemplateContext();
+        //            scContext.PushGlobal(scriptObject1);
 
-        //    var ProductList = new List<dynamic>()
+        //            var template = Scriban.Template.Parse(tem);
+
+        //            var classData = meta.ClassMetaDataList.Select(d => new TemplateClassMetaData(d.Namespace, d.Name,
+        //                d.AttributeMetaData, d.PropertyMeta, d.MethodMetaData, d.Interfaces, d.Constructor, d.Usings, d.AccessModifier)).ToList();
+
+        //            if (!string.IsNullOrWhiteSpace(extendMapModel.class_attribute_filter_expression))
         //            {
-        //                new {
-        //                    name="name1",
-        //                    price=123,
-        //                    description="this is ProductList"
-        //                },
-        //                new {
-        //                    name="name2",
-        //                    price=98,
-        //                    description="this is ProductList2"
-        //                }
-        //            };
+        //                classData = classData.Where(d => d.HasAttribute(extendMapModel.class_attribute_filter_expression)).ToList();
+        //            }
 
-        //    var result = template.Render(new { Products = ProductList });
+        //            foreach (var data in classData)
+        //            {
+        //                scriptObject1.Import(data);
 
-
-
-        //    context.AddSource("TestScriban", DateTime.Now.ToString() + Environment.NewLine + result);
-
-
-
-
-        //}
-
-        //private static void RenderExtendByClassMetaData(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
-        //{
-        //    foreach (var classMetaData in meta.ClassMetaDataList)
-        //    {
-        //        if (context.CancellationToken.IsCancellationRequested)
-        //            return;
-
-        //        extendMapModel.ClassMetaData = classMetaData;
-
-        //        //TemplateRender.RenderExtend(extendMapModel, d =>
-        //        //{
-        //        //    d.AddAssemblyReference(typeof(System.Collections.IList));
-        //        //    d.AddAssemblyReference(typeof(System.Linq.Enumerable));
-        //        //    d.AddAssemblyReference(typeof(System.Linq.IQueryable));
-        //        //    d.AddAssemblyReference(typeof(System.Collections.Generic.IEnumerable<>));
-        //        //    d.AddAssemblyReference(typeof(System.Collections.Generic.List<>));
-        //        //    d.AddAssemblyReference(typeof(System.Diagnostics.Debug));
-        //        //    d.AddAssemblyReference(typeof(System.Diagnostics.CodeAnalysis.SuppressMessageAttribute));
-        //        //    d.AddAssemblyReference(typeof(System.Runtime.Versioning.ComponentGuaranteesAttribute));
-        //        //    d.AddAssemblyReference(typeof(System.Linq.Expressions.BinaryExpression));
-
-        //        //    d.AddAssemblyReference(_currentAssembly);
-        //        //}, d =>
-        //        //{
-        //        //    d.Model = extendMapModel;
-        //        //});
-
-        //        foreach (var kv in extendMapModel.TemplateResult)
-        //        {
-        //            context.AddSource($"{kv.Key.Replace(".txt", "")}.cs", kv.Value);
+        //                var result = template.Render(scContext);
+        //                context.AddSource($"TestScriban_{data.Name}", result);
+        //            }
         //        }
+    }
 
-        //        extendMapModel.TemplateResult.Clear();
-        //    }
-        //}
+   
 
-        //private static void RenderExtendByClassMetaData(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
-        //{
-        //    foreach (var classMetaData in meta.ClassMetaDataList)
-        //    {
-        //        if (context.CancellationToken.IsCancellationRequested)
-        //            return;
+    //private static void RenderExtendByClassMetaData(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
+    //{
+    //    foreach (var classMetaData in meta.ClassMetaDataList)
+    //    {
+    //        if (context.CancellationToken.IsCancellationRequested)
+    //            return;
 
-        //        extendMapModel.ClassMetaData = classMetaData;
+    //        extendMapModel.ClassMetaData = classMetaData;
 
-        //        //TemplateRender.RenderExtend(extendMapModel, d =>
-        //        //{
-        //        //    d.AddAssemblyReference(typeof(System.Collections.IList));
-        //        //    d.AddAssemblyReference(typeof(System.Linq.Enumerable));
-        //        //    d.AddAssemblyReference(typeof(System.Linq.IQueryable));
-        //        //    d.AddAssemblyReference(typeof(System.Collections.Generic.IEnumerable<>));
-        //        //    d.AddAssemblyReference(typeof(System.Collections.Generic.List<>));
-        //        //    d.AddAssemblyReference(typeof(System.Diagnostics.Debug));
-        //        //    d.AddAssemblyReference(typeof(System.Diagnostics.CodeAnalysis.SuppressMessageAttribute));
-        //        //    d.AddAssemblyReference(typeof(System.Runtime.Versioning.ComponentGuaranteesAttribute));
-        //        //    d.AddAssemblyReference(typeof(System.Linq.Expressions.BinaryExpression));
+    //        //TemplateRender.RenderExtend(extendMapModel, d =>
+    //        //{
+    //        //    d.AddAssemblyReference(typeof(System.Collections.IList));
+    //        //    d.AddAssemblyReference(typeof(System.Linq.Enumerable));
+    //        //    d.AddAssemblyReference(typeof(System.Linq.IQueryable));
+    //        //    d.AddAssemblyReference(typeof(System.Collections.Generic.IEnumerable<>));
+    //        //    d.AddAssemblyReference(typeof(System.Collections.Generic.List<>));
+    //        //    d.AddAssemblyReference(typeof(System.Diagnostics.Debug));
+    //        //    d.AddAssemblyReference(typeof(System.Diagnostics.CodeAnalysis.SuppressMessageAttribute));
+    //        //    d.AddAssemblyReference(typeof(System.Runtime.Versioning.ComponentGuaranteesAttribute));
+    //        //    d.AddAssemblyReference(typeof(System.Linq.Expressions.BinaryExpression));
 
-        //        //    d.AddAssemblyReference(_currentAssembly);
-        //        //}, d =>
-        //        //{
-        //        //    d.Model = extendMapModel;
-        //        //});
+    //        //    d.AddAssemblyReference(_currentAssembly);
+    //        //}, d =>
+    //        //{
+    //        //    d.Model = extendMapModel;
+    //        //});
 
-        //        foreach (var kv in extendMapModel.TemplateResult)
-        //        {
-        //            context.AddSource($"{kv.Key.Replace(".txt", "")}.cs", kv.Value);
-        //        }
+    //        foreach (var kv in extendMapModel.TemplateResult)
+    //        {
+    //            context.AddSource($"{kv.Key.Replace(".txt", "")}.cs", kv.Value);
+    //        }
 
-        //        extendMapModel.TemplateResult.Clear();
-        //    }
-        //}
+    //        extendMapModel.TemplateResult.Clear();
+    //    }
+    //}
 
-        //private void RenderExtendByInterfaceMetaData(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
-        //{
-        //    foreach (var interfaceMetaData in meta.InterfaceMetaDataList)
-        //    {
-        //        if (context.CancellationToken.IsCancellationRequested)
-        //            return;
+    //private static void RenderExtendByClassMetaData(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
+    //{
+    //    foreach (var classMetaData in meta.ClassMetaDataList)
+    //    {
+    //        if (context.CancellationToken.IsCancellationRequested)
+    //            return;
 
-        //        extendMapModel.InterfaceMetaData = interfaceMetaData;
+    //        extendMapModel.ClassMetaData = classMetaData;
 
-        //        TemplateRender.RenderExtend(extendMapModel, d =>
-        //        {
-        //            d.AddAssemblyReference(typeof(System.Collections.IList));
-        //            d.AddAssemblyReference(typeof(Enumerable));
-        //            d.AddAssemblyReference(_currentAssembly);
-        //        }, d =>
-        //        {
-        //            d.Model = extendMapModel;
-        //        });
+    //        //TemplateRender.RenderExtend(extendMapModel, d =>
+    //        //{
+    //        //    d.AddAssemblyReference(typeof(System.Collections.IList));
+    //        //    d.AddAssemblyReference(typeof(System.Linq.Enumerable));
+    //        //    d.AddAssemblyReference(typeof(System.Linq.IQueryable));
+    //        //    d.AddAssemblyReference(typeof(System.Collections.Generic.IEnumerable<>));
+    //        //    d.AddAssemblyReference(typeof(System.Collections.Generic.List<>));
+    //        //    d.AddAssemblyReference(typeof(System.Diagnostics.Debug));
+    //        //    d.AddAssemblyReference(typeof(System.Diagnostics.CodeAnalysis.SuppressMessageAttribute));
+    //        //    d.AddAssemblyReference(typeof(System.Runtime.Versioning.ComponentGuaranteesAttribute));
+    //        //    d.AddAssemblyReference(typeof(System.Linq.Expressions.BinaryExpression));
 
-        //        foreach (var kv in extendMapModel.TemplateResult)
-        //        {
-        //            context.AddSource($"{kv.Key.Replace(".txt", "")}.cs", kv.Value);
-        //        }
+    //        //    d.AddAssemblyReference(_currentAssembly);
+    //        //}, d =>
+    //        //{
+    //        //    d.Model = extendMapModel;
+    //        //});
 
-        //        extendMapModel.TemplateResult.Clear();
-        //    }
-        //}
+    //        foreach (var kv in extendMapModel.TemplateResult)
+    //        {
+    //            context.AddSource($"{kv.Key.Replace(".txt", "")}.cs", kv.Value);
+    //        }
 
-        
-        
+    //        extendMapModel.TemplateResult.Clear();
+    //    }
+    //}
+
+    //private void RenderExtendByInterfaceMetaData(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
+    //{
+    //    foreach (var interfaceMetaData in meta.InterfaceMetaDataList)
+    //    {
+    //        if (context.CancellationToken.IsCancellationRequested)
+    //            return;
+
+    //        extendMapModel.InterfaceMetaData = interfaceMetaData;
+
+    //        TemplateRender.RenderExtend(extendMapModel, d =>
+    //        {
+    //            d.AddAssemblyReference(typeof(System.Collections.IList));
+    //            d.AddAssemblyReference(typeof(Enumerable));
+    //            d.AddAssemblyReference(_currentAssembly);
+    //        }, d =>
+    //        {
+    //            d.Model = extendMapModel;
+    //        });
+
+    //        foreach (var kv in extendMapModel.TemplateResult)
+    //        {
+    //            context.AddSource($"{kv.Key.Replace(".txt", "")}.cs", kv.Value);
+    //        }
+
+    //        extendMapModel.TemplateResult.Clear();
+    //    }
+    //}
+
+
+
     //}
 }

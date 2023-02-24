@@ -8,12 +8,12 @@ namespace Mic.Aop.Generator.MetaData
     /// </summary>
     public class InterfaceMetaData : MetaDataBase, IEquatable<InterfaceMetaData>
     {
-        public string Key => $"{NameSpace}.{Name}";
+        public string Key => $"{Namespace}.{Name}";
 
         /// <summary>Initializes a new instance of the <see cref="T:System.Object"></see> class.</summary>
-        public InterfaceMetaData(string nameSpace, string name, List<AttributeMetaData> attributeMetaData, List<PropertyMetaData> propertyMeta, List<MethodMetaData> methodMetaData) : base(name, attributeMetaData)
+        public InterfaceMetaData(string @namespace, string name, List<AttributeMetaData> attributeMetaData, List<PropertyMetaData> propertyMeta, List<MethodMetaData> methodMetaData, string accessModifier, string extModifier) : base(name, accessModifier, extModifier, attributeMetaData)
         {
-            NameSpace = nameSpace;
+            Namespace = @namespace;
             PropertyMeta = propertyMeta;
             MethodMetaData = methodMetaData;
         }
@@ -21,7 +21,7 @@ namespace Mic.Aop.Generator.MetaData
         /// <summary>
         /// 命名空间
         /// </summary>
-        public string NameSpace { get; set; }
+        public string Namespace { get; set; }
 
         /// <summary>
         /// 属性集合
@@ -35,7 +35,7 @@ namespace Mic.Aop.Generator.MetaData
 
         public bool Equals(InterfaceMetaData other)
         {
-            return Key == other.Key;
+            return Key == other?.Key;
         }
 
         /// <summary>

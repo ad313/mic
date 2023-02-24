@@ -33,6 +33,7 @@ namespace Scriban.Runtime
         /// <returns>The renamed method name</returns>
         public static string Rename(string name)
         {
+            return name;
             var builder = new StringBuilder();
             var previousUpper = false;
             for (var i = 0; i < name.Length; i++)
