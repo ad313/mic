@@ -8,36 +8,64 @@ namespace Mic.Aop.TestWeb
     {
         [Display(Name = "枚举枚举")]
         [BizDictionary(BizType = BizTypeEnum.Enum)]
-        public BizTypeEnum? EnumType2 { get; set; }
+        public BizTypeEnum? EnumType211 { get; set; }
 
         /// <summary>
         /// 单个字典，单选
         /// </summary>
         [Display(Name = "单个字典")]
         [BizDictionary(BizType =  BizTypeEnum.Dictionary, Code = "aaaaa")]
-        public string Name11 { get; set; }
+        public string Name1111 { get; set; }
 
         /// <summary>
         /// 单个字典，多选
         /// </summary>
         [Display(Name = "多个字典")]
-        [BizDictionary(BizType = BizTypeEnum.Dictionary,IsMultiple = true)]
-        public string Name22 { get; set; }
+        [BizDictionary(BizType = BizTypeEnum.Dictionary, IsMultiple = true)]
+        public string Name1122 { get; set; }
+
+        /// <summary>
+        /// 这是行政区划
+        /// </summary>
+        [Display(Name = "单个行政区划")]
+        [BizDictionary(BizType = BizTypeEnum.Region)]
+        public string Region11 { get; set; }
 
         /// <summary>
         /// 这是行政区划
         /// </summary>
         [Display(Name = "多个行政区划")]
         [BizDictionary(BizType = BizTypeEnum.Region, IsMultiple = true)]
-        public string Region { get; set; }
+        public string Region112 { get; set; }
 
         /// <summary>
         /// 这是部门
         /// </summary>
         [Display(Name = "单个部门")]
         [BizDictionary(BizType = BizTypeEnum.Department)]
-        public string Department { get; set; }
+        public string Department11 { get; set; }
 
+        /// <summary>
+        /// 这是部门
+        /// </summary>
+        [Display(Name = "多个部门")]
+        [BizDictionary(BizType = BizTypeEnum.Department, IsMultiple = true)]
+        public string Department112 { get; set; }
+
+
+        /// <summary>
+        /// 这是用户
+        /// </summary>
+        [Display(Name = "单个用户")]
+        [BizDictionary(BizType = BizTypeEnum.User)]
+        public string User1 { get; set; }
+
+        /// <summary>
+        /// 这是用户
+        /// </summary>
+        [Display(Name = "多个用户")]
+        [BizDictionary(BizType = BizTypeEnum.User, IsMultiple = true)]
+        public string User2 { get; set; }
 
 
 
@@ -50,36 +78,4 @@ namespace Mic.Aop.TestWeb
         [BizDictionary]
         public string Aaa { get; set; }
     }
-
-
-    //public static class Class2_Ge_Extensions1
-    //{
-    //    public static List<Class2> BindBizDictionary(this List<Class2> list)
-    //    {
-    //        if (list == null || !list.Any()) return list;
-    //        var codes = new List<string>();
-    //        if (list.Exists(d => !string.IsNullOrWhiteSpace(d.Name11))) { codes.Add("aaaaa"); }
-    //        if (list.Exists(d => !string.IsNullOrWhiteSpace(d.Name22))) { codes.Add("Name22"); }
-    //        if (!codes.Any()) return list;
-    //        var service = ServiceHelper.GetService<IBizDictionaryService>();
-    //        var dic = AsyncHelper.RunSync(() => service.GetBizDictionary(codes));
-    //        if (!dic.Any()) return list;
-    //        foreach (var dto in list)
-    //        {
-    //            if (!string.IsNullOrWhiteSpace(dto.Name11) && dic.TryGetValue(Name11, out List<DictionaryItem> Name11Options))
-    //            {
-    //                dto.Name11Text = Name11Options.FirstOrDefault(d => d.Value == dto.Name11)?.Text;
-    //            }
-    //            if (!string.IsNullOrWhiteSpace(dto.Name22) && dic.TryGetValue(Name22, out List<DictionaryItem> Name22Options))
-    //            {
-    //                dto.Name22Text = Name22Options.FirstOrDefault(d => d.Value == dto.Name22)?.Text;
-    //            }
-
-
-
-    //        }
-    //        return list;
-    //    }
-
-    //}
 }

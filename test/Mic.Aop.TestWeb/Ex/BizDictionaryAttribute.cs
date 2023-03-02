@@ -31,6 +31,8 @@ namespace SaiLing.Biz.Dictionary.Extensions
         Dictionary,
         [Description("部门")]
         Department,
+        [Description("用户")]
+        User,
         [Description("行政区划")]
         Region,
         [Description("枚举")]

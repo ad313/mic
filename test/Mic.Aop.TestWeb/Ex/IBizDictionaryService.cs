@@ -44,6 +44,24 @@ namespace SaiLing.Biz.Dictionary.Extensions
 
         #endregion
 
+        #region 用户
+
+        /// <summary>
+        /// 获取单个用户数据
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<BizDataItem> GetBizUser(string userId);
+
+        /// <summary>
+        /// 批量获取用户
+        /// </summary>
+        /// <param name="userIdList"></param>
+        /// <returns></returns>
+        Task<List<BizDataItem>> GetBizUser(List<string> userIdList);
+
+        #endregion
+
         #region 行政区划
 
         /// <summary>
