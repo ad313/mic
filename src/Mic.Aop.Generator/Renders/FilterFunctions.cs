@@ -1,4 +1,5 @@
-﻿using Mic.Aop.Generator.Extend;
+﻿using System;
+using Mic.Aop.Generator.Extend;
 using Mic.Aop.Generator.MetaData;
 using Scriban.Runtime;
 using System.Collections.Generic;
@@ -7,19 +8,6 @@ using System.Text.RegularExpressions;
 
 namespace Mic.Aop.Generator.Renders
 {
-    public class TemplateClassMetaData : ClassMetaData
-    {
-        /// <summary>Initializes a new instance of the <see cref="T:System.Object"></see> class.</summary>
-        public TemplateClassMetaData(string @namespace, string name, List<AttributeMetaData> attributeMetaData, List<PropertyMetaData> propertyMeta, List<MethodMetaData> methodMetaData, List<string> interfaces, List<KeyValueModel> constructor, List<string> usings, string accessModifier) : base(@namespace, name, attributeMetaData, propertyMeta, methodMetaData, interfaces, constructor, usings, accessModifier)
-        {
-        }
-
-        public bool HasAttribute(string attributeName)
-        {
-            return AttributeMetaData.HasAttribute(attributeName);
-        }
-    }
-
     // We simply inherit from ScriptObject
     // All functions defined in the object will be imported
     public class FilterFunctions : ScriptObject
@@ -44,9 +32,9 @@ namespace Mic.Aop.Generator.Renders
         /// <param name="data"></param>
         /// <param name="attributeName"></param>
         /// <returns></returns>
-        public static bool ClassHasAttribute(TemplateClassMetaData data, string attributeName)
+        public static bool ClassHasAttribute(ClassMetaData data, string attributeName)
         {
-            return data.HasAttribute(attributeName);
+            return data.AttributeMetaData.HasAttribute(attributeName);
         }
 
         /// <summary>
@@ -125,6 +113,11 @@ namespace Mic.Aop.Generator.Renders
         public static string GetFirstNotNullValue(string first, string second)
         {
             return !string.IsNullOrWhiteSpace(first) ? first.Trim('"') : second?.Trim('"');
+        }
+
+        public static string Now()
+        {
+            return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         }
     }
 }

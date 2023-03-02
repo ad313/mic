@@ -1,4 +1,5 @@
-﻿using Mic.Aop.Generator.MetaData;
+﻿using Mic.Aop.Generator.Extend;
+using Mic.Aop.Generator.MetaData;
 using Microsoft.CodeAnalysis;
 using Scriban;
 using Scriban.Runtime;
@@ -23,12 +24,9 @@ namespace Mic.Aop.Generator.Renders
         public static void BuildExtend(SourceProductionContext context, ImmutableArray<AdditionalText> additionalTexts, AssemblyMetaData meta, StringBuilder sb)
         {
             var extendMapModels = GetExtendMapModels(additionalTexts);
-            //extendMapModels.ForEach(item => item.AopMetaDataModel = meta);
             RenderExtend(context, meta, extendMapModels, sb);
         }
-
-        private static readonly ConcurrentDictionary<string, Template> TemplateDictionary = new ConcurrentDictionary<string, Template>();
-
+        
         private static List<ExtendTemplateModel> GetExtendMapModels(ImmutableArray<AdditionalText> additionalTexts)
         {
             var mapText = additionalTexts.FirstOrDefault(d => d.Path.EndsWith("Map.txt", StringComparison.OrdinalIgnoreCase))?.GetText()?.ToString();
@@ -118,12 +116,10 @@ namespace Mic.Aop.Generator.Renders
 
         private static void RenderExtendByClassMetaData(SourceProductionContext context, AssemblyMetaData meta, ExtendTemplateModel extendMapModel)
         {
-            var classData = meta.ClassMetaDataList.Select(d => new TemplateClassMetaData(d.Namespace, d.Name,
-                d.AttributeMetaData, d.PropertyMeta, d.MethodMetaData, d.Interfaces, d.Constructor, d.Usings, d.AccessModifier)).ToList();
-
+            var classData = meta.ClassMetaDataList;
             if (!string.IsNullOrWhiteSpace(extendMapModel.class_attribute_filter_expression))
             {
-                classData = classData.Where(d => d.HasAttribute(extendMapModel.class_attribute_filter_expression)).ToList();
+                classData = classData.Where(d => d.AttributeMetaData.HasAttribute(extendMapModel.class_attribute_filter_expression)).ToList();
             }
 
             foreach (var classMetaData in classData)
@@ -137,8 +133,7 @@ namespace Mic.Aop.Generator.Renders
                     scriptObject1.Import(classMetaData);
                     var scContext = new TemplateContext();
                     scContext.PushGlobal(scriptObject1);
-
-                    //var template = TemplateDictionary.GetOrAdd(kv.Key, key => Template.Parse(kv.Value));
+                    
                     var template = Template.Parse(kv.Value);
                     var result = template.Render(scContext);
                     extendMapModel.TemplateResult.TryAdd($"{kv.Key.Replace(".txt", "")}_{classMetaData.Name}_g.cs", result);

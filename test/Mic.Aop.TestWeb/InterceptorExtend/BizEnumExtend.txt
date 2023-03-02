@@ -1,4 +1,7 @@
-﻿{{- for using in Usings }}
+﻿/*
+  此代码通过 SourceGenerator，使用模板 Scriban 自动生成：{{ Now() }} 
+*/
+{{ for using in Usings }}
 {{- using}}
 {{ end }}using Mic.Aop;
 using System.Collections.Generic;
