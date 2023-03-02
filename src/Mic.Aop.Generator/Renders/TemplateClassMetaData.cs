@@ -24,8 +24,13 @@ namespace Mic.Aop.Generator.Renders
     // All functions defined in the object will be imported
     public class FilterFunctions : ScriptObject
     {
-        // A function an optional argument
-        public static string SplitString(string text, int index)
+        /// <summary>
+        /// 通过空格分割字符串，返回特定 index 的数据
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static string SplitStringByWhiteSpace(string text, int index)
         {
             var arr = Regex.Split(text, "\\s+");
             if (arr.Length >= index)

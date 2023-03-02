@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace {{ Namespace }}
 {
-    {{ SplitString AccessModifier 0 }} partial class {{ Name }}
+    {{ SplitStringByWhiteSpace AccessModifier 0 }} partial class {{ Name }}
     {
     {{- for prop in (PropertyListAttributeFilter PropertyMeta 'BizDictionaryAttribute') }}
         /// <summary>
