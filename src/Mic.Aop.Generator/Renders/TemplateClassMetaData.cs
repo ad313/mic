@@ -48,9 +48,34 @@ namespace Mic.Aop.Generator.Renders
             return data.Where(d => d.AttributeMetaData.HasAttribute(attributeName)).ToList();
         }
 
+        public static List<PropertyMetaData> PropertyListAttributeWithParamFilter(List<PropertyMetaData> data, string attributeName, string key, string value)
+        {
+            return data.Where(d => d.AttributeMetaData.Any(t => (t.Name == attributeName || t.Name + "Attribute" == attributeName) && t.ParamDictionary.Any(dic => dic.Key == key && dic.Value == value))).ToList();
+        }
+
         public static bool MethodHasAttribute(MethodMetaData data, string attributeName)
         {
             return data.AttributeMetaData.HasAttribute(attributeName);
+        }
+
+        public static string GetAttributeParamValue(PropertyMetaData propertyMetaData,
+            string attributeName, string key)
+        {
+            var attr = propertyMetaData.AttributeMetaData.FirstOrDefault(d => d.Name == attributeName || d.Name + "Attribute" == attributeName);
+            if (attr == null)
+                return null;
+
+            if (attr.ParamDictionary.TryGetValue(key, out string v))
+            {
+                return v;
+            }
+
+            return null;
+        }
+
+        public static string GetValue(string first, string second)
+        {
+            return !string.IsNullOrWhiteSpace(first) ? first.Trim('"') : second?.Trim('"');
         }
     }
 }

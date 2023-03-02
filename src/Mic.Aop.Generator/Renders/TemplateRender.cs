@@ -138,7 +138,8 @@ namespace Mic.Aop.Generator.Renders
                     var scContext = new TemplateContext();
                     scContext.PushGlobal(scriptObject1);
 
-                    var template = TemplateDictionary.GetOrAdd(kv.Key, key => Template.Parse(kv.Value));
+                    //var template = TemplateDictionary.GetOrAdd(kv.Key, key => Template.Parse(kv.Value));
+                    var template = Template.Parse(kv.Value);
                     var result = template.Render(scContext);
                     extendMapModel.TemplateResult.TryAdd($"{kv.Key.Replace(".txt", "")}_{classMetaData.Name}_g.cs", result);
                 }

@@ -90,7 +90,7 @@ namespace Mic.Aop.Generator.Extend
                     {
                         var arr = argument.ToString().Split('=');
                         key = arr[0].Trim();
-                        value = arr[1].Trim();
+                        value = arr[1].Trim();//.Trim('"');
                     }
 
                     attributeMetaData.AddParam(key, value);

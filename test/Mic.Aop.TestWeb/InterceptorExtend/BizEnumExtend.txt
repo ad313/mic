@@ -1,6 +1,10 @@
 ﻿{{- for using in Usings }}
 {{- using}}
-{{ end }}
+{{ end }}using Mic.Aop;
+using SaiLing.Biz.Dictionary.Extensions;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace {{ Namespace }}
 {
     {{ SplitString AccessModifier 0 }} partial class {{ Name }}
@@ -8,8 +12,42 @@ namespace {{ Namespace }}
     {{- for prop in (PropertyListAttributeFilter PropertyMeta 'BizDictionaryAttribute') }}
         /// <summary>
         /// {{ prop.Description }}
-        /// </summary>
-        {{ prop.AccessModifier}} string {{prop.Name}}Text { get; set; }
-    {{ end -}}
+        /// </summary> 
+        {{ if (GetAttributeParamValue prop 'BizDictionaryAttribute' 'BizType')=='BizTypeEnum.Enum' }}
+        {{- prop.AccessModifier}} string {{prop.Name}}Text => {{prop.Name}}.GetEnumDescription();
+        {{- else }}
+        {{- prop.AccessModifier}} string {{prop.Name}}Text { get; set; }
+        {{- end }}
+    {{- end -}}
     }
+
+    public static class {{ Name }}_g_Extensions
+    {
+        public static List<{{ Name }}> BindBizDictionary(this List<{{ Name }}> list)
+        {
+            if (list == null || !list.Any()) return list;
+            var codes = new List<string>();
+            {{- for prop in (PropertyListAttributeWithParamFilter PropertyMeta 'BizDictionaryAttribute' 'BizType' 'BizTypeEnum.Dictionary') }}
+            {{- dicKey = GetValue (GetAttributeParamValue prop 'BizDictionaryAttribute' 'Code') prop.Name}}
+            if (list.Exists(d => !string.IsNullOrWhiteSpace(d.{{prop.Name}}))) { codes.Add("{{dicKey}}"); }
+            {{- end }}
+            if (!codes.Any()) return list;
+            var service = ServiceHelper.GetService<IBizDictionaryService>();
+            var dic = AsyncHelper.RunSync(() => service.GetBizDictionary(codes));
+            if (!dic.Any()) return list;
+            foreach (var dto in list)
+            {        
+            {{- for prop in (PropertyListAttributeWithParamFilter PropertyMeta 'BizDictionaryAttribute' 'BizType' 'BizTypeEnum.Dictionary') }}
+                {{- dicKey = GetValue (GetAttributeParamValue prop 'BizDictionaryAttribute' 'Code') prop.Name}}
+                if (!string.IsNullOrWhiteSpace(dto.{{prop.Name}}) && dic.TryGetValue("{{dicKey}}", out List<DictionaryItem> value{{prop.Name}}))
+                {
+                    dto.{{prop.Name}}Text = value{{prop.Name}}.FirstOrDefault(d => d.Value == dto.{{prop.Name}})?.Text;
+                }
+                {{- end }}            
+            }
+            return list;
+        }
+    }
+
+
 }
