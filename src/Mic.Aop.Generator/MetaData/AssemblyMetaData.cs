@@ -10,6 +10,11 @@ namespace Mic.Aop.Generator.MetaData
     public class AssemblyMetaData
     {
         /// <summary>
+        /// 宿主程序集名称
+        /// </summary>
+        public string AssemblyName { get; set; }
+
+        /// <summary>
         /// 忽略Aop
         /// </summary>
         public string IgnoreAttribute { get; private set; }

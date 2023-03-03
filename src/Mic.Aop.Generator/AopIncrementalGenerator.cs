@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace Mic.Aop.Generator
@@ -18,7 +17,7 @@ namespace Mic.Aop.Generator
     [Generator]
     public class IncrementalGenerator : IIncrementalGenerator
     {
-        public static readonly Assembly CurrentAssembly = Assembly.GetExecutingAssembly();
+        //public static readonly Assembly CurrentAssembly = Assembly.GetExecutingAssembly();
         private readonly StringBuilder _errorBuilder = new StringBuilder();
         private readonly StringBuilder _timeBuilder = new StringBuilder();
 
@@ -31,13 +30,7 @@ namespace Mic.Aop.Generator
             //Debugger.Launch();
 
             var textFiles = context.AdditionalTextsProvider.Where(file => file.Path.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)).Collect();
-
-            // 找到对什么文件感兴趣
-            IncrementalValueProvider<Compilation> compilations =
-                context.CompilationProvider
-                    // 这里的 Select 是仿照 Linq 写的，可不是真的 Linq 哦，只是一个叫 Select 的方法
-                    // public static IncrementalValueProvider<TResult> Select<TSource,TResult>(this IncrementalValueProvider<TSource> source, Func<TSource,CancellationToken,TResult> selector)
-                    .Select((compilation, cancellationToken) => compilation);
+            var compilations = context.CompilationProvider.Select((compilation, cancellationToken) => compilation);
 
             context.RegisterSourceOutput(compilations.Combine(textFiles), (context, compilation) =>
             {
@@ -88,6 +81,8 @@ namespace Mic.Aop.Generator
                 meta = receiver
                     .FindAopInterceptors()
                     .GetMetaData(compilation);
+
+                meta.AssemblyName = compilation.AssemblyName;
 
                 builders = meta
                     .GetAopCodeBuilderMetaData()

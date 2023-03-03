@@ -12,7 +12,7 @@ namespace Mic.Aop.Generator.Renders
         public static void ToErrorStringBuilder(string name, StringBuilder sb, Exception e)
         {
             sb ??= new StringBuilder();
-            sb.AppendLine($"// {name} 异常 =>");
+            sb.AppendLine($"// {name} 异常 => {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
             sb.AppendLine($"// Message：{e.Message?.Replace("\r\n", "\r\n//")}");
             sb.AppendLine($"// InnerException：{e.InnerException?.Message?.Replace("\r\n", "\r\n//")}");
             sb.Append($"// StackTrace：{e.StackTrace?.Replace("\r\n", "\r\n//")}");
@@ -60,7 +60,7 @@ namespace Mic.Aop.Generator.Renders
             sb.AppendLine("{");
             sb.AppendLine($"\tinternal static class AopClassExtensions");
             sb.AppendLine("\t{");
-            sb.AppendLine("\t\tpublic static IServiceCollection RegisterAopClass(this IServiceCollection services)");
+            sb.AppendLine($"\t\tpublic static IServiceCollection RegisterInjectionFor{mateData.AssemblyName.Replace(".","")}(this IServiceCollection services)");
             sb.AppendLine("\t\t{");
 
             foreach (var aopAttribute in mateData.AopAttributeMetaDataList)

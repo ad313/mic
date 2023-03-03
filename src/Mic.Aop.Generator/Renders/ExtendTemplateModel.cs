@@ -1,5 +1,4 @@
-﻿using Mic.Aop.Generator.MetaData;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Mic.Aop.Generator.Renders
@@ -23,19 +22,19 @@ namespace Mic.Aop.Generator.Renders
 
         //public AssemblyMetaData AopMetaDataModel { get; set; }
 
-        public ClassMetaData ClassMetaData { get; set; }
+        //public ClassMetaData ClassMetaData { get; set; }
 
-        public InterfaceMetaData InterfaceMetaData { get; set; }
+        //public InterfaceMetaData InterfaceMetaData { get; set; }
         
         /// <summary>
         /// class attribute 过滤
         /// </summary>
         public string class_attribute_filter_expression { get; set; }
 
-        /// <summary>
-        /// class property attribute 过滤
-        /// </summary>
-        public string class_property_attribute_filter_expression { get; set; }
+        ///// <summary>
+        ///// class property attribute 过滤
+        ///// </summary>
+        //public string class_property_attribute_filter_expression { get; set; }
         
 
     }

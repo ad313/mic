@@ -7,10 +7,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Content Remove="InterceptorExtend\BizEnumExtendTest.cshtml" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <None Remove="InterceptorExtend\BizEnumExtend2.txt" />
 	</ItemGroup>
 
@@ -27,7 +23,6 @@
 
 	<ItemGroup>
 		<AdditionalFiles Include="InterceptorExtend\BizEnumExtend2.txt" />
-		<AdditionalFiles Include="InterceptorExtend\BizEnumExtendTest.cshtml" />
 		<AdditionalFiles Include="InterceptorExtend\BizEnumExtend.txt" />
 		<AdditionalFiles Include="InterceptorExtend\Map.txt" />
 	</ItemGroup>
