@@ -18,7 +18,7 @@ namespace Mic.Aop.Generator.Renders
         /// <param name="text"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public static string SplitStringByWhiteSpace(string text, int index)
+        public static string SplitStringByWhitespace(string text, int index)
         {
             var arr = Regex.Split(text, "\\s+");
             if (arr.Length >= index)

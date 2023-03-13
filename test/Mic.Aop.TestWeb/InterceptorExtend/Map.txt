@@ -9,7 +9,7 @@ class_property_attribute_filter_expression:BizDictionaryAttribute
 type:1
 name:枚举业务扩展2
 code:BizEnumExtendBuilder2
-templates:BizEnumExtend3.txt
+templates:BizEnumExtend22.txt
 class_attribute_filter_expression:BizDictionaryAttribute
 class_property_attribute_filter_expression:BizDictionaryAttribute
 #

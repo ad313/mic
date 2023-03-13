@@ -1,15 +1,15 @@
-﻿{{- for using in Usings }}
+﻿{{- for using in usings }}
 {{- using}}
 {{ end }}
-namespace {{ Namespace }}
+namespace {{ namespace }}
 {
-    {{ SplitStringByWhiteSpace AccessModifier 0 }} partial class {{ Name }}
+    {{ split_string_by_whitespace access_modifier 0 }} partial class {{ name }}
     {
-    {{- for prop in (PropertyListAttributeFilter PropertyMeta 'BizDictionaryAttribute') }}
+    {{- for prop in (property_list_attribute_filter property_meta 'BizDictionaryAttribute') }}
         /// <summary>
-        /// {{ prop.Description }}
+        /// {{ prop.description }}
         /// </summary>
-        {{ prop.AccessModifier}} string {{prop.Name}}Text { get; set; }
+        {{ prop.access_modifier}} string {{prop.name}}Text { get; set; }
     {{ end -}}
     }
 }

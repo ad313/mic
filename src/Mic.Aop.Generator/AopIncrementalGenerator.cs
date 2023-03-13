@@ -1,4 +1,5 @@
-﻿using Mic.Aop.Generator.MetaData;
+﻿using Kooboo.Json;
+using Mic.Aop.Generator.MetaData;
 using Mic.Aop.Generator.Renders;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -100,6 +101,9 @@ namespace Mic.Aop.Generator
             finally
             {
                 watch.Restart();
+                
+                //输出元数据json
+                context.AddSource("MetaJson", "//" +JsonSerializer.ToJson(meta));
             }
 
             #endregion

@@ -152,7 +152,7 @@ namespace Mic.Aop.Generator
                     var classMetaData = GetClassMetaData(classDeclaration);
                     if (classMetaData == null)
                         continue;
-
+                    
                     if (AopAttributeList.Contains(classMetaData.Name))
                         continue;
 
