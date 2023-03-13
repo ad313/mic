@@ -16,13 +16,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="ExpressionParser\**" />
-	  <EmbeddedResource Remove="ExpressionParser\**" />
-	  <None Remove="ExpressionParser\**" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <EmbeddedResource Include="Templates\BizEnumExtend.txt" />
+	  <EmbeddedResource Include="Templates\BizEnumExtend_Main.txt" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -32,34 +27,29 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-
-		<PackageReference Include="Kooboo.Json" Version="1.0.8" GeneratePathProperty="true" PrivateAssets="all" />
-		<!--<PackageReference Include="System.Text.Json" Version="7.0.0" GeneratePathProperty="true" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" GeneratePathProperty="true" PrivateAssets="all" />
-		<PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" GeneratePathProperty="true" PrivateAssets="all" />
-		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" GeneratePathProperty="true" PrivateAssets="all" />
-		<PackageReference Include="System.Text.Encodings.Web" Version="7.0.0" GeneratePathProperty="true" PrivateAssets="all" />
-		<PackageReference Include="System.Buffers" Version="4.5.1" GeneratePathProperty="true" PrivateAssets="all" />
-		<PackageReference Include="System.Memory" Version="4.5.5" GeneratePathProperty="true" PrivateAssets="all" />
-		<PackageReference Include="System.Numerics.Vectors" Version="4.5.0" GeneratePathProperty="true" PrivateAssets="all" />-->
-
 	</ItemGroup>
 
-	<PropertyGroup>
+	<ItemGroup Condition="'$(Configuration)'=='Release'">
+		<PackageReference Include="Kooboo.Json" Version="1.0.8"  />
+		<PackageReference Include="System.Reflection.Emit" Version="4.6.0"  />
+		<PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.6.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)'=='Debug'">
+		<PackageReference Include="Kooboo.Json" Version="1.0.8"  GeneratePathProperty="true" PrivateAssets="all"/>
+		<PackageReference Include="System.Reflection.Emit" Version="4.6.0"  GeneratePathProperty="true" PrivateAssets="all"/>
+		<PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.6.0"  GeneratePathProperty="true" PrivateAssets="all"/>
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
 		<GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
 	</PropertyGroup>
 
-	<Target Name="GetDependencyTargetPaths">
+	<Target Name="GetDependencyTargetPaths" Condition="'$(Configuration)'=='Debug'">
 		<ItemGroup>
 			<TargetPathWithTargetPlatformMoniker Include="$(PKGKooboo_Json)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
-			<!--<TargetPathWithTargetPlatformMoniker Include="$(PKGSystem_Text_Json)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
-			<TargetPathWithTargetPlatformMoniker Include="$(PKGMicrosoft_Bcl_AsyncInterfaces)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
-			<TargetPathWithTargetPlatformMoniker Include="$(PKGSystem_Runtime_CompilerServices_Unsafe)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
-			<TargetPathWithTargetPlatformMoniker Include="$(PKGSystem_Threading_Tasks_Extensions)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
-			<TargetPathWithTargetPlatformMoniker Include="$(PKGSystem_Buffers)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
-			<TargetPathWithTargetPlatformMoniker Include="$(PKGSystem_Memory)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
-			<TargetPathWithTargetPlatformMoniker Include="$(PKGSystem_Numerics_Vectors)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
-			<TargetPathWithTargetPlatformMoniker Include="$(PKGSystem_Text_Encodings_Web)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />-->
+			<TargetPathWithTargetPlatformMoniker Include="$(PKGSystem_Reflection_Emit)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
+			<TargetPathWithTargetPlatformMoniker Include="$(PKGSystem_Reflection_Emit_ILGeneration)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
 		</ItemGroup>
 	</Target>
 

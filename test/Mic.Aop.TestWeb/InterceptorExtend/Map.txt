@@ -1,15 +1,8 @@
-﻿//type 1：目标是所有的class；2：目标是所有的接口
-type:1
-name:枚举业务扩展
-code:BizEnumExtendBuilder
-templates:BizEnumExtend.txt
-class_attribute_filter_expression:BizDictionaryAttribute
-class_property_attribute_filter_expression:BizDictionaryAttribute
-#
-type:1
-name:枚举业务扩展2
-code:BizEnumExtendBuilder2
-templates:BizEnumExtend22.txt
-class_attribute_filter_expression:BizDictionaryAttribute
-class_property_attribute_filter_expression:BizDictionaryAttribute
-#
+﻿[
+  {
+    "Code": "BizEnumExtendBuilder111",
+    "Name": "枚举业务扩展",
+    "MainTemplate": "BizEnumExtend_Main1.txt",
+    "Templates": [ "BizEnumExtend1.txt" ]
+  }
+]

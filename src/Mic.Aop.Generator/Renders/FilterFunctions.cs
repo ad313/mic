@@ -1,5 +1,6 @@
 ﻿using Mic.Aop.Generator.Extend;
 using Mic.Aop.Generator.MetaData;
+using Scriban;
 using Scriban.Runtime;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,17 @@ namespace Mic.Aop.Generator.Renders
         public static bool ClassHasAttribute(ClassMetaData data, string attributeName)
         {
             return data.AttributeMetaData.HasAttribute(attributeName);
+        }
+
+        /// <summary>
+        /// 判断 attribute 是否有指定的特性
+        /// </summary>
+        /// <param name="attributeMetaDatas"></param>
+        /// <param name="attributeName"></param>
+        /// <returns></returns>
+        public static bool HasAttribute(List<AttributeMetaData> attributeMetaDatas, string attributeName)
+        {
+            return attributeMetaDatas.HasAttribute(attributeName);
         }
 
         /// <summary>
@@ -171,6 +183,27 @@ namespace Mic.Aop.Generator.Renders
         public static string Now()
         {
             return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
+
+        public static void Render(dynamic data, ExtendTemplateModel templateModel, string templateName, string fileName)
+        {
+            var templateString = templateModel?.GetTemplate(templateName);
+            if (string.IsNullOrWhiteSpace(templateString))
+                throw new ArgumentNullException($"未找到 {templateName} 对应的模板");
+
+            var scriptObject1 = new FilterFunctions();
+            scriptObject1.Import((object)data);
+            var scContext = new TemplateContext();
+            scContext.PushGlobal(scriptObject1);
+
+            var template = Template.Parse(templateString);
+            var result = template.Render(scContext);
+
+            if (string.IsNullOrWhiteSpace(fileName))
+                fileName = $"{templateName.Replace(".txt", "")}_{data.Name}_g";
+
+            IncrementalGenerator.Context.AddSource(fileName, result);
         }
     }
 }

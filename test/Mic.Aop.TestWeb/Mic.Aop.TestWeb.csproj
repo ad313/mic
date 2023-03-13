@@ -7,7 +7,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="InterceptorExtend\BizEnumExtend2.txt" />
+	  <None Remove="InterceptorExtend\BizEnumExtend_Main.txt" />
+	  <None Remove="InterceptorExtend\Map.txt" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -22,9 +23,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<AdditionalFiles Include="InterceptorExtend\BizEnumExtend2.txt" />
+		<AdditionalFiles Include="InterceptorExtend\BizEnumExtend_Main.txt" />
 		<AdditionalFiles Include="InterceptorExtend\BizEnumExtend.txt" />
 		<AdditionalFiles Include="InterceptorExtend\Map.txt" />
 	</ItemGroup>
+
+	<ProjectExtensions><VisualStudio><UserProperties interceptorextend_4mainjson_1json__JsonSchema="https://jsonapi.org/schema" /></VisualStudio></ProjectExtensions>
 
 </Project>

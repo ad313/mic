@@ -18,9 +18,9 @@ namespace Mic.Aop.Generator
     [Generator]
     public class IncrementalGenerator : IIncrementalGenerator
     {
-        //public static readonly Assembly CurrentAssembly = Assembly.GetExecutingAssembly();
         private readonly StringBuilder _errorBuilder = new StringBuilder();
         private readonly StringBuilder _timeBuilder = new StringBuilder();
+        public static SourceProductionContext Context;
 
         /// <summary>
         /// 初始化
@@ -37,6 +37,7 @@ namespace Mic.Aop.Generator
             {
                 try
                 {
+                    Context = context;
                     Execute(context, compilation.Left, compilation.Right);
                 }
                 catch (Exception e)
