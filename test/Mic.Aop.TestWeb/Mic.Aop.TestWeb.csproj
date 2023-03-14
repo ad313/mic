@@ -15,6 +15,7 @@
 		<!--<PackageReference Include="Mic.Aop" Version="1.0.1.4" />-->
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
 		<PackageReference Include="Nito.AsyncEx" Version="5.0.0" />
+		<PackageReference Include="Quartz" Version="3.6.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -28,6 +29,6 @@
 		<AdditionalFiles Include="InterceptorExtend\Map.txt" />
 	</ItemGroup>
 
-	<ProjectExtensions><VisualStudio><UserProperties interceptorextend_4mainjson_1json__JsonSchema="https://jsonapi.org/schema" /></VisualStudio></ProjectExtensions>
+	<ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>

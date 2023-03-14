@@ -5,7 +5,9 @@ using Scriban.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
+using Kooboo.Json;
 
 namespace Mic.Aop.Generator.Renders
 {
@@ -204,6 +206,11 @@ namespace Mic.Aop.Generator.Renders
                 fileName = $"{templateName.Replace(".txt", "")}_{data.Name}_g";
 
             IncrementalGenerator.Context.AddSource(fileName, result);
+        }
+
+        public static void Json(dynamic data, string name)
+        {
+            IncrementalGenerator.Context.AddSource(string.IsNullOrWhiteSpace(name) ? Guid.NewGuid().ToString() : name, JsonSerializer.ToJson(data));
         }
     }
 }

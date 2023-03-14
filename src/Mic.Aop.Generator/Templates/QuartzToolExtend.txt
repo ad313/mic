@@ -1,0 +1,69 @@
+﻿/*
+  此代码通过 SourceGenerator，使用模板 Scriban 自动生成：{{ now() }} 
+*/
+{{ for using in usings }}
+{{- using}}
+{{ end }}using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Builder;
+using System.Linq;
+using Microsoft.Extensions.Logging;
+using Quartz;
+using System;
+{{ class_name = name+'_qz_g'}}
+namespace {{ namespace }}
+{
+    {{- for method in method_meta_data }}
+          {{- if method_has_attribute method 'QzTagAttribute' }}
+          {{- isTask = method.is_task}}
+          /// <summary>
+          /// 自动生成定时任务  {{ name }} - {{method.name}}
+          /// </summary>
+          [DisallowConcurrentExecution]
+          public class {{ class_name }}_{{ method.name }}_Job : IJob
+          {
+              /// <summary>
+              /// 任务执行
+              /// </summary>
+              /// <param name="context"></param>
+              /// <returns></returns>
+              public {{ if isTask }}async {{ end }}Task Execute(IJobExecutionContext context)
+              {
+                 
+                  Console.WriteLine($"定时任务 启动：{{ name }} - {{method.name}} =>");
+              }
+          }
+          {{ end }}
+          {{- end }}
+    
+
+    public static class {{ class_name }}_ext
+    {
+        public static void AddQzTool_{{class_name}}(this IServiceCollection service)
+        {
+            service.AddScoped<{{namespace}}.{{ name }}>();
+        }
+
+        public static async Task UseQzTool_{{class_name}}(this IApplicationBuilder builder)
+        {
+
+        {{- for method in method_meta_data }}
+        {{- if method_has_attribute method 'QzTagAttribute' }}
+        {{- cron = (get_attribute_param_value_by_attribute_list method.attribute_meta_data 'QzTagAttribute' 'Cron')}}
+        {{- second = (get_attribute_param_value_by_attribute_list method.attribute_meta_data 'QzTagAttribute' 'Second')}}
+            await QuartzHelper.Init<{{namespace}}.{{class_name}}_{{method.name}}_Job>(option =>
+            {
+                option.FirstDelayLength = 5;
+                {{- if cron != null }}
+                option.Cron = {{cron}};
+                {{- end }}
+                
+                {{- if second != null }}
+                option.SleepLength = {{second}};
+                {{- end }}
+            });
+          {{ end }}
+          {{- end }}
+        }
+    }
+}

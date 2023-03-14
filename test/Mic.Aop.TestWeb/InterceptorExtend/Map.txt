@@ -1,8 +1,8 @@
 ﻿[
-  {
-    "Code": "BizEnumExtendBuilder111",
-    "Name": "枚举业务扩展",
-    "MainTemplate": "BizEnumExtend_Main1.txt",
-    "Templates": [ "BizEnumExtend1.txt" ]
-  }
+  //{
+  //  "Code": "BizEnumExtendBuilder111",
+  //  "Name": "枚举业务扩展",
+  //  "MainTemplate": "BizEnumExtend_Main.txt",
+  //  "Templates": [ "BizEnumExtend.txt" ]
+  //}
 ]

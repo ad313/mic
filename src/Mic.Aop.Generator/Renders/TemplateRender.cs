@@ -30,29 +30,33 @@ namespace Mic.Aop.Generator.Renders
 
         private static List<ExtendTemplateModel> GetExtendMapModels(ImmutableArray<AdditionalText> additionalTexts)
         {
-            var json = additionalTexts.FirstOrDefault(d => d.Path.EndsWith("Map.txt", StringComparison.OrdinalIgnoreCase))?.GetText()?.ToString();
-            if (string.IsNullOrWhiteSpace(json)) 
-                return new List<ExtendTemplateModel>();
+            var list = new List<ExtendTemplateModel>();
+            var json = additionalTexts.FirstOrDefault(d => d.Path.Replace("/", "\\").EndsWith("\\Map.txt", StringComparison.OrdinalIgnoreCase))?.GetText()?.ToString();
+            if (!string.IsNullOrWhiteSpace(json))
+            {
+                list = JsonSerializer.ToObject<List<ExtendTemplateModel>>(json);
+            }
 
-            var list = JsonSerializer.ToObject<List<ExtendTemplateModel>>(json);
             foreach (var model in list)
             {
                 if (model.Templates.Any())
                 {
                     foreach (var template in model.Templates)
                     {
-                        var file = additionalTexts.FirstOrDefault(d => d.Path.EndsWith($"\\{template}", StringComparison.OrdinalIgnoreCase));
-                        if (file == null) continue;
+                        var file = additionalTexts.FirstOrDefault(d => d.Path.Replace("/","\\").EndsWith($"\\{template}", StringComparison.OrdinalIgnoreCase));
+                        if (file == null)
+                            throw new ArgumentNullException($"未找到模板 {nameof(template)}");
 
                         model.TemplateDictionary ??= new ConcurrentDictionary<string, string>();
                         model.TemplateDictionary.TryAdd(template, file.GetText()?.ToString());
+                        model.Path = file.Path;
                     }
                 }
 
                 if (!string.IsNullOrWhiteSpace(model.MainTemplate))
                 {
                     model.MainTemplateString = additionalTexts.FirstOrDefault(d =>
-                            d.Path.EndsWith($"\\{model.MainTemplate}", StringComparison.OrdinalIgnoreCase))?.GetText()
+                            d.Path.Replace("/", "\\").EndsWith($"\\{model.MainTemplate}", StringComparison.OrdinalIgnoreCase))?.GetText()
                         ?.ToString();
                 }
             }
@@ -79,6 +83,30 @@ namespace Mic.Aop.Generator.Renders
                 bizDicModel.MainTemplateString = Assembly.GetExecutingAssembly().GetResourceString($"Templates.{bizDicModel.MainTemplate}");
 
                 list.Add(bizDicModel);
+            }
+
+            //默认附加 Quartz 扩展
+            var qzModel = list.FirstOrDefault(d => d.Code.Equals("QuartzToolBuilder", StringComparison.OrdinalIgnoreCase));
+            if (qzModel == null)
+            {
+                qzModel = new ExtendTemplateModel()
+                {
+                    Code = "BizEnumExtendBuilder",
+                    Name = "Quartz 扩展",
+                    MainTemplate = "QuartzToolExtend_Main.txt",
+                    Templates = new List<string>() { "QuartzToolExtend.txt" },
+                };
+
+                foreach (var template in qzModel.Templates)
+                {
+                    var file = Assembly.GetExecutingAssembly().GetResourceString($"Templates.{template}");
+                    qzModel.TemplateDictionary ??= new ConcurrentDictionary<string, string>();
+                    qzModel.TemplateDictionary.TryAdd(template, file);
+                }
+
+                qzModel.MainTemplateString = Assembly.GetExecutingAssembly().GetResourceString($"Templates.{qzModel.MainTemplate}");
+
+                list.Add(qzModel);
             }
 
             return list;

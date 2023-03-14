@@ -62,6 +62,8 @@ namespace Mic.Aop.Generator.Renders
 
         public string MainTemplateString { get; set; }
 
+        public string Path { get; set; }
+
         public string GetTemplate(string templateName)
         {
             return TemplateDictionary.TryGetValue(templateName, out string v) ? v : string.Empty;

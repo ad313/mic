@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net5.0;net6.0;net7.0</TargetFrameworks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.1.0.4-preview2</Version>
+    <Version>1.1.0.4-preview5</Version>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <DocumentationFile>Mic.Aop.xml</DocumentationFile>
     <Description>通过 SourceGenerator 生成继承类实现Aop</Description>
@@ -41,7 +41,7 @@
     <Folder Include="NugetPackage\analyzers\dotnet\cs\" />
   </ItemGroup>
   <!--nuget analyzers -->
-  <!--<ItemGroup>
+  <ItemGroup>
     <None Include="NugetPackage\tools\*.*" PackagePath="tools" Pack="true" />
     <None Include="NugetPackage\analyzers\dotnet\cs\**" PackagePath="analyzers\dotnet\cs" Pack="true" />
   </ItemGroup>
@@ -50,5 +50,5 @@
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="dotnet publish ../Mic.Aop.Generator/Mic.Aop.Generator.csproj -c Release -o NugetPackage/analyzers/dotnet/cs" />
-  </Target>-->
+  </Target>
 </Project>

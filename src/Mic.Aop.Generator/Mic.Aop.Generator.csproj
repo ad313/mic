@@ -16,8 +16,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Templates\QuartzToolExtend.txt" />
+	  <None Remove="Templates\QuartzToolExtend_Main.txt" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <EmbeddedResource Include="Templates\BizEnumExtend.txt" />
 	  <EmbeddedResource Include="Templates\BizEnumExtend_Main.txt" />
+	  <EmbeddedResource Include="Templates\QuartzToolExtend.txt" />
+	  <EmbeddedResource Include="Templates\QuartzToolExtend_Main.txt" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -30,15 +37,15 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Release'">
-		<PackageReference Include="Kooboo.Json" Version="1.0.8"  />
-		<PackageReference Include="System.Reflection.Emit" Version="4.6.0"  />
+		<PackageReference Include="Kooboo.Json" Version="1.0.8" />
+		<PackageReference Include="System.Reflection.Emit" Version="4.6.0" />
 		<PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.6.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Debug'">
-		<PackageReference Include="Kooboo.Json" Version="1.0.8"  GeneratePathProperty="true" PrivateAssets="all"/>
-		<PackageReference Include="System.Reflection.Emit" Version="4.6.0"  GeneratePathProperty="true" PrivateAssets="all"/>
-		<PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.6.0"  GeneratePathProperty="true" PrivateAssets="all"/>
+		<PackageReference Include="Kooboo.Json" Version="1.0.8" GeneratePathProperty="true" PrivateAssets="all" />
+		<PackageReference Include="System.Reflection.Emit" Version="4.6.0" GeneratePathProperty="true" PrivateAssets="all" />
+		<PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.6.0" GeneratePathProperty="true" PrivateAssets="all" />
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
