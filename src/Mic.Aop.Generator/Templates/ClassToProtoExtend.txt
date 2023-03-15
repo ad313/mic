@@ -1,0 +1,21 @@
+﻿/*
+  此代码通过 SourceGenerator，使用模板 Scriban 自动生成：{{ now() }} 
+*/
+
+ /*
+   {{- index = 1  }}
+   {{- for prop in property_meta }}
+   {{- if prop.ext_modifier == 'string' }}
+   google.protobuf.StringValue {{prop.name}} = {{ index }};//{{ prop.description }}
+   {{- else if prop.ext_modifier == 'decimal' || prop.ext_modifier == 'decimal?' || prop.ext_modifier == 'double' || prop.ext_modifier == 'double?'}}
+   double {{prop.name}} = {{ index }};//{{ prop.description }}
+   {{- else if prop.ext_modifier == 'bool' || prop.ext_modifier == 'bool?'}}
+   bool {{prop.name}} = {{ index }};//{{ prop.description }}
+   {{- else if prop.ext_modifier == 'int' || prop.ext_modifier == 'int?'}}
+   int32 {{prop.name}} = {{ index }};//{{ prop.description }}
+   {{- else }}
+   //---
+   {{- end }}    
+   {{- index = index + 1 }}
+   {{- end }}    
+ */

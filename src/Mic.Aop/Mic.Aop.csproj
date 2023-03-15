@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net5.0;net6.0;net7.0</TargetFrameworks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.1.0.4-preview5</Version>
+    <Version>1.1.0.4-preview6</Version>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <DocumentationFile>Mic.Aop.xml</DocumentationFile>
     <Description>通过 SourceGenerator 生成继承类实现Aop</Description>

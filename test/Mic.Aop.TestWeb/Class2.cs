@@ -1,9 +1,11 @@
 ﻿using SaiLing.Biz.Dictionary.Extensions;
 using System.ComponentModel.DataAnnotations;
+using SaiLing.WaterPlantAttendance.Services.Common.ClassToProto;
 
 namespace Mic.Aop.TestWeb
 {
     [BizDictionary]
+    [ClassToProto]
     public partial class Class2
     {
         [Display(Name = "枚举枚举")]

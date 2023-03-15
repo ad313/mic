@@ -91,7 +91,7 @@ namespace Mic.Aop.Generator.Renders
             {
                 qzModel = new ExtendTemplateModel()
                 {
-                    Code = "BizEnumExtendBuilder",
+                    Code = "QuartzToolBuilder",
                     Name = "Quartz 扩展",
                     MainTemplate = "QuartzToolExtend_Main.txt",
                     Templates = new List<string>() { "QuartzToolExtend.txt" },
@@ -107,6 +107,30 @@ namespace Mic.Aop.Generator.Renders
                 qzModel.MainTemplateString = Assembly.GetExecutingAssembly().GetResourceString($"Templates.{qzModel.MainTemplate}");
 
                 list.Add(qzModel);
+            }
+
+            //默认附加 ClassToProto 扩展
+            var classToProtoModel = list.FirstOrDefault(d => d.Code.Equals("ClassToProtoBuilder", StringComparison.OrdinalIgnoreCase));
+            if (classToProtoModel == null)
+            {
+                classToProtoModel = new ExtendTemplateModel()
+                {
+                    Code = "ClassToProtoBuilder",
+                    Name = "ClassToProto 扩展",
+                    MainTemplate = "ClassToProtoExtend_Main.txt",
+                    Templates = new List<string>() { "ClassToProtoExtend.txt" },
+                };
+
+                foreach (var template in classToProtoModel.Templates)
+                {
+                    var file = Assembly.GetExecutingAssembly().GetResourceString($"Templates.{template}");
+                    classToProtoModel.TemplateDictionary ??= new ConcurrentDictionary<string, string>();
+                    classToProtoModel.TemplateDictionary.TryAdd(template, file);
+                }
+
+                classToProtoModel.MainTemplateString = Assembly.GetExecutingAssembly().GetResourceString($"Templates.{classToProtoModel.MainTemplate}");
+
+                list.Add(classToProtoModel);
             }
 
             return list;
