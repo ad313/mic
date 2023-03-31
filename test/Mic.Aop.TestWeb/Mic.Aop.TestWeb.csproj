@@ -8,7 +8,11 @@
 
 	<ItemGroup>
 	  <None Remove="InterceptorExtend\BizEnumExtend_Main.txt" />
+	  <None Remove="InterceptorExtend\ClassToProtoExtend.txt" />
+	  <None Remove="InterceptorExtend\ClassToProtoExtend_Main.txt" />
 	  <None Remove="InterceptorExtend\Map.txt" />
+	  <None Remove="InterceptorExtend\QuartzToolExtend.txt" />
+	  <None Remove="InterceptorExtend\QuartzToolExtend_Main.txt" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -26,7 +30,11 @@
 	<ItemGroup>
 		<AdditionalFiles Include="InterceptorExtend\BizEnumExtend_Main.txt" />
 		<AdditionalFiles Include="InterceptorExtend\BizEnumExtend.txt" />
+		<AdditionalFiles Include="InterceptorExtend\ClassToProtoExtend.txt" />
+		<AdditionalFiles Include="InterceptorExtend\ClassToProtoExtend_Main.txt" />
 		<AdditionalFiles Include="InterceptorExtend\Map.txt" />
+		<AdditionalFiles Include="InterceptorExtend\QuartzToolExtend.txt" />
+		<AdditionalFiles Include="InterceptorExtend\QuartzToolExtend_Main.txt" />
 	</ItemGroup>
 
 	<ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>

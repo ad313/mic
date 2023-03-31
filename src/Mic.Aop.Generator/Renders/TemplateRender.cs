@@ -61,6 +61,8 @@ namespace Mic.Aop.Generator.Renders
                 }
             }
 
+            var assembly = Assembly.GetExecutingAssembly();
+
             //默认附加 枚举业务扩展
             var bizDicModel = list.FirstOrDefault(d => d.Code.Equals("BizEnumExtendBuilder", StringComparison.OrdinalIgnoreCase));
             if (bizDicModel == null)
@@ -75,12 +77,12 @@ namespace Mic.Aop.Generator.Renders
 
                 foreach (var template in bizDicModel.Templates)
                 {
-                    var file = Assembly.GetExecutingAssembly().GetResourceString($"Templates.{template}");
+                    var file = assembly.GetResourceString($"Templates.{template}");
                     bizDicModel.TemplateDictionary ??= new ConcurrentDictionary<string, string>();
                     bizDicModel.TemplateDictionary.TryAdd(template, file);
                 }
 
-                bizDicModel.MainTemplateString = Assembly.GetExecutingAssembly().GetResourceString($"Templates.{bizDicModel.MainTemplate}");
+                bizDicModel.MainTemplateString = assembly.GetResourceString($"Templates.{bizDicModel.MainTemplate}");
 
                 list.Add(bizDicModel);
             }
@@ -99,12 +101,12 @@ namespace Mic.Aop.Generator.Renders
 
                 foreach (var template in qzModel.Templates)
                 {
-                    var file = Assembly.GetExecutingAssembly().GetResourceString($"Templates.{template}");
+                    var file = assembly.GetResourceString($"Templates.{template}");
                     qzModel.TemplateDictionary ??= new ConcurrentDictionary<string, string>();
                     qzModel.TemplateDictionary.TryAdd(template, file);
                 }
 
-                qzModel.MainTemplateString = Assembly.GetExecutingAssembly().GetResourceString($"Templates.{qzModel.MainTemplate}");
+                qzModel.MainTemplateString = assembly.GetResourceString($"Templates.{qzModel.MainTemplate}");
 
                 list.Add(qzModel);
             }
@@ -123,12 +125,12 @@ namespace Mic.Aop.Generator.Renders
 
                 foreach (var template in classToProtoModel.Templates)
                 {
-                    var file = Assembly.GetExecutingAssembly().GetResourceString($"Templates.{template}");
+                    var file = assembly.GetResourceString($"Templates.{template}");
                     classToProtoModel.TemplateDictionary ??= new ConcurrentDictionary<string, string>();
                     classToProtoModel.TemplateDictionary.TryAdd(template, file);
                 }
 
-                classToProtoModel.MainTemplateString = Assembly.GetExecutingAssembly().GetResourceString($"Templates.{classToProtoModel.MainTemplate}");
+                classToProtoModel.MainTemplateString = assembly.GetResourceString($"Templates.{classToProtoModel.MainTemplate}");
 
                 list.Add(classToProtoModel);
             }

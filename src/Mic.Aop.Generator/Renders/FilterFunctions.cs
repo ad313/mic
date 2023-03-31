@@ -1,13 +1,12 @@
-﻿using Mic.Aop.Generator.Extend;
+﻿using Kooboo.Json;
+using Mic.Aop.Generator.Extend;
 using Mic.Aop.Generator.MetaData;
 using Scriban;
 using Scriban.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
-using Kooboo.Json;
 
 namespace Mic.Aop.Generator.Renders
 {
@@ -187,6 +186,18 @@ namespace Mic.Aop.Generator.Renders
             return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         }
 
+        /// <summary>
+        /// 让字符串首字母小写
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string LowFirstCode(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+                return str;
+
+            return str.Substring(0, 1).ToLower() + str.Substring(1);
+        }
 
         public static void Render(dynamic data, ExtendTemplateModel templateModel, string templateName, string fileName)
         {

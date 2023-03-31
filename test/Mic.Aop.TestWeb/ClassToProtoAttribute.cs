@@ -7,6 +7,6 @@ namespace SaiLing.WaterPlantAttendance.Services.Common.ClassToProto
     /// </summary>
     public class ClassToProtoAttribute : Attribute
     {
-       
+
     }
 }

@@ -3,6 +3,7 @@ using Mic.Aop.Generator.MetaData;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -176,34 +177,45 @@ namespace Mic.Aop.Generator
 
         private ClassMetaData GetClassMetaData(ClassDeclarationSyntax classDeclaration)
         {
-            var namespaceName = classDeclaration.FindParent<NamespaceDeclarationSyntax>().Name.ToString();
-            var className = classDeclaration.Identifier.Text;
-            var properties = classDeclaration.DescendantNodes().OfType<PropertyDeclarationSyntax>().ToList();
-            var methodSyntax = classDeclaration.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
-            
-            //属性集合
-            var props = properties.Select(d => new PropertyMetaData(d.Identifier.Text, d.GetAttributeMetaData(), GetPropertyDescription(d), d.Modifiers.ToString(), d.Type?.ToString())).ToList();
-            //方法集合
-            var methods = methodSyntax.Select(GetMethodMetaData).ToList();
-            //实现的接口集合
-            var interfaces = classDeclaration.BaseList?.ToString().Split(':').Last().Trim().Split(',').Where(d => d.Split('.').Last().StartsWith("I")).ToList() ?? new List<string>();
-            //using 引用
-            var usingDirectiveSyntax = classDeclaration.Parent?.Parent == null ? new SyntaxList<UsingDirectiveSyntax>() : ((CompilationUnitSyntax)classDeclaration.Parent.Parent).Usings;
-            var usingList = usingDirectiveSyntax.Select(d => d.ToString()).ToList();
-
-            //构造函数
-            var constructorDictionary = new List<KeyValueModel>();
-            foreach (var memberDeclarationSyntax in classDeclaration.Members)
+            try
             {
-                if (memberDeclarationSyntax.Kind().ToString() == "ConstructorDeclaration")
-                {
-                    //constructorDictionary = memberDeclarationSyntax.DescendantNodes().OfType<ParameterSyntax>().ToDictionary(d => d.GetFirstToken().Text, d => d.GetLastToken().Text);
-                    constructorDictionary = memberDeclarationSyntax.DescendantNodes().OfType<ParameterSyntax>().Select(d => new KeyValueModel(d.Type?.ToString(), d.Identifier.Text)).ToList();
-                    break;
-                }
-            }
+                var namespaceName = classDeclaration.FindParent<NamespaceDeclarationSyntax>()?.Name.ToString();
+                var className = classDeclaration.Identifier.Text;
+                var properties = classDeclaration.DescendantNodes().OfType<PropertyDeclarationSyntax>().ToList();
+                var methodSyntax = classDeclaration.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
 
-            return new ClassMetaData(namespaceName, className, classDeclaration.GetAttributeMetaData(), props, methods, interfaces, constructorDictionary, usingList, classDeclaration.Modifiers.ToString());
+                //属性集合
+                var props = properties.Select(d => new PropertyMetaData(d.Identifier.Text, d.GetAttributeMetaData(), GetPropertyDescription(d), d.Modifiers.ToString(), d.Type?.ToString())).ToList();
+                //方法集合
+                var methods = methodSyntax.Select(GetMethodMetaData).ToList();
+                //实现的接口集合
+                var interfaces = classDeclaration.BaseList?.ToString().Split(':').Last().Trim().Split(',').Where(d => d.Split('.').Last().StartsWith("I")).ToList() ?? new List<string>();
+                //using 引用
+                //特殊处理 class中嵌套class
+                var parent = classDeclaration.Parent is ClassDeclarationSyntax
+                    ? classDeclaration.Parent?.Parent?.Parent
+                    : classDeclaration.Parent?.Parent;
+                var usingDirectiveSyntax = parent == null ? new SyntaxList<UsingDirectiveSyntax>() : ((CompilationUnitSyntax)parent).Usings;
+                var usingList = usingDirectiveSyntax.Select(d => d.ToString()).ToList();
+
+                //构造函数
+                var constructorDictionary = new List<KeyValueModel>();
+                foreach (var memberDeclarationSyntax in classDeclaration.Members)
+                {
+                    if (memberDeclarationSyntax.Kind().ToString() == "ConstructorDeclaration")
+                    {
+                        //constructorDictionary = memberDeclarationSyntax.DescendantNodes().OfType<ParameterSyntax>().ToDictionary(d => d.GetFirstToken().Text, d => d.GetLastToken().Text);
+                        constructorDictionary = memberDeclarationSyntax.DescendantNodes().OfType<ParameterSyntax>().Select(d => new KeyValueModel(d.Type?.ToString(), d.Identifier.Text)).ToList();
+                        break;
+                    }
+                }
+
+                return new ClassMetaData(namespaceName, className, classDeclaration.GetAttributeMetaData(), props, methods, interfaces, constructorDictionary, usingList, classDeclaration.Modifiers.ToString());
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"class 报错：{classDeclaration.Identifier.Text}", e);
+            }
         }
         
         private MethodMetaData GetMethodMetaData(MethodDeclarationSyntax methodDeclarationSyntax)

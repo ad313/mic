@@ -83,7 +83,7 @@ namespace Mic.Aop.Generator
                 meta = receiver
                     .FindAopInterceptors()
                     .GetMetaData(compilation);
-
+                
                 meta.AssemblyName = compilation.AssemblyName;
 
                 builders = meta

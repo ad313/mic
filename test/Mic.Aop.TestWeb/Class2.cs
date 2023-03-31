@@ -1,6 +1,10 @@
-﻿using SaiLing.Biz.Dictionary.Extensions;
+﻿using System.ComponentModel;
+using SaiLing.Biz.Dictionary.Extensions;
 using System.ComponentModel.DataAnnotations;
 using SaiLing.WaterPlantAttendance.Services.Common.ClassToProto;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace Mic.Aop.TestWeb
 {
@@ -79,5 +83,55 @@ namespace Mic.Aop.TestWeb
     {
         [BizDictionary]
         public string Aaa { get; set; }
+    }
+
+
+    
+    public partial class Class4
+    {
+        /// <summary>
+        /// aaa
+        /// </summary>
+        public string Aaa { get; set; }
+    }
+
+    /// <summary>
+    /// 考勤统计 查询参数
+    /// </summary>
+    [ClassToProto]
+    public class ClockStatisticsQuery 
+    {
+        /// <summary>
+        /// 112323欧尼
+        /// </summary>
+        public  int Page { get; set; }
+
+        public  int PageSize { get; set; }
+
+        /// <summary>
+        /// 考勤组
+        /// </summary>  
+        [DisplayName("考勤组")]
+        public string? AttendanceGroupId { get; set; }
+
+        /// <summary>
+        /// 开始日期
+        /// </summary>  
+        [DisplayName("开始日期")]
+        public DateTime? BeginDate { get; set; }
+
+        /// <summary>
+        /// 结束日期
+        /// </summary>  
+        [DisplayName("结束日期")]
+        public DateTime? EndDate { get; set; }
+
+        /// <summary>
+        /// 用户编号集合
+        /// </summary>  
+        [DisplayName("用户编号集合")]
+        public string? UserIds { get; set; }
+
+        public List<string> UserIdList => string.IsNullOrWhiteSpace(UserIds) ? null : UserIds.Split(',').ToList();
     }
 }
