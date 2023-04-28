@@ -38,6 +38,8 @@ using Mic.Aop.TestWeb.AopSpace;
 using Mic.BenchmarkDotNet.AopTest;
 using Microsoft.Extensions.DependencyInjection;
 using Mic.BenchmarkDotNet.AopTest.MicAop;
+using Mic.BenchmarkDotNet.PoolCache;
+using SaiLing.WaterMetering.Redis.PoolCache;
 
 #if NETCOREAPP3_0_OR_GREATER
 using System.Text.Encodings.Web;
@@ -68,8 +70,40 @@ namespace Mic.BenchmarkDotNet
             //Console.ReadLine();
 
 
+            var model = new ItemModel()
+            {
+                Id = 1,
+                Name = "aaaaa",
+                Money = 1234455m,
+                Time = DateTime.Now,
+                Enable = true
+            };
 
-            var summary = BenchmarkRunner.Run<DictionaryBenchmark>();
+            model.Model = new ItemModel()
+            {
+                Id = 1,
+                Name = "aaaaa",
+                Money = 1234455m,
+                Time = DateTime.Now,
+                Enable = true
+            };
+
+            var ss = DeepCopyHelper.Copy(model);
+            ss = DeepCopyHelper.Copy(model);
+            ss = DeepCopyHelper.Copy(model);
+
+            var model2 = new ItemModel2() { Code = "123" };
+            var model2_copy = DeepCopyHelper.Copy(model2);
+            model2_copy = DeepCopyHelper.Copy(model2);
+            model2_copy = DeepCopyHelper.Copy(model2);
+
+
+            //var s = new CreateInstanceHelper().CreateInstance<ItemModel>();
+
+
+            //var summary = BenchmarkRunner.Run<DictionaryBenchmark>();
+            var summary = BenchmarkRunner.Run<DeepCopyBenchmark>();
+            //var summary = BenchmarkRunner.Run<CreateInstanceBenchmark>();
 
             Console.ReadLine();
         }

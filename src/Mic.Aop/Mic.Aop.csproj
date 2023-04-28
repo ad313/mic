@@ -41,7 +41,7 @@
     <Folder Include="NugetPackage\analyzers\dotnet\cs\" />
   </ItemGroup>
   <!--nuget analyzers -->
-  <ItemGroup>
+  <!--<ItemGroup>
     <None Include="NugetPackage\tools\*.*" PackagePath="tools" Pack="true" />
     <None Include="NugetPackage\analyzers\dotnet\cs\**" PackagePath="analyzers\dotnet\cs" Pack="true" />
   </ItemGroup>
@@ -50,5 +50,5 @@
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="dotnet publish ../Mic.Aop.Generator/Mic.Aop.Generator.csproj -c Release -o NugetPackage/analyzers/dotnet/cs" />
-  </Target>
+  </Target>-->
 </Project>

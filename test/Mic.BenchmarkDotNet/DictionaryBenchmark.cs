@@ -1,7 +1,7 @@
-﻿using System;
+﻿using BenchmarkDotNet.Attributes;
+using Collections.Pooled;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using BenchmarkDotNet.Attributes;
 
 namespace Mic.BenchmarkDotNet
 {
@@ -10,13 +10,15 @@ namespace Mic.BenchmarkDotNet
     {
         private Dictionary<int, int> dic = new Dictionary<int, int>();
         private ConcurrentDictionary<int, int> concurrentDictionary = new ConcurrentDictionary<int, int>();
-        
+        private PooledDictionary<int, int> pooledDictionary = new PooledDictionary<int, int>();
+
         public DictionaryBenchmark()
         {
             for (int i = 0; i < 200; i++)
             {
                 dic.Add(i,i);
                 concurrentDictionary.TryAdd(i, i);
+                pooledDictionary.Add(i, i);
             }
 
             //PollHelper.Init();
@@ -32,6 +34,12 @@ namespace Mic.BenchmarkDotNet
         public void Get_ConcurrentDictionary()
         {
             concurrentDictionary.TryGetValue(55, out int v);
+        }
+
+        [Benchmark]
+        public void Get_PooledDictionary()
+        {
+            pooledDictionary.TryGetValue(55, out int v);
         }
     }
 
