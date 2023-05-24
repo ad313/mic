@@ -26,11 +26,14 @@ namespace Mic.Models
         /// <summary>内容</summary>
         public List<T> Data { get; private set; }
 
+        /// <summary>执行语句</summary>
+        public string Sql { get; set; }
+
         public PagerList()
         {
         }
 
-        public PagerList(Pager pager, List<T> data, long totalCount)
+        public PagerList(Pager pager, List<T> data, long totalCount, string sql)
         {
             Data = data;
 
@@ -40,6 +43,7 @@ namespace Mic.Models
             Page = pager.Page;
             PageSize = pager.PageSize;
             TotalCount = totalCount;
+            Sql = sql;
         }
 
 

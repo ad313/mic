@@ -77,8 +77,9 @@ namespace Mic.Aop.TestWeb.AopSpace
 
     public class TestService2
     {
+        [Log]
         [Cache(Key = "aaa")]
-        public virtual DateTime GetDateTimeSync()
+        public virtual DateTime GetDateTimeSync(string a)
         {
             return DateTime.Now;
         }

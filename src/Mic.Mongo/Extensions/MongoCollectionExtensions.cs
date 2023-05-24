@@ -133,8 +133,9 @@ namespace Mic.Mongo.Extensions
             Pager pager) where T : class, new()
         {
             var count = await query.CountDocumentsAsync();
-            var list = await query.Skip((pager.Page - 1) * pager.PageSize).Limit(pager.PageSize).ToListAsync();
-            return new PagerList<TResult>(pager, list, count);
+            var temp = query.Skip((pager.Page - 1) * pager.PageSize).Limit(pager.PageSize);
+            var list = await temp.ToListAsync();
+            return new PagerList<TResult>(pager, list, count, temp.ToString());
         }
 
         /// <summary>
