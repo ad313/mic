@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+		<CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Mic.Aop" Version="2.0.0" />
+	</ItemGroup>
+
+	<!--<ItemGroup>
+		<ProjectReference Include="..\Mic.Aop.Sg.Templates\Mic.Aop.Sg.Templates.csproj" />
+		<ProjectReference Include="..\Mic.Aop\Mic.Aop.csproj" />
+	</ItemGroup>-->
+
+</Project>

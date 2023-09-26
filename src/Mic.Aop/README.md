@@ -82,10 +82,10 @@
         /// <returns></returns>
         ValueTask<AopContext> NextAsync(AopContext context);
     }
-#### 2、定义接口和实现类。
+#### 2、定义接口和实现类。（必须加上 AopTag 属性，不管是true还是false，都会触发生成代码）
     public interface ITestService
     {
-        [Log]
+        [Log(AopTag = true)]
         string HasReturnSync();
         
         void NoReturnSync(string name, int id);
@@ -128,10 +128,10 @@
     }
     
 #### 3、通过 SourceGenerator 自动生成
-    public sealed class TestService_Aop : TestService
+    public sealed class TestService_g : TestService
 	{
 		private readonly IServiceProvider _serviceProvider0;
-		public TestService_Aop(IServiceProvider serviceProvider0)
+		public TestService_g(IServiceProvider serviceProvider0)
 		{
 			_serviceProvider0 = serviceProvider0;
 		}

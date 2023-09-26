@@ -34,6 +34,11 @@
             返回值，具体的值
             </summary>
         </member>
+        <member name="P:Mic.Aop.AopContext.ReturnType">
+            <summary>
+            返回值类型
+            </summary>
+        </member>
         <member name="P:Mic.Aop.AopContext.Exception">
             <summary>
             异常信息
@@ -44,7 +49,7 @@
             IServiceProvider
             </summary>
         </member>
-        <member name="M:Mic.Aop.AopContext.#ctor(System.IServiceProvider,System.Collections.Generic.Dictionary{System.String,System.Object},System.Boolean,System.Boolean,System.Func{System.Object})">
+        <member name="M:Mic.Aop.AopContext.#ctor(System.IServiceProvider,System.Collections.Generic.Dictionary{System.String,System.Object},System.Boolean,System.Boolean,System.Func{System.Object},System.Type)">
             <summary>
             初始化
             </summary>
@@ -68,22 +73,22 @@
         </member>
         <member name="P:Mic.Aop.AopInterceptor.HasBefore">
             <summary>
-            是否执行 Before
+            是否执行 Before，默认 true
             </summary>
         </member>
         <member name="P:Mic.Aop.AopInterceptor.HasAfter">
             <summary>
-            是否执行 After
+            是否执行 After，默认 true
             </summary>
         </member>
         <member name="P:Mic.Aop.AopInterceptor.HasAopNext">
             <summary>
-            是否执行 Aop 的 Next
+            是否执行 Aop 的 Next，默认 true
             </summary>
         </member>
         <member name="P:Mic.Aop.AopInterceptor.HasActualNext">
             <summary>
-            是否执行实际的方法
+            是否执行实际的方法，默认 true
             </summary>
         </member>
         <member name="P:Mic.Aop.AopInterceptor.AopTag">
