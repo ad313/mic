@@ -37,6 +37,11 @@ namespace Mic.Aop
         /// </summary>
         public bool HasActualNext { get; set; }
 
+        /// <summary>
+        /// AopTag
+        /// </summary>
+        public bool AopTag { get; set; }
+
         public AopInterceptor()
         {
             HasBefore = true;

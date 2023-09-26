@@ -23,7 +23,7 @@ namespace Mic.Aop.TestWeb.Controllers
         {
             var result = _testService.GetDateTimeSync();
 
-            _testService2.GetDateTimeSync();
+            //_testService2.GetDateTimeSync();
 
             return result;
         }

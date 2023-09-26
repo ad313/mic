@@ -86,17 +86,10 @@
             是否执行实际的方法
             </summary>
         </member>
-        <member name="T:Mic.Aop.EnumExtensions">
+        <member name="P:Mic.Aop.AopInterceptor.AopTag">
             <summary>
-            枚举扩展类
+            AopTag
             </summary>
-        </member>
-        <member name="M:Mic.Aop.EnumExtensions.GetEnumDescription(System.Enum)">
-            <summary>
-            获取枚举的描述
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
         </member>
         <member name="T:Mic.Aop.IAopInterceptor">
             <summary>
