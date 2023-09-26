@@ -2,7 +2,15 @@
 ### 1、引用包
     <PackageReference Include="Mic.EventBus.RabbitMQ" Version="2.0.0" />
 
-### 2、注入
+### 2.1、内存队列
+```
+services.AddMemoryEventBus();
+
+//获取对象：IMemoryEventBusProvider
+
+```
+
+### 2.2、RabbitMQ
 ```
 //rabbitmq
 services.AddEventBusUseRabbitMq(op =>
@@ -90,4 +98,34 @@ await _eventBusProvider.PublishQueueAsync("xxxxxkey", new List<string>(){"hello 
                 });   
  
             
+```
+
+### 4、Rpc
+```
+        /// <summary>
+        /// 发布事件 RpcClient
+        /// </summary>
+        /// <param name="key">Key 唯一值</param>
+        /// <param name="message">数据</param>
+        /// <param name="timeout">超时时间 秒</param>
+        /// <returns></returns>
+        Task<RpcResult<T>> RpcClientAsync<T>(string key, object[] message = null, int timeout = 30);
+
+        /// <summary>
+        /// RpcServer
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key">Key 唯一</param>
+        /// <param name="handler">订阅处理</param>
+        void RpcServer<T>(string key, Func<T, Task<RpcResult>> handler);
+
+
+        或者直接打标签
+        [RpcServer("/server/test/test1")]
+        public string Test1(string key)
+        {
+            return DataQueuePrefixKey + key;
+        }
+        
+
 ```

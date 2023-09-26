@@ -124,7 +124,7 @@ namespace Mic.BenchmarkDotNet
         {
             IServiceCollection services = new ServiceCollection();
             services.AddSingleton<TestService>();
-            services.AddSingleton<TestService_Aop>();
+            //services.AddSingleton<TestService_Aop>();
 
             services.AddTransient<CacheAttribute>();
             services.AddTransient<SampleAttribute>();
