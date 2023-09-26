@@ -1,44 +1,108 @@
-## Aop
+## Mic.Aop
 
-### 使用方法
+### 一、使用方法
 #### 1、定义 Attribute，继承 AopInterceptor
     /// <summary>
-    /// 日志
+    /// 继承基类，重写相关方法
     /// </summary>
-    public class LogAttribute : AopInterceptor
+    public class Aop1Attribute : AopInterceptor
     {
         /// <summary>
-        /// 日志服务，只有 实际方法、After
+        /// 定义一个参数
         /// </summary>
-        public LogAttribute()
+        public string Prop1 { get; set; }
+
+        public override ValueTask<AopContext> BeforeAsync(AopContext context)
         {
-            HasBefore = false;
-            HasAopNext = false;
+            Console.WriteLine("BeforeAsync action...");
+
+            return base.BeforeAsync(context);
         }
 
-        public override AopContext After(AopContext context)
-        {
-            //Console.WriteLine("log trace sync");
-            return context;
-        }
-        
-        /// <summary>执行后操作，异步方法调用</summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
         public override ValueTask<AopContext> AfterAsync(AopContext context)
         {
-            //Console.WriteLine("log trace async");
+            Console.WriteLine("AfterAsync action...");
+
             return base.AfterAsync(context);
         }
     }
-
-#### 2、注入依赖关系
-    services.RegisterAopClass();
         
-#### 3、正常使用，注意：实际的方法必须是可重写的，即加了 override 或 virtual
+#### 2、打上标记，注意：实际的方法必须是可重写的，即加了 override 或 virtual
     在接口或类上打标签
+    public class SampleService
+    {
+        /// <summary>
+        /// 必须加上 AopTag 属性，不管是true还是false，都会触发生成代码
+        /// 在分析器 - SourceGenerator.Template.Generators 下面可以看到生成的代码，名称是 AopExtend_SampleService_g
+        /// 生成了 SampleService 的子类，注入的时候，请注入子类
+        /// </summary>
+        [Aop1(AopTag = true, Prop1 = "传一个值进去")]
+        public virtual void Test()
+        {
+            Console.WriteLine("Test action...");
+        }
+    }
+#### 3、查看生成的代码 => 分析器 - SourceGenerator.Template.Generators，以 AopExtend 开头，SampleService 对应的子类名称是 AopExtend_SampleService_g
+    /*
+     此代码通过 SourceGenerator，使用模板 Scriban 自动生成：2023-09-26 11:34:19 AM
+    */
     
-### 实现原理
+    using Microsoft.Extensions.DependencyInjection;
+    using System.Collections.Generic;
+    using Mic.Aop;
+    
+    namespace Mic.Aop.Test
+    {
+        /// <summary>
+        /// 继承 SampleService 实现方法拦截
+        /// </summary>
+        public sealed class SampleService_g : SampleService
+        {
+            private readonly IServiceProvider _serviceProvider0;
+            public SampleService_g(IServiceProvider serviceProvider0)
+            {
+                _serviceProvider0 = serviceProvider0;
+            }
+    
+            public override void Test()
+            {
+                var aopContext = new AopContext(_serviceProvider0,
+                    new Dictionary<string, dynamic>() { },
+                    false,
+                    false,
+                    null,
+                    null);
+    
+                var aopInterceptor0 = _serviceProvider0.GetRequiredService<Aop1Attribute>();
+                aopInterceptor0.AopTag = true;
+                aopInterceptor0.Prop1 = "传一个值进去";
+    
+                if (aopInterceptor0.HasBefore) aopContext = aopInterceptor0.Before(aopContext);
+                if (aopInterceptor0.HasAopNext)
+                {
+                    if (aopInterceptor0.HasActualNext)
+                    {
+                        aopContext.ActualMethod = () => Task.Run(() => base.TestAsync());
+                    }
+    
+                    aopContext = aopInterceptor0.Next(aopContext);
+                }
+                else
+                {
+                    if (aopInterceptor0.HasActualNext)
+                    {
+                        base.TestAsync();
+                    }
+                }
+    
+                if (aopInterceptor0.HasAfter) aopContext = aopInterceptor0.After(aopContext);
+            }
+        }
+    }
+#### 4、注入。 SampleService 对应的子类名称是 AopExtend_SampleService_g，因此要用 AopExtend_SampleService_g 代替 SampleService
+
+
+### 二、注意事项
 #### 1、一共有6个方法，分别是“执行前、执行实际方法、执行后”三个方法的同步和异步版本。同步和异步分别调用对应的方法。
     /// <summary>
     /// Aop 拦截器
@@ -82,7 +146,8 @@
         /// <returns></returns>
         ValueTask<AopContext> NextAsync(AopContext context);
     }
-#### 2、定义接口和实现类。（必须加上 AopTag 属性，不管是true还是false，都会触发生成代码）
+    
+#### 2、支持在接口和类上加标记。（必须加上 AopTag 属性，不管是true还是false，都会触发生成代码）
     public interface ITestService
     {
         [Log(AopTag = true)]
@@ -98,17 +163,13 @@
     
     public class TestService : ITestService
     {
-        public TestService()
-        {
-        }
-
         public virtual string HasReturnSync()
         {
             //Console.WriteLine($"method: GetNameSync");
             return "ad313";
         }
 
-        [Log]
+       [Log(AopTag = true)]
         public virtual void NoReturnSync(string name, int id)
         {
             //Console.WriteLine($"method:set name:{name}");
@@ -120,86 +181,18 @@
             return Task.FromResult($"ad313 async:{name}");
         }
 
-        [Log]
+        [Log(AopTag = true)]
         public virtual async Task<string> HasReturnAsync(string name, int aaa)
         {
             return await Task.FromResult($"ad313_2 async:{name}");
         }
     }
     
-#### 3、通过 SourceGenerator 自动生成
-    public sealed class TestService_g : TestService
-	{
-		private readonly IServiceProvider _serviceProvider0;
-		public TestService_g(IServiceProvider serviceProvider0)
-		{
-			_serviceProvider0 = serviceProvider0;
-		}
-
-		public override void NoReturnSync(string name, int id)
-		{
-			var aopContext = new AopContext(_serviceProvider0,
-				new Dictionary<string, dynamic>() { { "name", name }, { "id", id } },
-				false,
-				false,
-				null);
-
-			var aopInterceptor0 = _serviceProvider0.GetRequiredService<LogAttribute>();
-			if (aopInterceptor0.HasBefore) aopContext = aopInterceptor0.Before(aopContext);
-			if (aopInterceptor0.HasAopNext)
-			{
-				if (aopInterceptor0.HasActualNext)
-				{
-					aopContext.ActualMethod = () => Task.Run(() => base.NoReturnSync(name, id));
-				}
-				aopContext = aopInterceptor0.Next(aopContext);
-			}
-			else
-			{
-				if (aopInterceptor0.HasActualNext)
-				{
-					base.NoReturnSync(name, id);
-				}
-			}
-			if (aopInterceptor0.HasAfter) aopContext = aopInterceptor0.After(aopContext);
-		}
-
-		public override async Task<string> HasReturnAsync(string name, int aaa)
-		{
-			var aopContext = new AopContext(_serviceProvider0,
-				new Dictionary<string, dynamic>() { { "name", name }, { "aaa", aaa } },
-				true,
-				true,
-				null);
-
-			var aopInterceptor0 = _serviceProvider0.GetRequiredService<LogAttribute>();
-			if (aopInterceptor0.HasBefore) aopContext = await aopInterceptor0.BeforeAsync(aopContext);
-			if (aopInterceptor0.HasAopNext)
-			{
-				if (aopInterceptor0.HasActualNext)
-				{
-					aopContext.ActualMethod = () => base.HasReturnAsync(name, aaa);
-				}
-				aopContext = await aopInterceptor0.NextAsync(aopContext);
-			}
-			else
-			{
-				if (aopInterceptor0.HasActualNext)
-				{
-					aopContext.ReturnValue = await base.HasReturnAsync(name, aaa);
-				}
-			}
-			if (aopInterceptor0.HasAfter) aopContext = await aopInterceptor0.AfterAsync(aopContext);
-
-			return aopContext.ReturnValue;
-		}
-
-	}
-#### 4、一些优先级和规则
-##### 1、优先级：就近原则，类方法上的标签 > 类上的标签 > 接口方法上的标签 > 接口上的标签
-##### 2、忽略Aop：打上 [IgnoreAop] 标签
-##### 3、如果一个方法打上多个Attribute，则按照管道的原则，先进后出，注意，只有最接近方法的 Attribute 才能调用 Next 方法。如果有 三个 Attribute，分别是 attribute1、attribute2、attribute3，则执行顺序是 attribute1.Before => attribute2.Before => attribute3.Before => attribute3.Next => attribute3.After => attribute2.After => attribute1.After
-##### 4、自定义执行方法：内置了 4个属性 
+#### 3、一些优先级和规则
+##### 1)、优先级：就近原则，类方法上的标签 > 类上的标签 > 接口方法上的标签 > 接口上的标签
+##### 2)、忽略Aop：打上 [IgnoreAop] 标签
+##### 3)、如果一个方法打上多个Attribute，则按照管道的原则，先进后出，注意，只有最接近方法的 Attribute 才能调用 Next 方法。如果有 三个 Attribute，分别是 attribute1、attribute2、attribute3，则执行顺序是 attribute1.Before => attribute2.Before => attribute3.Before => attribute3.Next => attribute3.After => attribute2.After => attribute1.After
+##### 4)、自定义执行方法：内置了 4个属性 
         /// <summary>
         /// 是否执行 Before
         /// </summary>
