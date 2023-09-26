@@ -97,7 +97,16 @@ namespace Mic.Helpers
             var valueExpress = Expression.Constant(value);
 
             //类型转换
-            dynamic rightExpress = member.Type == valueExpress.Type ? valueExpress : Expression.Convert(valueExpress, member.Type);
+            dynamic rightExpress = null;
+            if (member.Type == valueExpress.Type)
+            {
+                rightExpress = valueExpress;
+            }
+            else
+            {
+                rightExpress = Expression.Convert(valueExpress, member.Type);
+            }
+
 
             BinaryExpression compare = null;
             switch (oprator)
