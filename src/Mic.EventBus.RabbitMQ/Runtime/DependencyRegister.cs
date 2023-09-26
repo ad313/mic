@@ -83,7 +83,7 @@ namespace Mic.EventBus.RabbitMQ.Runtime
                 .FirstOrDefault();
 
             if (first.Value > 1)
-                throw new ArgumentException($"RpcServr Key 重复：{first.Key}");
+                throw new ArgumentException($"RpcServer Key 重复：{first.Key}");
         }
 
         private void RegisterSubscriber(List<Type> types)
