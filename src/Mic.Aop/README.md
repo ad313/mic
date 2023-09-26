@@ -1,4 +1,7 @@
 ## Mic.Aop
+ 
+### 引用包
+    <PackageReference Include="Mic.Aop" Version="2.0.0" />
 
 ### 一、使用方法
 #### 1、定义 Attribute，继承 AopInterceptor
