@@ -1,0 +1,649 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Mic</name>
+    </assembly>
+    <members>
+        <member name="T:Mic.Extensions.ConvertExtensions">
+            <summary>
+            数据格式转换扩展
+            </summary>
+        </member>
+        <member name="M:Mic.Extensions.ConvertExtensions.GetTimeStamp(System.DateTime)">
+            <summary>
+            获取时间戳
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Mic.Extensions.DictionaryExtension">
+            <summary>
+            字典扩展
+            </summary>
+        </member>
+        <member name="M:Mic.Extensions.DictionaryExtension.GetValue(System.Collections.Generic.Dictionary{System.Int32,System.String},System.Int32,System.String)">
+            <summary>
+            获取字典值
+            </summary>
+            <param name="dic"></param>
+            <param name="key"></param>
+            <param name="defaultValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Extensions.DictionaryExtension.GetValue(System.Collections.Generic.Dictionary{System.String,System.String},System.String,System.String)">
+            <summary>
+            获取字典值
+            </summary>
+            <param name="dic"></param>
+            <param name="key"></param>
+            <param name="defaultValue"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Mic.Extensions.EnumExtensions">
+            <summary>
+            枚举扩展类
+            </summary>
+        </member>
+        <member name="M:Mic.Extensions.EnumExtensions.GetDescription(System.Enum)">
+            <summary>
+            获取枚举的描述
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Extensions.EnumExtensions.GetItems``1">
+            <summary>
+            枚举值和枚举描述转换成字典
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Extensions.EnumExtensions.GetItemsValue``1">
+            <summary>
+            枚举值和枚举key转换成字典
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Extensions.EnumExtensions.FormatEnumDesText``1(System.Int32,System.String)">
+            <summary>
+            获取枚举描述，根据 值
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+            <param name="defaultValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Extensions.EnumExtensions.FormatEnumDesText``1(System.Collections.Generic.List{System.String},System.Char,System.String)">
+            <summary>
+            获取枚举描述，根据 值
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="values"></param>
+            <param name="spi"></param>
+            <param name="defaultValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Extensions.EnumExtensions.FormatEnumText``1(System.Int32,System.String)">
+            <summary>
+            获取枚举key，根据 值
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+            <param name="defaultValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Extensions.EnumExtensions.FormatEnumTexts``1(System.Collections.Generic.List{System.String},System.String)">
+            <summary>
+            获取枚举key，根据 值
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="values"></param>
+            <param name="defaultValue"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Mic.Extensions.ExpressionExtensions">
+            <summary>
+            系统扩展 - Lambda表达式
+            </summary>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.Property(System.Linq.Expressions.Expression,System.String)">
+            <summary>
+            创建属性表达式
+            </summary>
+            <param name="expression">表达式</param>
+            <param name="propertyName">属性名,支持多级属性名，与句点分隔，范例：Customer.Name</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.Property(System.Linq.Expressions.Expression,System.Reflection.MemberInfo)">
+            <summary>
+            创建属性表达式
+            </summary>
+            <param name="expression">表达式</param>
+            <param name="member">属性</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.And(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)">
+            <summary>
+            与操作表达式
+            </summary>
+            <param name="left">左操作数</param>
+            <param name="right">右操作数</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.And``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            与操作表达式
+            </summary>
+            <typeparam name="T">对象类型</typeparam>
+            <param name="left">左操作数</param>
+            <param name="right">右操作数</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.Or(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)">
+            <summary>
+            或操作表达式
+            </summary>
+            <param name="left">左操作数</param>
+            <param name="right">右操作数</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.Or``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            或操作表达式
+            </summary>
+            <typeparam name="T">对象类型</typeparam>
+            <param name="left">左操作数</param>
+            <param name="right">右操作数</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.Equal(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)">
+            <summary>
+            创建等于运算表达式
+            </summary>
+            <param name="left">左操作数</param>
+            <param name="right">右操作数</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.NotEqual(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)">
+            <summary>
+            创建不等于运算表达式
+            </summary>
+            <param name="left">左操作数</param>
+            <param name="right">右操作数</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.Greater(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)">
+            <summary>
+            创建大于运算表达式
+            </summary>
+            <param name="left">左操作数</param>
+            <param name="right">右操作数</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.GreaterEqual(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)">
+            <summary>
+            创建大于等于运算表达式
+            </summary>
+            <param name="left">左操作数</param>
+            <param name="right">右操作数</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.Less(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)">
+            <summary>
+            创建小于运算表达式
+            </summary>
+            <param name="left">左操作数</param>
+            <param name="right">右操作数</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.LessEqual(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)">
+            <summary>
+            创建小于等于运算表达式
+            </summary>
+            <param name="left">左操作数</param>
+            <param name="right">右操作数</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.StartsWith(System.Linq.Expressions.Expression,System.Object)">
+            <summary>
+            头匹配
+            </summary>
+            <param name="left">左操作数</param>
+            <param name="value">值</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.EndsWith(System.Linq.Expressions.Expression,System.Object)">
+            <summary>
+            尾匹配
+            </summary>
+            <param name="left">左操作数</param>
+            <param name="value">值</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.Contains(System.Linq.Expressions.Expression,System.Object)">
+            <summary>
+            模糊匹配
+            </summary>
+            <param name="left">左操作数</param>
+            <param name="value">值</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.Operation(System.Linq.Expressions.Expression,Mic.Extensions.Operator,System.Linq.Expressions.Expression)">
+            <summary>
+            操作
+            </summary>
+            <param name="left">左操作数</param>
+            <param name="operator">运算符</param>
+            <param name="value">值</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.Call(System.Linq.Expressions.Expression,System.String,System.Linq.Expressions.Expression[])">
+            <summary>
+            创建调用方法表达式
+            </summary>
+            <param name="instance">调用的实例</param>
+            <param name="methodName">方法名</param>
+            <param name="values">参数值列表</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.GetMethodInfo(System.Linq.Expressions.Expression,System.String)">
+            <summary>
+            获取方法
+            </summary>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.Call(System.Linq.Expressions.Expression,System.String,System.Object[])">
+            <summary>
+            创建调用方法表达式
+            </summary>
+            <param name="instance">调用的实例</param>
+            <param name="methodName">方法名</param>
+            <param name="values">参数值列表</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.Call(System.Linq.Expressions.Expression,System.String,System.Type[],System.Object[])">
+            <summary>
+            创建调用方法表达式
+            </summary>
+            <param name="instance">调用的实例</param>
+            <param name="methodName">方法名</param>
+            <param name="paramTypes">参数类型列表</param>
+            <param name="values">参数值列表</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.Compose``1(System.Linq.Expressions.Expression{``0},System.Linq.Expressions.Expression{``0},System.Func{System.Linq.Expressions.Expression,System.Linq.Expressions.Expression,System.Linq.Expressions.Expression})">
+            <summary>
+            组合表达式
+            </summary>
+            <typeparam name="T">对象类型</typeparam>
+            <param name="first">左操作数</param>
+            <param name="second">右操作数</param>
+            <param name="merge">合并操作</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.ToLambda``1(System.Linq.Expressions.Expression,System.Linq.Expressions.ParameterExpression[])">
+            <summary>
+            创建Lambda表达式
+            </summary>
+            <typeparam name="TDelegate">委托类型</typeparam>
+            <param name="body">表达式</param>
+            <param name="parameters">参数列表</param>
+        </member>
+        <member name="M:Mic.Extensions.ExpressionExtensions.ToPredicate``1(System.Linq.Expressions.Expression,System.Linq.Expressions.ParameterExpression[])">
+            <summary>
+            创建谓词表达式
+            </summary>
+            <typeparam name="T">委托类型</typeparam>
+            <param name="body">表达式</param>
+            <param name="parameters">参数列表</param>
+        </member>
+        <member name="T:Mic.Extensions.Operator">
+            <summary>
+            查询操作符
+            </summary>
+        </member>
+        <member name="F:Mic.Extensions.Operator.Equal">
+            <summary>
+            等于
+            </summary>
+        </member>
+        <member name="F:Mic.Extensions.Operator.NotEqual">
+            <summary>
+            不等于
+            </summary>
+        </member>
+        <member name="F:Mic.Extensions.Operator.Greater">
+            <summary>
+            大于
+            </summary>
+        </member>
+        <member name="F:Mic.Extensions.Operator.GreaterEqual">
+            <summary>
+            大于等于
+            </summary>
+        </member>
+        <member name="F:Mic.Extensions.Operator.Less">
+            <summary>
+            小于
+            </summary>
+        </member>
+        <member name="F:Mic.Extensions.Operator.LessEqual">
+            <summary>
+            小于等于
+            </summary>
+        </member>
+        <member name="F:Mic.Extensions.Operator.Starts">
+            <summary>
+            头匹配
+            </summary>
+        </member>
+        <member name="F:Mic.Extensions.Operator.Ends">
+            <summary>
+            尾匹配
+            </summary>
+        </member>
+        <member name="F:Mic.Extensions.Operator.Contains">
+            <summary>
+            模糊匹配
+            </summary>
+        </member>
+        <member name="F:Mic.Extensions.Operator.In">
+            <summary>
+            In
+            </summary>
+        </member>
+        <member name="F:Mic.Extensions.Operator.NotIn">
+            <summary>
+            Not In
+            </summary>
+        </member>
+        <member name="T:Mic.Extensions.ParameterRebinder">
+            <summary>
+            参数重绑定操作
+            </summary>
+        </member>
+        <member name="F:Mic.Extensions.ParameterRebinder._map">
+            <summary>
+            参数字典
+            </summary>
+        </member>
+        <member name="M:Mic.Extensions.ParameterRebinder.#ctor(System.Collections.Generic.Dictionary{System.Linq.Expressions.ParameterExpression,System.Linq.Expressions.ParameterExpression})">
+            <summary>
+            初始化参数重绑定操作
+            </summary>
+            <param name="map">参数字典</param>
+        </member>
+        <member name="M:Mic.Extensions.ParameterRebinder.ReplaceParameters(System.Collections.Generic.Dictionary{System.Linq.Expressions.ParameterExpression,System.Linq.Expressions.ParameterExpression},System.Linq.Expressions.Expression)">
+            <summary>
+            替换参数
+            </summary>
+            <param name="map">参数字典</param>
+            <param name="exp">表达式</param>
+        </member>
+        <member name="M:Mic.Extensions.ParameterRebinder.VisitParameter(System.Linq.Expressions.ParameterExpression)">
+            <summary>
+            访问参数
+            </summary>
+            <param name="parameterExpression">参数</param>
+        </member>
+        <member name="M:Mic.Extensions.Extension.GetValue``1(``0,System.String,System.Type)">
+            <summary>
+            反射 根据名称获取值
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="model"></param>
+            <param name="name"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Mic.Helpers.AsyncLock">
+            <summary>
+            异步锁
+            </summary>
+        </member>
+        <member name="T:Mic.Helpers.DeepCopyHelper">
+            <summary>
+            深拷贝
+            </summary>
+        </member>
+        <member name="T:Mic.Helpers.DictionaryHelpers">
+            <summary>
+            对象转换成字典
+            </summary>
+        </member>
+        <member name="T:Mic.Helpers.ExpressionHelper">
+            <summary>
+            表达式树辅助类
+            </summary>
+        </member>
+        <member name="M:Mic.Helpers.ExpressionHelper.GetPropertyExpression``1(System.String)">
+            <summary>
+            生成 d => d.Name
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="propertyName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Helpers.ExpressionHelper.GetAnonymousExpression``1(System.Collections.Generic.List{System.String})">
+            <summary>
+            生成 d => new { d.Name, d.Code }
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="columns"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Helpers.ExpressionHelper.CreateAnonymousType(System.Collections.Generic.List{System.Reflection.PropertyInfo})">
+            <summary>
+            生成匿名类
+            </summary>
+            <param name="props"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Helpers.ExpressionHelper.GetWhereExpression``1(System.String,Mic.Helpers.CompareOprator,System.Object)">
+            <summary>
+            创建 Where 表达式
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="column"></param>
+            <param name="oprator"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Helpers.ExpressionHelper.GetContainsExpression``1(System.String,System.Object,System.Boolean)">
+            <summary>
+            Contains
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="propertyName"></param>
+            <param name="propertyValue"></param>
+            <param name="ifNot">是否是非包含</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Helpers.ExpressionHelper.GetInExpression``1(System.String,System.Object,System.Boolean)">
+            <summary>
+            Contains
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="propertyName"></param>
+            <param name="propertyValue"></param>
+            <param name="ifNot">是否是非包含</param>
+            <returns></returns>
+        </member>
+        <member name="T:Mic.Helpers.CompareOprator">
+            <summary>
+            比较枚举
+            </summary>
+        </member>
+        <member name="T:Mic.Helpers.IdHelper">
+            <summary>
+            Id帮助类
+            </summary>
+        </member>
+        <member name="M:Mic.Helpers.IdHelper.GetSnowflakeId">
+            <summary>
+            获取雪花Id
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Helpers.Snowflake.#ctor(System.Int64)">
+            <summary>
+            机器码
+            </summary>
+            <param name="workerId"></param>
+        </member>
+        <member name="M:Mic.Helpers.Snowflake.TillNextMillis(System.Int64)">
+            <summary>
+            获取下一微秒时间戳
+            </summary>
+            <param name="lastTimestamp"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Helpers.Snowflake.TimeGen">
+            <summary>
+            生成当前时间戳
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.Helpers.ListHelper.SplitList``1(System.Collections.Generic.List{``0},System.Int32)">
+            <summary>
+            把list按照指定数量分隔
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <param name="length"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Mic.Helpers.MathHelper">
+            <summary>
+            数学算法辅助类
+            </summary>
+        </member>
+        <member name="M:Mic.Helpers.MathHelper.BoxFilter(System.Decimal[])">
+            <summary>
+            箱型图数据过滤
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Mic.Helpers.BoxFilterResult">
+            <summary>
+            详细图过滤数据结果模型
+            </summary>
+        </member>
+        <member name="P:Mic.Helpers.BoxFilterResult.Success">
+            <summary>
+            是否成功
+            </summary>
+        </member>
+        <member name="P:Mic.Helpers.BoxFilterResult.ErrorMessage">
+            <summary>
+            错误消息
+            </summary>
+        </member>
+        <member name="P:Mic.Helpers.BoxFilterResult.Source">
+            <summary>
+            数据源
+            </summary>
+        </member>
+        <member name="P:Mic.Helpers.BoxFilterResult.Q1Position">
+            <summary>
+            下四分位数位置
+            </summary>
+        </member>
+        <member name="P:Mic.Helpers.BoxFilterResult.Q1">
+            <summary>
+            下四分位数
+            </summary>
+        </member>
+        <member name="P:Mic.Helpers.BoxFilterResult.Q1String">
+            <summary>
+            下四分位数详情
+            </summary>
+        </member>
+        <member name="P:Mic.Helpers.BoxFilterResult.Q2Position">
+            <summary>
+            中位数位置
+            </summary>
+        </member>
+        <member name="P:Mic.Helpers.BoxFilterResult.Q2">
+            <summary>
+            中位数
+            </summary>
+        </member>
+        <member name="P:Mic.Helpers.BoxFilterResult.Q2String">
+            <summary>
+            中位数详情
+            </summary>
+        </member>
+        <member name="P:Mic.Helpers.BoxFilterResult.Q3Position">
+            <summary>
+            上四分位数位置
+            </summary>
+        </member>
+        <member name="P:Mic.Helpers.BoxFilterResult.Q3">
+            <summary>
+            上四分位数
+            </summary>
+        </member>
+        <member name="P:Mic.Helpers.BoxFilterResult.Q3String">
+            <summary>
+            上四分位数详情
+            </summary>
+        </member>
+        <member name="P:Mic.Helpers.BoxFilterResult.Max">
+            <summary>
+            上限
+            </summary>
+        </member>
+        <member name="P:Mic.Helpers.BoxFilterResult.Min">
+            <summary>
+            下限
+            </summary>
+        </member>
+        <member name="P:Mic.Helpers.BoxFilterResult.Iqr">
+            <summary>
+            四分位距
+            </summary>
+        </member>
+        <member name="M:Mic.Helpers.BoxFilterResult.#ctor(System.Decimal[])">
+            <summary>
+            初始化
+            </summary>
+            <param name="source"></param>
+        </member>
+        <member name="T:Mic.Helpers.NumberHelper">
+            <summary>
+            数字辅助类
+            </summary>
+        </member>
+        <member name="M:Mic.Helpers.NumberHelper.ToChinese(System.Int32)">
+            <summary>
+            阿拉伯数字转换为中文数字（0-99999）
+            </summary>
+            <param name="num"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Mic.Models.Pager">
+            <summary>
+            分页基类
+            </summary>
+        </member>
+        <member name="P:Mic.Models.Pager.Page">
+            <summary>页索引，即第几页，从1开始</summary>
+        </member>
+        <member name="P:Mic.Models.Pager.PageSize">
+            <summary>每页显示行数</summary>
+        </member>
+        <member name="P:Mic.Models.Pager.Order">
+            <summary>排序条件</summary>
+        </member>
+        <member name="P:Mic.Models.Pager.Keyword">
+            <summary>
+            关键字
+            </summary>
+        </member>
+        <member name="T:Mic.Models.PagerList`1">
+            <summary>
+            分页列表模型
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:Mic.Models.PagerList`1.Page">
+            <summary>页索引，即第几页，从1开始</summary>
+        </member>
+        <member name="P:Mic.Models.PagerList`1.PageSize">
+            <summary>每页显示行数</summary>
+        </member>
+        <member name="P:Mic.Models.PagerList`1.TotalCount">
+            <summary>总行数</summary>
+        </member>
+        <member name="P:Mic.Models.PagerList`1.PageCount">
+            <summary>总页数</summary>
+        </member>
+        <member name="P:Mic.Models.PagerList`1.Data">
+            <summary>内容</summary>
+        </member>
+        <member name="P:Mic.Models.PagerList`1.Sql">
+            <summary>执行语句</summary>
+        </member>
+    </members>
+</doc>

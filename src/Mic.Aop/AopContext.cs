@@ -13,10 +13,12 @@ namespace Mic.Aop
         /// 是否是异步
         /// </summary>
         public bool IsTask { get; private set; }
+
         /// <summary>
         /// 是否有返回值
         /// </summary>
         public bool HasReturnValue { get; private set; }
+
         /// <summary>
         /// 方法输入参数
         /// </summary>
@@ -26,14 +28,22 @@ namespace Mic.Aop
         /// 实际方法执行结果，可能是 Task
         /// </summary>
         public Func<dynamic> ActualMethod { get; set; }
+
         /// <summary>
         /// 返回值，具体的值
         /// </summary>
         public dynamic ReturnValue { get; set; }
+
+        /// <summary>
+        /// 返回值类型
+        /// </summary>
+        public Type ReturnType { get; set; }
+
         /// <summary>
         /// 异常信息
         /// </summary>
         public Exception Exception { get; set; }
+
         /// <summary>
         /// IServiceProvider
         /// </summary>
@@ -47,13 +57,14 @@ namespace Mic.Aop
         /// <param name="isTask"></param>
         /// <param name="hasReturnValue"></param>
         /// <param name="actualMethod"></param>
-        public AopContext(IServiceProvider serviceProvider, Dictionary<string, dynamic> methodInputParam, bool isTask, bool hasReturnValue, Func<dynamic> actualMethod) : this()
+        public AopContext(IServiceProvider serviceProvider, Dictionary<string, dynamic> methodInputParam, bool isTask, bool hasReturnValue, Func<dynamic> actualMethod, Type returnType) : this()
         {
             ServiceProvider = serviceProvider;
             MethodInputParam = methodInputParam;
             IsTask = isTask;
             HasReturnValue = hasReturnValue;
             ActualMethod = actualMethod;
+            ReturnType = returnType;
         }
 
         /// <summary>
@@ -85,7 +96,7 @@ namespace Mic.Aop
         /// <returns></returns>
         public void Invoke()
         {
-            if (ActualMethod == null) 
+            if (ActualMethod == null)
                 return;
 
             //特殊处理 同步且没有返回值，用 Task.Run 包装

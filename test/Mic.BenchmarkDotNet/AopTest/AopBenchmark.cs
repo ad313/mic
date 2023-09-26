@@ -10,7 +10,7 @@ namespace Mic.BenchmarkDotNet.AopTest
     public class AopBenchmark
     {
         readonly TestService directService ;
-        readonly TestService_Aop aopService;
+        //readonly TestService_Aop aopService;
 
         private const int totalCount = 10000;
 
@@ -18,7 +18,7 @@ namespace Mic.BenchmarkDotNet.AopTest
         {
             var serviceProvider = Program.Register();
             directService = serviceProvider.GetRequiredService<TestService>();
-            aopService = serviceProvider.GetRequiredService<TestService_Aop>();
+            //aopService = serviceProvider.GetRequiredService<TestService_Aop>();
 
             //PollHelper.Init();
         }
@@ -33,14 +33,14 @@ namespace Mic.BenchmarkDotNet.AopTest
         [Benchmark]
         public void AopService_GetDateTimeSync()
         {
-            aopService.GetDateTimeSync();
+            //aopService.GetDateTimeSync();
         }
 
 
         [Benchmark]
         public void AopService_SampleSync()
         {
-            aopService.SampleSync();
+            //aopService.SampleSync();
         }
 
 
@@ -66,14 +66,14 @@ namespace Mic.BenchmarkDotNet.AopTest
         [Benchmark]
         public async Task AopService_GetDateTimeAsync()
         {
-            await aopService.GetDateTimeAsync();
+            //await aopService.GetDateTimeAsync();
         }
 
 
         [Benchmark]
         public async Task AopService_SampleAsync()
         {
-           await aopService.SampleAsync();
+           //await aopService.SampleAsync();
         }
 
         //[Benchmark]

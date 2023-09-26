@@ -1,0 +1,1427 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Mic.EventBus.RabbitMQ</name>
+    </assembly>
+    <members>
+        <member name="P:Mic.EventBus.RabbitMQ.Attributes.RpcServerAttribute.Key">
+            <summary>
+            RpcServer 唯一标识
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.Attributes.RpcServerAttribute.Group">
+            <summary>
+            RpcServer 分组
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.Attributes.SubscriberAttribute.Key">
+            <summary>
+            Subscriber 唯一标识
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.Attributes.SubscriberAttribute.Group">
+            <summary>
+            Subscriber 分组
+            </summary>
+        </member>
+        <member name="T:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider">
+            <summary>
+            EventBus
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.ServiceProvider">
+            <summary>
+            ServiceProvider
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.PublishAsync``1(System.String,Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0},System.Boolean)">
+            <summary>
+            发布事件
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="message">数据</param>
+            <param name="broadcast">是否广播模式（注：对内存队列和redis无效）</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.PublishQueueAsync``1(System.String,System.Collections.Generic.List{``0})">
+            <summary>
+            发布事件 数据放到队列，并发布通知到订阅者
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="message">数据集合</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.DelayPublishAsync``1(System.String,System.Int64,Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0})">
+            <summary>
+            发布事件 延迟队列
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="seconds">延迟秒数</param>
+            <param name="message">数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.DelayPublishAsync``1(System.String,System.DateTime,Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0})">
+            <summary>
+            发布事件 延迟队列
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="absoluteTime">指定执行时间</param>
+            <param name="message">数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.RpcClientAsync``1(System.String,System.Object[],System.Int32)">
+            <summary>
+            发布事件 RpcClient
+            </summary>
+            <param name="key">Key 唯一值</param>
+            <param name="message">数据</param>
+            <param name="timeout">超时时间 秒</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.Subscribe``1(System.String,System.Action{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0}},System.Boolean)">
+            <summary>
+            订阅事件
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+            <param name="broadcast">是否广播模式（注：对内存队列和redis无效）</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.DelaySubscribe``1(System.String,System.Action{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0}})">
+            <summary>
+            订阅事件 延迟队列
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.DelaySubscribe``1(System.String,System.Func{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0},System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 延迟队列
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.RpcServer``1(System.String,System.Func{``0,System.Threading.Tasks.Task{Mic.EventBus.RabbitMQ.Core.Abstractions.RpcResult}})">
+            <summary>
+            RpcServer
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key 唯一</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.Subscribe``1(System.String,System.Func{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0},System.Threading.Tasks.Task},System.Boolean)">
+            <summary>
+            订阅事件
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+            <param name="broadcast">是否广播模式（注：对内存队列和redis无效）</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.SubscribeQueue``1(System.String,System.Action{System.Func{System.Int32,System.Collections.Generic.List{``0}}})">
+            <summary>
+            订阅事件 从队列读取数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.SubscribeQueue``1(System.String,System.Func{System.Func{System.Int32,System.Threading.Tasks.Task{System.Collections.Generic.List{``0}}},System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 从队列读取数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.SubscribeQueue``1(System.String,System.Int32,System.Int32,Mic.EventBus.RabbitMQ.Core.Abstractions.ExceptionHandlerEnum,System.Func{System.Collections.Generic.List{``0},System.Threading.Tasks.Task},System.Func{System.Exception,System.Collections.Generic.List{``0},System.Threading.Tasks.Task},System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 从队列读取数据 分批次消费
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="length">每次处理条数</param>
+            <param name="delay">每次处理间隔 毫秒</param>
+            <param name="exceptionHandler">异常处理方式</param>
+            <param name="handler">订阅处理</param>
+            <param name="error">发生异常时回调</param>
+            <param name="completed">本次消费完成回调 最后执行</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.GetQueueLength(System.String)">
+            <summary>
+            获取某个频道队列数据量
+            </summary>
+            <param name="key">Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.GetQueueItems``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.GetQueueItemsAsync``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.GetErrorQueueLength(System.String)">
+            <summary>
+            获取某个频道错误队列数据量
+            </summary>
+            <param name="key">Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.GetErrorQueueItems``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道错误队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.GetErrorQueueItemsAsync``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道错误队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.UnSubscribe(System.String)">
+            <summary>
+            取消订阅
+            </summary>
+            <param name="key"></param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IEventBusProvider.SetEnable(System.Boolean,System.String)">
+            <summary>
+            设置发布订阅是否开启
+            </summary>
+            <param name="enable">true 开启开关，false 关闭开关</param>
+            <param name="key">为空时表示总开关</param>
+        </member>
+        <member name="T:Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel`1">
+            <summary>
+            事件消息模型
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel`1.Key">
+            <summary>
+            频道
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel`1.Data">
+            <summary>
+            数据
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel`1.TraceId">
+            <summary>
+            TraceId
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel`1.#ctor">
+            <summary>
+            初始化
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel`1.#ctor(`0,System.String)">
+            <summary>
+            初始化
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.Core.Abstractions.RpcResult`1.Success">
+            <summary>
+            是否成功
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.Core.Abstractions.RpcResult`1.Data">
+            <summary>
+            数据
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.Core.Abstractions.RpcResult`1.ErrorMessage">
+            <summary>
+            错误消息
+            </summary>
+        </member>
+        <member name="T:Mic.EventBus.RabbitMQ.Core.Abstractions.ExceptionHandlerEnum">
+            <summary>
+            处理错误枚举
+            </summary>
+        </member>
+        <member name="F:Mic.EventBus.RabbitMQ.Core.Abstractions.ExceptionHandlerEnum.Continue">
+            <summary>
+            忽略错误，继续执行
+            </summary>
+        </member>
+        <member name="F:Mic.EventBus.RabbitMQ.Core.Abstractions.ExceptionHandlerEnum.Stop">
+            <summary>
+            停止执行
+            </summary>
+        </member>
+        <member name="F:Mic.EventBus.RabbitMQ.Core.Abstractions.ExceptionHandlerEnum.PushToSelfQueueAndStop">
+            <summary>
+            重新加入本身队列 并且停止执行
+            </summary>
+        </member>
+        <member name="F:Mic.EventBus.RabbitMQ.Core.Abstractions.ExceptionHandlerEnum.PushToSelfQueueAndContinue">
+            <summary>
+            重新加入本身队列 并且忽略错误，继续执行
+            </summary>
+        </member>
+        <member name="F:Mic.EventBus.RabbitMQ.Core.Abstractions.ExceptionHandlerEnum.PushToErrorQueueAndStop">
+            <summary>
+            加入错误队列 并且停止执行
+            </summary>
+        </member>
+        <member name="F:Mic.EventBus.RabbitMQ.Core.Abstractions.ExceptionHandlerEnum.PushToErrorQueueAndContinue">
+            <summary>
+            加入错误队列 并且忽略错误，继续执行
+            </summary>
+        </member>
+        <member name="T:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider">
+            <summary>
+            EventBus
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider.ServiceProvider">
+            <summary>
+            ServiceProvider
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider.PublishAsync``1(System.String,Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0},System.Boolean)">
+            <summary>
+            发布事件
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="message">数据</param>
+            <param name="broadcast">是否广播模式（注：对内存队列和redis无效）</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider.PublishQueueAsync``1(System.String,System.Collections.Generic.List{``0})">
+            <summary>
+            发布事件 数据放到队列，并发布通知到订阅者
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="message">数据集合</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider.Subscribe``1(System.String,System.Action{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0}},System.Boolean)">
+            <summary>
+            订阅事件
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+            <param name="broadcast">是否广播模式（注：对内存队列和redis无效）</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider.Subscribe``1(System.String,System.Func{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0},System.Threading.Tasks.Task},System.Boolean)">
+            <summary>
+            订阅事件
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+            <param name="broadcast">是否广播模式（注：对内存队列和redis无效）</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider.SubscribeQueue``1(System.String,System.Action{System.Func{System.Int32,System.Collections.Generic.List{``0}}})">
+            <summary>
+            订阅事件 从队列读取数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider.SubscribeQueue``1(System.String,System.Func{System.Func{System.Int32,System.Threading.Tasks.Task{System.Collections.Generic.List{``0}}},System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 从队列读取数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider.SubscribeQueue``1(System.String,System.Int32,System.Int32,Mic.EventBus.RabbitMQ.Core.Abstractions.ExceptionHandlerEnum,System.Func{System.Collections.Generic.List{``0},System.Threading.Tasks.Task},System.Func{System.Exception,System.Collections.Generic.List{``0},System.Threading.Tasks.Task},System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 从队列读取数据 分批次消费
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="length">每次处理条数</param>
+            <param name="delay">每次处理间隔 毫秒</param>
+            <param name="exceptionHandler">异常处理方式</param>
+            <param name="handler">订阅处理</param>
+            <param name="error">发生异常时回调</param>
+            <param name="completed">本次消费完成回调 最后执行</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider.GetQueueLength(System.String)">
+            <summary>
+            获取某个频道队列数据量
+            </summary>
+            <param name="key">Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider.GetQueueItems``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider.GetQueueItemsAsync``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider.GetErrorQueueLength(System.String)">
+            <summary>
+            获取某个频道错误队列数据量
+            </summary>
+            <param name="key">Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider.GetErrorQueueItems``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道错误队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider.GetErrorQueueItemsAsync``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道错误队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider.UnSubscribe(System.String)">
+            <summary>
+            取消订阅
+            </summary>
+            <param name="key"></param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.IMemoryEventBusProvider.SetEnable(System.Boolean,System.String)">
+            <summary>
+            设置发布订阅是否开启
+            </summary>
+            <param name="enable">true 开启开关，false 关闭开关</param>
+            <param name="key">为空时表示总开关</param>
+        </member>
+        <member name="T:Mic.EventBus.RabbitMQ.Core.Abstractions.ISerializerProvider">
+            <summary>
+            序列化接口
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.ISerializerProvider.Serialize(System.Object,System.Type)">
+            <summary>
+            序列化
+            </summary>
+            <param name="data"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.ISerializerProvider.SerializeBytes(System.Object,System.Type)">
+            <summary>
+            序列化
+            </summary>
+            <param name="data"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.ISerializerProvider.Deserialize``1(System.String)">
+            <summary>
+            反序列化
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="json"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.ISerializerProvider.Deserialize(System.String,System.Type)">
+            <summary>
+            反序列化
+            </summary>
+            <param name="json"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.ISerializerProvider.Deserialize``1(System.Byte[])">
+            <summary>
+            反序列化
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="bytes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.ISerializerProvider.Deserialize(System.Byte[],System.Type)">
+            <summary>
+            反序列化
+            </summary>
+            <param name="bytes"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.ISerializerProvider.Clone``1(``0)">
+            <summary>
+            克隆对象
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Abstractions.ISerializerProvider.Clone(System.Object,System.Type)">
+            <summary>
+            克隆对象
+            </summary>
+            <param name="data"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider">
+            <summary>
+            基于内存的发布订阅实现
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.Enable">
+            <summary>
+            总开关默认开启
+            </summary>
+        </member>
+        <member name="F:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider._channelEnableDictionary">
+            <summary>
+            频道开关
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.#ctor(Mic.EventBus.RabbitMQ.Core.Abstractions.ISerializerProvider,System.IServiceProvider)">
+            <summary>
+            初始化
+            </summary>
+            <param name="serializerProvider"></param>
+            <param name="serviceProvider"></param>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.ServiceProvider">
+            <summary>
+            ServiceProvider
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.PublishAsync``1(System.String,Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0},System.Boolean)">
+            <summary>
+            发布事件
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="message">数据</param>
+            <param name="broadcast">是否广播模式（注：对内存队列和redis无效）</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.PublishQueueAsync``1(System.String,System.Collections.Generic.List{``0})">
+            <summary>
+            发布事件 数据放到队列，并发布通知到订阅者
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="message">数据集合</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.DelayPublishAsync``1(System.String,System.Int64,Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0})">
+            <summary>
+            发布事件 延迟队列
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="seconds">延迟秒数</param>
+            <param name="message">数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.DelayPublishAsync``1(System.String,System.DateTime,Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0})">
+            <summary>
+            发布事件 延迟队列
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="absoluteTime">指定执行时间</param>
+            <param name="message">数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.Subscribe``1(System.String,System.Action{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0}},System.Boolean)">
+            <summary>
+            订阅事件
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+            <param name="broadcast">是否广播模式（注：对内存队列和redis无效）</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.DelaySubscribe``1(System.String,System.Action{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0}})">
+            <summary>
+            订阅事件 延迟队列
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.DelaySubscribe``1(System.String,System.Func{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0},System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 延迟队列
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.RpcServer``1(System.String,System.Func{``0,System.Threading.Tasks.Task{Mic.EventBus.RabbitMQ.Core.Abstractions.RpcResult}})">
+            <summary>
+            订阅事件 RpcServer
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.Subscribe``1(System.String,System.Func{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0},System.Threading.Tasks.Task},System.Boolean)">
+            <summary>
+            订阅事件
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+            <param name="broadcast">是否广播模式（注：对内存队列和redis无效）</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.SubscribeQueue``1(System.String,System.Action{System.Func{System.Int32,System.Collections.Generic.List{``0}}})">
+            <summary>
+            订阅事件 从队列读取数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.SubscribeQueue``1(System.String,System.Func{System.Func{System.Int32,System.Threading.Tasks.Task{System.Collections.Generic.List{``0}}},System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 从队列读取数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.SubscribeQueue``1(System.String,System.Int32,System.Int32,Mic.EventBus.RabbitMQ.Core.Abstractions.ExceptionHandlerEnum,System.Func{System.Collections.Generic.List{``0},System.Threading.Tasks.Task},System.Func{System.Exception,System.Collections.Generic.List{``0},System.Threading.Tasks.Task},System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 从队列读取数据 分批次消费
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="length">每次处理条数</param>
+            <param name="delay">每次处理间隔 毫秒</param>
+            <param name="exceptionHandler">异常处理方式</param>
+            <param name="handler">订阅处理</param>
+            <param name="error">发生异常时回调</param>
+            <param name="completed">本次消费完成回调 最后执行</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.GetQueueLength(System.String)">
+            <summary>
+            获取某个频道队列数据量
+            </summary>
+            <param name="key">Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.GetQueueItems``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.GetQueueItemsAsync``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.GetErrorQueueLength(System.String)">
+            <summary>
+            获取某个频道错误队列数据量
+            </summary>
+            <param name="key">Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.GetErrorQueueItems``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道错误队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.GetErrorQueueItemsAsync``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道错误队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.UnSubscribe(System.String)">
+            <summary>
+            取消订阅
+            </summary>
+            <param name="key"></param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.SetEnable(System.Boolean,System.String)">
+            <summary>
+            设置订阅是否消费
+            </summary>
+            <param name="enable">true 开启开关，false 关闭开关</param>
+            <param name="key">为空时表示总开关</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.SubscribeTest``1(System.String,System.Action{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0}})">
+            <summary>
+            订阅事件 用于单元测试
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.SubscribeTest``1(System.String,System.Func{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0},System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 用于单元测试
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.SubscribeQueueTest``1(System.String,System.Action{System.Func{System.Int32,System.Collections.Generic.List{``0}}})">
+            <summary>
+            订阅事件 从队列读取数据 用于单元测试
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.SubscribeQueueTest``1(System.String,System.Func{System.Func{System.Int32,System.Threading.Tasks.Task{System.Collections.Generic.List{``0}}},System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 从队列读取数据 用于单元测试
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProvider.SubscribeQueueTest``1(System.String,System.Int32,System.Int32,Mic.EventBus.RabbitMQ.Core.Abstractions.ExceptionHandlerEnum,System.Func{System.Collections.Generic.List{``0},System.Threading.Tasks.Task},System.Func{System.Exception,System.Collections.Generic.List{``0},System.Threading.Tasks.Task},System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 从队列读取数据 分批次消费 用于单元测试
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="length">每次处理条数</param>
+            <param name="delay">每次处理间隔 毫秒</param>
+            <param name="exceptionHandler">异常处理方式</param>
+            <param name="handler">订阅处理</param>
+            <param name="error">发生异常时回调</param>
+            <param name="completed">本次消费完成回调 最后执行</param>
+        </member>
+        <member name="T:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard">
+            <summary>
+            基于内存的发布订阅实现
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.Enable">
+            <summary>
+            总开关默认开启
+            </summary>
+        </member>
+        <member name="F:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard._channelEnableDictionary">
+            <summary>
+            频道开关
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.#ctor(Mic.EventBus.RabbitMQ.Core.Abstractions.ISerializerProvider,System.IServiceProvider)">
+            <summary>
+            初始化
+            </summary>
+            <param name="serializerProvider"></param>
+            <param name="serviceProvider"></param>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.ServiceProvider">
+            <summary>
+            ServiceProvider
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.PublishAsync``1(System.String,Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0},System.Boolean)">
+            <summary>
+            发布事件
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="message">数据</param>
+            <param name="broadcast">是否广播模式（注：对内存队列和redis无效）</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.PublishQueueAsync``1(System.String,System.Collections.Generic.List{``0})">
+            <summary>
+            发布事件 数据放到队列，并发布通知到订阅者
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="message">数据集合</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.Subscribe``1(System.String,System.Action{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0}},System.Boolean)">
+            <summary>
+            订阅事件
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+            <param name="broadcast">是否广播模式（注：对内存队列和redis无效）</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.Subscribe``1(System.String,System.Func{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0},System.Threading.Tasks.Task},System.Boolean)">
+            <summary>
+            订阅事件
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+            <param name="broadcast">是否广播模式（注：对内存队列和redis无效）</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.SubscribeQueue``1(System.String,System.Action{System.Func{System.Int32,System.Collections.Generic.List{``0}}})">
+            <summary>
+            订阅事件 从队列读取数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.SubscribeQueue``1(System.String,System.Func{System.Func{System.Int32,System.Threading.Tasks.Task{System.Collections.Generic.List{``0}}},System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 从队列读取数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.SubscribeQueue``1(System.String,System.Int32,System.Int32,Mic.EventBus.RabbitMQ.Core.Abstractions.ExceptionHandlerEnum,System.Func{System.Collections.Generic.List{``0},System.Threading.Tasks.Task},System.Func{System.Exception,System.Collections.Generic.List{``0},System.Threading.Tasks.Task},System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 从队列读取数据 分批次消费
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="length">每次处理条数</param>
+            <param name="delay">每次处理间隔 毫秒</param>
+            <param name="exceptionHandler">异常处理方式</param>
+            <param name="handler">订阅处理</param>
+            <param name="error">发生异常时回调</param>
+            <param name="completed">本次消费完成回调 最后执行</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.GetQueueLength(System.String)">
+            <summary>
+            获取某个频道队列数据量
+            </summary>
+            <param name="key">Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.GetQueueItems``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.GetQueueItemsAsync``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.GetErrorQueueLength(System.String)">
+            <summary>
+            获取某个频道错误队列数据量
+            </summary>
+            <param name="key">Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.GetErrorQueueItems``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道错误队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.GetErrorQueueItemsAsync``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道错误队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.UnSubscribe(System.String)">
+            <summary>
+            取消订阅
+            </summary>
+            <param name="key"></param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.SetEnable(System.Boolean,System.String)">
+            <summary>
+            设置订阅是否消费
+            </summary>
+            <param name="enable">true 开启开关，false 关闭开关</param>
+            <param name="key">为空时表示总开关</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.SubscribeTest``1(System.String,System.Action{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0}})">
+            <summary>
+            订阅事件 用于单元测试
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.SubscribeTest``1(System.String,System.Func{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0},System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 用于单元测试
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.SubscribeQueueTest``1(System.String,System.Action{System.Func{System.Int32,System.Collections.Generic.List{``0}}})">
+            <summary>
+            订阅事件 从队列读取数据 用于单元测试
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.SubscribeQueueTest``1(System.String,System.Func{System.Func{System.Int32,System.Threading.Tasks.Task{System.Collections.Generic.List{``0}}},System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 从队列读取数据 用于单元测试
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.MemoryEventBusProviderStandard.SubscribeQueueTest``1(System.String,System.Int32,System.Int32,Mic.EventBus.RabbitMQ.Core.Abstractions.ExceptionHandlerEnum,System.Func{System.Collections.Generic.List{``0},System.Threading.Tasks.Task},System.Func{System.Exception,System.Collections.Generic.List{``0},System.Threading.Tasks.Task},System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 从队列读取数据 分批次消费 用于单元测试
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="length">每次处理条数</param>
+            <param name="delay">每次处理间隔 毫秒</param>
+            <param name="exceptionHandler">异常处理方式</param>
+            <param name="handler">订阅处理</param>
+            <param name="error">发生异常时回调</param>
+            <param name="completed">本次消费完成回调 最后执行</param>
+        </member>
+        <member name="T:Mic.EventBus.RabbitMQ.Core.Implements.SerializerProvider">
+            <summary>
+            序列化接口
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.SerializerProvider.Serialize(System.Object,System.Type)">
+            <summary>
+            序列化
+            </summary>
+            <param name="data"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.SerializerProvider.SerializeBytes(System.Object,System.Type)">
+            <summary>
+            序列化
+            </summary>
+            <param name="data"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.SerializerProvider.Deserialize``1(System.String)">
+            <summary>
+            反序列化
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="json"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.SerializerProvider.Deserialize(System.String,System.Type)">
+            <summary>
+            反序列化
+            </summary>
+            <param name="json"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.SerializerProvider.Deserialize``1(System.Byte[])">
+            <summary>
+            反序列化
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="bytes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.SerializerProvider.Deserialize(System.Byte[],System.Type)">
+            <summary>
+            反序列化
+            </summary>
+            <param name="bytes"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.SerializerProvider.Clone``1(``0)">
+            <summary>
+            克隆对象
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Core.Implements.SerializerProvider.Clone(System.Object,System.Type)">
+            <summary>
+            克隆对象
+            </summary>
+            <param name="data"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Extensions.BasicProperties(RabbitMQ.Client.IModel)">
+            <summary>
+            持久化
+            </summary>
+            <param name="channel"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.ExchangeName">
+            <summary>
+            交换机
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.HostName">
+            <summary>
+            HostName
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.UserName">
+            <summary>
+            账户
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.VirtualHost">
+            <summary>
+            虚拟主机
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.PrefetchSize">
+            <summary>
+            prefetchSize
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.PrefetchCount">
+            <summary>
+            prefetchCount
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.DataQueuePrefixKey">
+            <summary>
+            数据队列key前缀
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.DataErrorQueuePrefixKey">
+            <summary>
+            数据错误队列key前缀
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.SampleQueuePrefixKey">
+            <summary>
+            普通队列key前缀
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.DeadLetterExchange">
+            <summary>
+            死信队列 交换机
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.DeadLetterPrefixKey">
+            <summary>
+            死信队列 路由key前缀
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.DeadLetterHostQueuePrefixKey">
+            <summary>
+            死信队列 宿主队列key前缀
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.DeadLetterWorkQueuePrefixKey">
+            <summary>
+            死信队列 消费队列key前缀
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.RpcServerQueuePrefixKey">
+            <summary>
+            Rpc服务端队列前缀
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqConfig.RpcClientQueuePrefixKey">
+            <summary>
+            Rpc客户端端队列前缀
+            </summary>
+        </member>
+        <member name="T:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider">
+            <summary>
+            基于 RabbitMQ 的发布订阅实现
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.ServiceProvider">
+            <summary>
+            ServiceProvider
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.Enable">
+            <summary>
+            总开关默认开启
+            </summary>
+        </member>
+        <member name="F:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider._channelEnableDictionary">
+            <summary>
+            频道开关
+            </summary>
+        </member>
+        <member name="F:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider._queueNameDictionary">
+            <summary>
+            key queue 名称字典
+            </summary>
+        </member>
+        <member name="F:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider._lockObjectDictionary">
+            <summary>
+            异步锁
+            </summary>
+        </member>
+        <member name="F:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider._rpcCallbackMapper">
+            <summary>
+            Rpc client 标识
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.PublishAsync``1(System.String,Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0},System.Boolean)">
+            <summary>
+            发布事件
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="message">数据</param>
+            <param name="broadcast">是否广播模式（注：对内存队列和redis无效）</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.PublishQueueAsync``1(System.String,System.Collections.Generic.List{``0})">
+            <summary>
+            发布事件 数据放到队列，并发布通知到订阅者
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="message">数据集合</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.DelayPublishAsync``1(System.String,System.Int64,Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0})">
+            <summary>
+            发布事件 延迟队列
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="seconds">延迟秒数</param>
+            <param name="message">数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.DelayPublishAsync``1(System.String,System.DateTime,Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0})">
+            <summary>
+            发布事件 延迟队列
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="absoluteTime">指定执行时间</param>
+            <param name="message">数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.Subscribe``1(System.String,System.Action{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0}},System.Boolean)">
+            <summary>
+            订阅事件
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+            <param name="broadcast">是否广播模式（注：对内存队列和redis无效）</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.DelaySubscribe``1(System.String,System.Action{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0}})">
+            <summary>
+            订阅事件 延迟队列
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.DelaySubscribe``1(System.String,System.Func{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0},System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 延迟队列
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.RpcServer``1(System.String,System.Func{``0,System.Threading.Tasks.Task{Mic.EventBus.RabbitMQ.Core.Abstractions.RpcResult}})">
+            <summary>
+            订阅事件 RpcServer
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.Subscribe``1(System.String,System.Func{Mic.EventBus.RabbitMQ.Core.Abstractions.EventMessageModel{``0},System.Threading.Tasks.Task},System.Boolean)">
+            <summary>
+            订阅事件
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+            <param name="broadcast">是否广播模式（注：对内存队列和redis无效）</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.SubscribeQueue``1(System.String,System.Action{System.Func{System.Int32,System.Collections.Generic.List{``0}}})">
+            <summary>
+            订阅事件 从队列读取数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.SubscribeQueue``1(System.String,System.Func{System.Func{System.Int32,System.Threading.Tasks.Task{System.Collections.Generic.List{``0}}},System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 从队列读取数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="handler">订阅处理</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.SubscribeQueue``1(System.String,System.Int32,System.Int32,Mic.EventBus.RabbitMQ.Core.Abstractions.ExceptionHandlerEnum,System.Func{System.Collections.Generic.List{``0},System.Threading.Tasks.Task},System.Func{System.Exception,System.Collections.Generic.List{``0},System.Threading.Tasks.Task},System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            订阅事件 从队列读取数据 分批次消费
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">Key</param>
+            <param name="length">每次处理条数</param>
+            <param name="delay">每次处理间隔 毫秒</param>
+            <param name="exceptionHandler">异常处理方式</param>
+            <param name="handler">订阅处理</param>
+            <param name="error">发生异常时回调</param>
+            <param name="completed">本次消费完成回调 最后执行</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.GetQueueLength(System.String)">
+            <summary>
+            获取某个频道队列数据量
+            </summary>
+            <param name="key">Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.GetQueueItems``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.GetQueueItemsMethod``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道队列数据
+            </summary>
+            <param name="queueName">queueName</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.GetQueueItemsAsync``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.GetErrorQueueLength(System.String)">
+            <summary>
+            获取某个频道错误队列数据量
+            </summary>
+            <param name="key">Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.GetErrorQueueItems``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道错误队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.GetErrorQueueItemsAsync``1(System.String,System.Int32)">
+            <summary>
+            获取某个频道错误队列数据
+            </summary>
+            <param name="key">Key</param>
+            <param name="length">获取指定的数据条数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.UnSubscribe(System.String)">
+            <summary>
+            取消订阅
+            </summary>
+            <param name="key"></param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.RabbitMqEventBusProvider.SetEnable(System.Boolean,System.String)">
+            <summary>
+            设置发布订阅是否开启
+            </summary>
+            <param name="enable">true 开启开关，false 关闭开关</param>
+            <param name="key">为空时表示总开关</param>
+        </member>
+        <member name="T:Mic.EventBus.RabbitMQ.Runtime.DependencyRegister">
+            <summary>
+            依赖引导器
+            </summary>
+        </member>
+        <member name="P:Mic.EventBus.RabbitMQ.Runtime.DependencyRegister.ServiceCollection">
+            <summary>
+            ServiceCollection
+            </summary>
+        </member>
+        <member name="F:Mic.EventBus.RabbitMQ.Runtime.DependencyRegister.RpcServerMethodList">
+            <summary>
+            RpcServer 列表
+            </summary>
+        </member>
+        <member name="F:Mic.EventBus.RabbitMQ.Runtime.DependencyRegister.SubscriberMethodList">
+            <summary>
+            Subscriber 列表
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Runtime.DependencyRegister.#ctor">
+            <summary>
+            初始化
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Runtime.DependencyRegister.SetServiceCollection(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            设置ServiceCollection
+            </summary>
+            <param name="serviceCollection"></param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Runtime.DependencyRegister.RegisterServices">
+            <summary>
+            注册依赖服务
+            </summary>
+        </member>
+        <member name="T:Mic.EventBus.RabbitMQ.Runtime.TypeFinder">
+            <summary>
+            类型查找器
+            </summary>
+        </member>
+        <member name="F:Mic.EventBus.RabbitMQ.Runtime.TypeFinder.SkipAssemblies">
+            <summary>
+            跳过的程序集
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Runtime.TypeFinder.GetAssemblies">
+            <summary>
+            获取程序集列表
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Runtime.TypeFinder.LoadAssemblies(System.String)">
+            <summary>
+            加载程序集到当前应用程序域
+            </summary>
+            <param name="path">目录绝对路径</param>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Runtime.TypeFinder.Match(System.String)">
+            <summary>
+            程序集是否匹配
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Runtime.TypeFinder.LoadAssemblyToAppDomain(System.String)">
+            <summary>
+            将程序集添加当前应用程序域
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Runtime.TypeFinder.GetAssembliesFromCurrentAppDomain">
+            <summary>
+            从当前应用程序域获取程序集列表
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Runtime.TypeFinder.Match(System.Reflection.Assembly)">
+            <summary>
+            程序集是否匹配
+            </summary>
+        </member>
+        <member name="M:Mic.EventBus.RabbitMQ.Runtime.TypeFinder.FindAllInterface(System.Collections.Generic.List{System.Reflection.Assembly})">
+            <summary>
+            查找类型列表
+            </summary>
+            <param name="assemblies">在指定的程序集列表中查找</param>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.MemoryEventExtensions">
+            <summary>
+            注册 RabbitMQ EventBus
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.MemoryEventExtensions.AddMemoryEventBus(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            注册 内存队列 IMemoryEventBusProvider
+            </summary>
+            <param name="service"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.RabbitMqEventExtensions">
+            <summary>
+            注册 RabbitMQ EventBus
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.RabbitMqEventExtensions.AddEventBusUseRabbitMq(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Mic.EventBus.RabbitMQ.RabbitMqConfig})">
+            <summary>
+            注册 RabbitMQ EventBus
+            </summary>
+            <param name="service"></param>
+            <param name="option"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.RabbitMqEventExtensions.AddEventBusUseRabbitMq(Microsoft.Extensions.DependencyInjection.IServiceCollection,Mic.EventBus.RabbitMQ.RabbitMqConfig)">
+            <summary>
+            注册 RabbitMQ EventBus
+            </summary>
+            <param name="service"></param>
+            <param name="config"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

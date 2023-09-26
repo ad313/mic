@@ -3,39 +3,32 @@ using System.Threading.Tasks;
 
 namespace Mic.Aop
 {
-    public class AopInterceptor : Attribute, IAopInterceptor//, IDisposable
+    public class AopInterceptor : Attribute, IAopInterceptor
     {
-        //#region IServiceProvider IServiceScope
-        //private IServiceScope Scope { get; set; }
-
-        //protected IServiceScope CreateServiceScope(IServiceProvider serviceProvider)
-        //{
-        //    Scope = serviceProvider.CreateScope();
-        //    return Scope;
-        //}
-
-        //protected T GetService<T>() where T : class
-        //{
-        //    return Scope?.ServiceProvider.GetService<T>();
-        //} 
-        //#endregion
-
         /// <summary>
-        /// 是否执行 Before
+        /// 是否执行 Before，默认 true
         /// </summary>
         public bool HasBefore { get; set; }
+
         /// <summary>
-        /// 是否执行 After
+        /// 是否执行 After，默认 true
         /// </summary>
         public bool HasAfter { get; set; }
+
         /// <summary>
-        /// 是否执行 Aop 的 Next
+        /// 是否执行 Aop 的 Next，默认 true
         /// </summary>
         public bool HasAopNext { get; set; }
+
         /// <summary>
-        /// 是否执行实际的方法
+        /// 是否执行实际的方法，默认 true
         /// </summary>
         public bool HasActualNext { get; set; }
+
+        /// <summary>
+        /// AopTag
+        /// </summary>
+        public bool AopTag { get; set; }
 
         public AopInterceptor()
         {
@@ -98,10 +91,5 @@ namespace Mic.Aop
         {
 
         }
-
-        //public void Dispose()
-        //{
-        //    //Scope?.Dispose();
-        //}
     }
 }
