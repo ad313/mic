@@ -1,10 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Mic.Aop.TestWeb.AopSpace
+﻿namespace Mic.Aop.TestWeb.AopSpace
 {
     /// <summary>
     /// 常规服务，执行所有方法
