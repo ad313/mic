@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Mic.WebSockets</name>
+    </assembly>
+    <members>
+        <member name="M:Mic.WebSockets.IWebSocketServer.AddClient(Microsoft.AspNetCore.Http.HttpContext,System.Int32,System.Net.WebSockets.WebSocket)">
+            <summary>
+            添加客户端
+            </summary>
+            <param name="httpContext"></param>
+            <param name="webSocketId"></param>
+            <param name="client"></param>
+        </member>
+        <member name="M:Mic.WebSockets.IWebSocketServer.RemoveClient(System.Int32)">
+            <summary>
+            移除客户端
+            </summary>
+            <param name="webSocketId"></param>
+        </member>
+        <member name="M:Mic.WebSockets.IWebSocketServer.Receiver(Microsoft.AspNetCore.Http.HttpContext,System.Net.WebSockets.WebSocket,System.ArraySegment{System.Byte})">
+            <summary>
+            收到消息
+            </summary>
+            <param name="httpContext"></param>
+            <param name="webSocket"></param>
+            <param name="bytes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.WebSockets.IWebSocketServer.OnConnectioned(System.Func{Microsoft.AspNetCore.Http.HttpContext,System.Net.WebSockets.WebSocket,System.Threading.Tasks.Task})">
+            <summary>
+            客户端连接处理函数
+            </summary>
+            <param name="connectionHandler"></param>
+        </member>
+        <member name="M:Mic.WebSockets.IWebSocketServer.OnReceived(System.Func{Microsoft.AspNetCore.Http.HttpContext,System.Net.WebSockets.WebSocket,System.ArraySegment{System.Byte},System.Threading.Tasks.Task})">
+            <summary>
+            收到消息处理函数
+            </summary>
+            <param name="receiverHandler"></param>
+        </member>
+        <member name="M:Mic.WebSockets.IWebSocketServer.SendAsync(System.Net.WebSockets.WebSocket,System.String,System.Threading.CancellationToken)">
+            <summary>
+            给单个客户端发送消息
+            </summary>
+            <param name="webSocket"></param>
+            <param name="message"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.WebSockets.IWebSocketServer.SendAsync``1(System.Net.WebSockets.WebSocket,``0,System.Threading.CancellationToken)">
+            <summary>
+            给单个客户端发送消息
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="webSocket"></param>
+            <param name="message"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.WebSockets.IWebSocketServer.SendToAllClientsAsync``1(``0,System.Threading.CancellationToken)">
+            <summary>
+            给所以客户端发送消息
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="message"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.WebSockets.IWebSocketServer.GetAllClients">
+            <summary>
+            获取所有的客户端
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.WebSockets.WebSocketServer.#ctor(Microsoft.Extensions.Logging.ILogger{Mic.WebSockets.WebSocketServer})">
+            <summary>
+            初始化
+            </summary>
+            <param name="logger"></param>
+        </member>
+        <member name="M:Mic.WebSockets.WebSocketServer.AddClient(Microsoft.AspNetCore.Http.HttpContext,System.Int32,System.Net.WebSockets.WebSocket)">
+            <summary>
+            添加客户端
+            </summary>
+            <param name="httpContext"></param>
+            <param name="webSocketId"></param>
+            <param name="client"></param>
+        </member>
+        <member name="M:Mic.WebSockets.WebSocketServer.RemoveClient(System.Int32)">
+            <summary>
+            移除客户端
+            </summary>
+            <param name="webSocketId"></param>
+        </member>
+        <member name="M:Mic.WebSockets.WebSocketServer.Receiver(Microsoft.AspNetCore.Http.HttpContext,System.Net.WebSockets.WebSocket,System.ArraySegment{System.Byte})">
+            <summary>
+            收到消息
+            </summary>
+            <param name="httpContext"></param>
+            <param name="webSocket"></param>
+            <param name="bytes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.WebSockets.WebSocketServer.OnConnectioned(System.Func{Microsoft.AspNetCore.Http.HttpContext,System.Net.WebSockets.WebSocket,System.Threading.Tasks.Task})">
+            <summary>
+            客户端连接处理函数
+            </summary>
+            <param name="connectionHandler"></param>
+        </member>
+        <member name="M:Mic.WebSockets.WebSocketServer.OnReceived(System.Func{Microsoft.AspNetCore.Http.HttpContext,System.Net.WebSockets.WebSocket,System.ArraySegment{System.Byte},System.Threading.Tasks.Task})">
+            <summary>
+            收到消息处理函数
+            </summary>
+            <param name="receiverHandler"></param>
+        </member>
+        <member name="M:Mic.WebSockets.WebSocketServer.SendAsync(System.Net.WebSockets.WebSocket,System.String,System.Threading.CancellationToken)">
+            <summary>
+            给单个客户端发送消息
+            </summary>
+            <param name="webSocket"></param>
+            <param name="message"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.WebSockets.WebSocketServer.SendAsync``1(System.Net.WebSockets.WebSocket,``0,System.Threading.CancellationToken)">
+            <summary>
+            给单个客户端发送消息
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="webSocket"></param>
+            <param name="message"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.WebSockets.WebSocketServer.SendToAllClientsAsync``1(``0,System.Threading.CancellationToken)">
+            <summary>
+            给所以客户端发送消息
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="message"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mic.WebSockets.WebSocketServer.GetAllClients">
+            <summary>
+            获取所有的客户端
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.WebSocketServerExtension">
+            <summary>
+            WebSocket 扩展服务
+            </summary>
+        </member>
+    </members>
+</doc>
