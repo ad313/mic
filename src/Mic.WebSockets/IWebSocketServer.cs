@@ -35,8 +35,14 @@ namespace Mic.WebSockets
         /// <summary>
         /// 客户端连接处理函数
         /// </summary>
-        /// <param name="connectionHandler"></param>
-        void OnConnectioned(Func<HttpContext, WebSocket, Task> connectionHandler);
+        /// <param name="connectedHandler"></param>
+        void OnConnected(Func<HttpContext, WebSocket, Task> connectedHandler);
+
+        /// <summary>
+        /// 客户端断开连接处理函数
+        /// </summary>
+        /// <param name="disConnectedHandler"></param>
+        void OnDisConnected(Func<HttpContext, WebSocket, Task> disConnectedHandler);
 
         /// <summary>
         /// 收到消息处理函数
@@ -73,9 +79,15 @@ namespace Mic.WebSockets
         Task SendToAllClientsAsync<T>(T message, CancellationToken token = default) where T : class;
 
         /// <summary>
+        /// 获取单个客户端
+        /// </summary>
+        /// <returns></returns>
+        WebSocketSession GetClient(int webSocketId);
+
+        /// <summary>
         /// 获取所有的客户端
         /// </summary>
         /// <returns></returns>
-        List<WebSocket> GetAllClients();
+        List<WebSocketSession> GetAllClients();
     }
 }

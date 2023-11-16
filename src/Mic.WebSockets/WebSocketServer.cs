@@ -15,9 +15,10 @@ namespace Mic.WebSockets
     public class WebSocketServer : IWebSocketServer
     {
         private readonly ILogger<WebSocketServer> _logger;
-        private readonly ConcurrentDictionary<int, WebSocket> _clients = new ConcurrentDictionary<int, WebSocket>();
+        private readonly ConcurrentDictionary<int, WebSocketSession> _clients = new ConcurrentDictionary<int, WebSocketSession>();
         private Func<HttpContext, WebSocket, ArraySegment<byte>, Task> _receiverHandlerFunc;
-        private Func<HttpContext, WebSocket, Task> _connectionHandlerFunc;
+        private Func<HttpContext, WebSocket, Task> _connectedHandlerFunc;
+        private Func<HttpContext, WebSocket, Task> _disConnectedHandlerFunc;
 
         /// <summary>
         /// 初始化
@@ -27,7 +28,8 @@ namespace Mic.WebSockets
         {
             _logger = logger;
             _receiverHandlerFunc = (httpContext, webSocket, bytes) => Task.CompletedTask;
-            _connectionHandlerFunc = (httpContext, webSocket) => Task.CompletedTask;
+            _connectedHandlerFunc = (httpContext, webSocket) => Task.CompletedTask;
+            _disConnectedHandlerFunc = (httpContext, webSocket) => Task.CompletedTask;
         }
 
         /// <summary>
@@ -36,11 +38,12 @@ namespace Mic.WebSockets
         /// <param name="httpContext"></param>
         /// <param name="webSocketId"></param>
         /// <param name="client"></param>
+        /// <param name="ext"></param>
         public void AddClient(HttpContext httpContext, int webSocketId, WebSocket client)
         {
             _logger.LogInformation($"{DateTime.Now} WebSocket - {webSocketId} 已连接 -  - {httpContext.Connection.RemoteIpAddress}:{httpContext.Connection.RemotePort}");
-            _clients.TryAdd(webSocketId, client);
-            _connectionHandlerFunc.Invoke(httpContext, client);
+            _clients.TryAdd(webSocketId, new WebSocketSession(webSocketId, httpContext, client, null));
+            _connectedHandlerFunc.Invoke(httpContext, client);
         }
 
         /// <summary>
@@ -50,7 +53,8 @@ namespace Mic.WebSockets
         public void RemoveClient(int webSocketId)
         {
             _logger.LogInformation($"{DateTime.Now} WebSocket - {webSocketId} 已断开");
-            _clients.TryRemove(webSocketId, out _);
+            if (_clients.TryRemove(webSocketId, out WebSocketSession session))
+                _disConnectedHandlerFunc.Invoke(session.HttpContext, session.WebSocket);
         }
 
         /// <summary>
@@ -78,10 +82,19 @@ namespace Mic.WebSockets
         /// <summary>
         /// 客户端连接处理函数
         /// </summary>
-        /// <param name="connectionHandler"></param>
-        public void OnConnectioned(Func<HttpContext, WebSocket, Task> connectionHandler)
+        /// <param name="connectedHandler"></param>
+        public void OnConnected(Func<HttpContext, WebSocket, Task> connectedHandler)
         {
-            _connectionHandlerFunc = connectionHandler ?? throw new ArgumentNullException(nameof(connectionHandler));
+            _connectedHandlerFunc = connectedHandler ?? throw new ArgumentNullException(nameof(connectedHandler));
+        }
+
+        /// <summary>
+        /// 客户端断开连接处理函数
+        /// </summary>
+        /// <param name="disConnectedHandler"></param>
+        public void OnDisConnected(Func<HttpContext, WebSocket, Task> disConnectedHandler)
+        {
+            _disConnectedHandlerFunc = disConnectedHandler ?? throw new ArgumentNullException(nameof(disConnectedHandler));
         }
 
         /// <summary>
@@ -138,17 +151,48 @@ namespace Mic.WebSockets
 
             foreach (var client in _clients)
             {
-                await SendAsync(client.Value, message, token);
+                await SendAsync(client.Value.WebSocket, message, token);
             }
+        }
+
+        /// <summary>
+        /// 获取单个客户端
+        /// </summary>
+        /// <returns></returns>
+        public WebSocketSession GetClient(int webSocketId)
+        {
+            return _clients.TryGetValue(webSocketId, out WebSocketSession session) ? session : null;
         }
 
         /// <summary>
         /// 获取所有的客户端
         /// </summary>
         /// <returns></returns>
-        public List<WebSocket> GetAllClients()
+        public List<WebSocketSession> GetAllClients()
         {
             return _clients.Select(d => d.Value).ToList();
+        }
+    }
+
+    public class WebSocketSession
+    {
+        public long WebSocketId { get; set; }
+
+        public HttpContext HttpContext { get; set; }
+
+        public WebSocket WebSocket { get; set; }
+
+        /// <summary>
+        /// 扩展字段
+        /// </summary>
+        public object Ext { get; set; }
+
+        public WebSocketSession(long webSocketId, HttpContext httpContext, WebSocket webSocket, object ext)
+        {
+            WebSocketId = webSocketId;
+            HttpContext = httpContext;
+            WebSocket = webSocket;
+            Ext = ext;
         }
     }
 }

@@ -26,6 +26,7 @@ namespace SaiLing.WaterPlantAttendance.Services.Services.Common
         public virtual async Task InitCalendar()
         {
             //await _calendarService.InitAsync(DateTime.Now.Year + 1);
+            Console.WriteLine("-----" + DateTime.Now);
         }
 
         /// <summary>

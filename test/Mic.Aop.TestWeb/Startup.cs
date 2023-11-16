@@ -1,9 +1,15 @@
+using Mic.Aop.TestWeb.InterceptorExtend;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using SaiLing.WaterPlantAttendance.Services.Services.Common;
+using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace Mic.Aop.TestWeb
 {
@@ -26,8 +32,19 @@ namespace Mic.Aop.TestWeb
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mic.Aop.TestWeb", Version = "v1" });
             });
 
+            services.ConfigureHttpJsonOptions(options =>
+            {
+                options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+            });
+
             services.AddMemoryCache();
-            
+
+            services.AddTransient<Log2Attribute>();
+
+            //services.AddScoped<TaskSchedulerService, TaskSchedulerService_g>();
+
+            //new TaskSchedulerService_g(services.BuildServiceProvider()).InitCalendar();
+
             //services.RegisterInjectionForMicAopTestWeb();
         }
 
@@ -61,5 +78,11 @@ namespace Mic.Aop.TestWeb
             });
         }
     }
-    
+
+    [JsonSerializable(typeof(DateTime))]
+    internal partial class AppJsonSerializerContext : JsonSerializerContext
+    {
+       
+    }
+
 }

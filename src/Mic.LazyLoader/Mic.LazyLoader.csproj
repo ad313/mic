@@ -1,7 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net5.0;net6.0;net7.0</TargetFrameworks>
+		<TargetFrameworks>net5.0;net6.0;net7.0;net8.0</TargetFrameworks>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Version>0.0.0.1</Version>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<DocumentationFile>Mic.LazyLoader.xml</DocumentationFile>
+		<Description>LazyLoader</Description>
+		<PackageProjectUrl>https://github.com/ad313/mic/tree/main/src/Mic.LazyLoader</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/ad313/mic/tree/main/src/Mic.LazyLoader</RepositoryUrl>
+		<Authors>ad313</Authors>
 	</PropertyGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
@@ -12,5 +20,8 @@
 	</ItemGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net7.0' ">
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+	</ItemGroup>
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
 	</ItemGroup>
 </Project>

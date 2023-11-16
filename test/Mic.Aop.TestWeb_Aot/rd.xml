@@ -1,0 +1,10 @@
+﻿<Directives>
+	<Application>
+		<Assembly Name="Mic.Aop"  Dynamic="Required All">
+		</Assembly>
+		<Assembly Name="SourceGenerator.Template"  Dynamic="Required All">
+		</Assembly>
+		<Assembly Name="Microsoft.Extensions.DependencyInjection.Abstractions"  Dynamic="Required All">
+		</Assembly>
+	</Application>
+</Directives>

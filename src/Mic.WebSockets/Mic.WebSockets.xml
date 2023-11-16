@@ -27,11 +27,17 @@
             <param name="bytes"></param>
             <returns></returns>
         </member>
-        <member name="M:Mic.WebSockets.IWebSocketServer.OnConnectioned(System.Func{Microsoft.AspNetCore.Http.HttpContext,System.Net.WebSockets.WebSocket,System.Threading.Tasks.Task})">
+        <member name="M:Mic.WebSockets.IWebSocketServer.OnConnected(System.Func{Microsoft.AspNetCore.Http.HttpContext,System.Net.WebSockets.WebSocket,System.Threading.Tasks.Task})">
             <summary>
             客户端连接处理函数
             </summary>
-            <param name="connectionHandler"></param>
+            <param name="connectedHandler"></param>
+        </member>
+        <member name="M:Mic.WebSockets.IWebSocketServer.OnDisConnected(System.Func{Microsoft.AspNetCore.Http.HttpContext,System.Net.WebSockets.WebSocket,System.Threading.Tasks.Task})">
+            <summary>
+            客户端断开连接处理函数
+            </summary>
+            <param name="disConnectedHandler"></param>
         </member>
         <member name="M:Mic.WebSockets.IWebSocketServer.OnReceived(System.Func{Microsoft.AspNetCore.Http.HttpContext,System.Net.WebSockets.WebSocket,System.ArraySegment{System.Byte},System.Threading.Tasks.Task})">
             <summary>
@@ -67,6 +73,12 @@
             <param name="token"></param>
             <returns></returns>
         </member>
+        <member name="M:Mic.WebSockets.IWebSocketServer.GetClient(System.Int32)">
+            <summary>
+            获取单个客户端
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Mic.WebSockets.IWebSocketServer.GetAllClients">
             <summary>
             获取所有的客户端
@@ -86,6 +98,7 @@
             <param name="httpContext"></param>
             <param name="webSocketId"></param>
             <param name="client"></param>
+            <param name="ext"></param>
         </member>
         <member name="M:Mic.WebSockets.WebSocketServer.RemoveClient(System.Int32)">
             <summary>
@@ -102,11 +115,17 @@
             <param name="bytes"></param>
             <returns></returns>
         </member>
-        <member name="M:Mic.WebSockets.WebSocketServer.OnConnectioned(System.Func{Microsoft.AspNetCore.Http.HttpContext,System.Net.WebSockets.WebSocket,System.Threading.Tasks.Task})">
+        <member name="M:Mic.WebSockets.WebSocketServer.OnConnected(System.Func{Microsoft.AspNetCore.Http.HttpContext,System.Net.WebSockets.WebSocket,System.Threading.Tasks.Task})">
             <summary>
             客户端连接处理函数
             </summary>
-            <param name="connectionHandler"></param>
+            <param name="connectedHandler"></param>
+        </member>
+        <member name="M:Mic.WebSockets.WebSocketServer.OnDisConnected(System.Func{Microsoft.AspNetCore.Http.HttpContext,System.Net.WebSockets.WebSocket,System.Threading.Tasks.Task})">
+            <summary>
+            客户端断开连接处理函数
+            </summary>
+            <param name="disConnectedHandler"></param>
         </member>
         <member name="M:Mic.WebSockets.WebSocketServer.OnReceived(System.Func{Microsoft.AspNetCore.Http.HttpContext,System.Net.WebSockets.WebSocket,System.ArraySegment{System.Byte},System.Threading.Tasks.Task})">
             <summary>
@@ -142,11 +161,22 @@
             <param name="token"></param>
             <returns></returns>
         </member>
+        <member name="M:Mic.WebSockets.WebSocketServer.GetClient(System.Int32)">
+            <summary>
+            获取单个客户端
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Mic.WebSockets.WebSocketServer.GetAllClients">
             <summary>
             获取所有的客户端
             </summary>
             <returns></returns>
+        </member>
+        <member name="P:Mic.WebSockets.WebSocketSession.Ext">
+            <summary>
+            扩展字段
+            </summary>
         </member>
         <member name="T:Microsoft.Extensions.DependencyInjection.WebSocketServerExtension">
             <summary>

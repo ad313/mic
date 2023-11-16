@@ -1,5 +1,6 @@
 ﻿using Mic.Aop.TestWeb.AopSpace;
 using Microsoft.AspNetCore.Mvc;
+using SaiLing.WaterPlantAttendance.Services.Services.Common;
 using System;
 using System.Threading.Tasks;
 
@@ -11,11 +12,13 @@ namespace Mic.Aop.TestWeb.Controllers
     {
         private readonly ITestService _testService;
         private readonly TestService2 _testService2;
+        private readonly TaskSchedulerService _taskSchedulerService;
 
-        public TestController(ITestService testService, TestService2 testService2)
+        public TestController(ITestService testService, TestService2 testService2, TaskSchedulerService taskSchedulerService)
         {
             _testService = testService;
             _testService2 = testService2;
+            _taskSchedulerService = taskSchedulerService;
         }
 
         [HttpGet("GetDateTimeSync")]
@@ -50,6 +53,12 @@ namespace Mic.Aop.TestWeb.Controllers
         {
             var result = await _testService.GetDateTimeAsyncDirect();
             return result;
+        }
+
+        [HttpGet("Test")]
+        public async Task Test()
+        {
+            await _taskSchedulerService.InitCalendar();
         }
     }
 }
