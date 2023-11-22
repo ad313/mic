@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Mic.Helpers
 {
@@ -20,6 +15,30 @@ namespace Mic.Helpers
         {
             return Snowflake.Instance.NextId().ToString();
         }
+
+        /// <summary>
+        /// 获取雪花Id
+        /// </summary>
+        /// <returns></returns>
+        public static long GetSnowflakeIdLong()
+        {
+            return Snowflake.Instance.NextId();
+        }
+
+        public static void SetWorkId(long workId)
+        {
+            Snowflake.Instance.SetWorkId(workId);
+        }
+
+        public static void SetWorkerIdBits(int workerIdBits)
+        {
+            Snowflake.WorkerIdBits = workerIdBits;
+        }
+
+        public static int GetWorkerIdBits()
+        {
+            return Snowflake.WorkerIdBits;
+        }
     }
 
     internal class Snowflake
@@ -28,11 +47,11 @@ namespace Mic.Helpers
         private static long _nodeId;
         private static readonly long Twepoch = 687888001020L; //唯一时间，这是一个避免重复的随机量，自行设定不要大于当前时间戳
         private static long _sequence = 0L;
-        private static readonly int workerIdBits = 4; //机器码字节数。4个字节用来保存机器码(定义为Long类型会出现，最大偏移64位，所以左移64位没有意义)
-        internal static long MaxWorkerId = -1L ^ -1L << workerIdBits; //最大机器ID
+        public static int WorkerIdBits = 6; //机器码字节数。4个字节用来保存机器码(定义为Long类型会出现，最大偏移64位，所以左移64位没有意义)
+        internal static long MaxWorkerId = -1L ^ -1L << WorkerIdBits; //最大机器ID
         private static int sequenceBits = 10; //计数器字节数，10个字节用来保存计数码
         private static readonly int WorkerIdShift = sequenceBits; //机器码数据左移位数，就是后面计数器占用的位数
-        private static readonly int TimestampLeftShift = sequenceBits + workerIdBits; //时间戳左移动位数就是机器码和计数器总字节数
+        private static readonly int TimestampLeftShift = sequenceBits + WorkerIdBits; //时间戳左移动位数就是机器码和计数器总字节数
         internal static long SequenceMask = -1L ^ -1L << sequenceBits; //一微秒内可以产生计数，如果达到该值则等到下一微妙在进行生成
         private long _lastTimestamp = -1L;
 
@@ -47,6 +66,11 @@ namespace Mic.Helpers
             if (workerId > MaxWorkerId || workerId < 0)
                 throw new Exception($"节点id 不能大于 {workerId} 或者 小于 0 ");
             _nodeId = workerId;
+        }
+
+        internal void SetWorkId(long workId)
+        {
+            _nodeId = workId;
         }
 
         internal long NextId()

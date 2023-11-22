@@ -41,7 +41,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mic.WebSockets", "src\Mic.W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mic.WebSocketsTest", "test\Mic.WebSocketsTest\Mic.WebSocketsTest.csproj", "{D5D77C0A-224F-4EBA-984A-0FF9D818C486}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mic.Aop.TestWeb_Aot", "test\Mic.Aop.TestWeb_Aot\Mic.Aop.TestWeb_Aot.csproj", "{C7D6BD81-DB98-40CC-A81A-3E4243FD52B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mic.Aop.TestWeb_Aot", "test\Mic.Aop.TestWeb_Aot\Mic.Aop.TestWeb_Aot.csproj", "{C7D6BD81-DB98-40CC-A81A-3E4243FD52B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mic.SnowflakeId", "src\Mic.SnowflakeId\Mic.SnowflakeId.csproj", "{4BCA5BDF-E931-4950-8F07-175D5E6CA146}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -179,6 +181,14 @@ Global
 		{C7D6BD81-DB98-40CC-A81A-3E4243FD52B9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C7D6BD81-DB98-40CC-A81A-3E4243FD52B9}.Release|x64.ActiveCfg = Release|Any CPU
 		{C7D6BD81-DB98-40CC-A81A-3E4243FD52B9}.Release|x64.Build.0 = Release|Any CPU
+		{4BCA5BDF-E931-4950-8F07-175D5E6CA146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BCA5BDF-E931-4950-8F07-175D5E6CA146}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BCA5BDF-E931-4950-8F07-175D5E6CA146}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4BCA5BDF-E931-4950-8F07-175D5E6CA146}.Debug|x64.Build.0 = Debug|Any CPU
+		{4BCA5BDF-E931-4950-8F07-175D5E6CA146}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BCA5BDF-E931-4950-8F07-175D5E6CA146}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BCA5BDF-E931-4950-8F07-175D5E6CA146}.Release|x64.ActiveCfg = Release|Any CPU
+		{4BCA5BDF-E931-4950-8F07-175D5E6CA146}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -200,6 +210,7 @@ Global
 		{088152AE-B339-47AB-A425-D731FA3D9B6D} = {8BA8A61D-BBAC-406C-ABF9-BCEE10C88DD3}
 		{D5D77C0A-224F-4EBA-984A-0FF9D818C486} = {2A0002B7-961B-4395-A309-A1919651BF22}
 		{C7D6BD81-DB98-40CC-A81A-3E4243FD52B9} = {2A0002B7-961B-4395-A309-A1919651BF22}
+		{4BCA5BDF-E931-4950-8F07-175D5E6CA146} = {8BA8A61D-BBAC-406C-ABF9-BCEE10C88DD3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EDEE32F9-C57B-4731-96B5-D6DE7C32313B}

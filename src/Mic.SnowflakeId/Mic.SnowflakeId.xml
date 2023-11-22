@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Mic.SnowflakeId</name>
+    </assembly>
+    <members>
+        <member name="T:Mic.SnowflakeId.AutoWorkIdService">
+            <summary>
+            雪花ID 自动注册 WorkId
+            </summary>
+        </member>
+        <member name="F:Mic.SnowflakeId.AutoWorkIdService.MaxWorkId">
+            <summary>
+            最大支持节点数
+            </summary>
+        </member>
+        <member name="F:Mic.SnowflakeId.AutoWorkIdService.RegisterSuccess">
+            <summary>
+            获取到WorkId后回调事件
+            </summary>
+        </member>
+        <member name="M:Mic.SnowflakeId.AutoWorkIdService.ExecuteAsync(System.Threading.CancellationToken)">
+            ExecuteAsync
+        </member>
+        <member name="M:Mic.SnowflakeId.AutoWorkIdService.StopAsync(System.Threading.CancellationToken)">
+            Stop
+        </member>
+        <member name="M:Mic.SnowflakeId.AutoWorkIdService.UpdateRegisterAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+            定时更新有效期
+        </member>
+        <member name="P:Mic.SnowflakeId.IdGenConfig.Redis">
+            <summary>
+            Redis 连接字符串
+            </summary>
+        </member>
+        <member name="P:Mic.SnowflakeId.IdGenConfig.HandlerSeconds">
+            <summary>
+            每次占用时间秒数，占用期间不能被其他应用使用
+            </summary>
+        </member>
+        <member name="P:Mic.SnowflakeId.IdGenConfig.Enable">
+            <summary>
+            是否启用
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.SnowflakeExtension.RegisterSnowflakeId(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Int32)">
+            <summary>
+            注册 雪花ID，主要用于单个程序多个实例的情况，需要自动注册 WorkId 防止重复，依赖配置，节点名称：IdGenConfig，没有配置则不启用
+              "IdGenConfig": {
+                               "Redis": "192.168.0.124:6379,password=123456,defaultDatabase=10",
+                               "HandlerSeconds": 100,//有效期 秒
+                               "Enable": true
+                              }
+            </summary>
+            <param name="services"></param>
+            <param name="workerIdBit">雪花ID节点相关，默认5</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

@@ -464,6 +464,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Mic.Helpers.IdHelper.GetSnowflakeIdLong">
+            <summary>
+            获取雪花Id
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Mic.Helpers.Snowflake.#ctor(System.Int64)">
             <summary>
             机器码
