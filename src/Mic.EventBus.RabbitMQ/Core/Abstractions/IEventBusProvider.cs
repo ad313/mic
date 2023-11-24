@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Primitives;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -52,7 +53,7 @@ namespace Mic.EventBus.RabbitMQ.Core.Abstractions
         /// <param name="message">数据</param>
         /// <returns></returns>
         Task DelayPublishAsync<T>(string key, DateTime absoluteTime, EventMessageModel<T> message);
-        
+
         /// <summary>
         /// 发布事件 RpcClient
         /// </summary>
@@ -248,6 +249,11 @@ namespace Mic.EventBus.RabbitMQ.Core.Abstractions
     public class EventMessageModel<T>
     {
         /// <summary>
+        /// 通过 Scope 创建的 ServiceProvider
+        /// </summary>
+        public IServiceProvider ScopeServiceProvider { get; set; }
+
+        /// <summary>
         /// 频道
         /// </summary>
         public string Key { get; set; }
@@ -261,6 +267,11 @@ namespace Mic.EventBus.RabbitMQ.Core.Abstractions
         /// TraceId
         /// </summary>
         public string TraceId { get; set; }
+
+        /// <summary>
+        /// Http Header
+        /// </summary>
+        public Dictionary<string, string> HttpHeader { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// 初始化
@@ -277,6 +288,23 @@ namespace Mic.EventBus.RabbitMQ.Core.Abstractions
         {
             Data = data;
             TraceId = trackId ?? Guid.NewGuid().ToString();
+        }
+
+        /// <summary>
+        /// 附加 HttpContext Header
+        /// </summary>
+        /// <param name="httpHeader"></param>
+        /// <returns></returns>
+        public EventMessageModel<T> SetHttpHeader(IDictionary<string, StringValues> httpHeader)
+        {
+            foreach (var pair in httpHeader ?? new Dictionary<string, StringValues>())
+            {
+                if (string.IsNullOrWhiteSpace(pair.Key))
+                    continue;
+
+                HttpHeader.Add(pair.Key, pair.Value);
+            }
+            return this;
         }
     }
 

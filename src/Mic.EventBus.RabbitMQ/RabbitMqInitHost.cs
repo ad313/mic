@@ -32,33 +32,42 @@ namespace Mic.EventBus.RabbitMQ
             foreach (var method in DependencyRegister.RpcServerMethodList)
             {
                 var tag = method.GetCustomAttribute<RpcServerAttribute>();
-                _eventBusProvider.RpcServer<JsonElement[]>(tag.GetFormatKey(), async data =>
+                _eventBusProvider.RpcServer<JsonElement[]>(tag.GetFormatKey(), async source =>
                 {
                     try
                     {
                         using var scope = _eventBusProvider.ServiceProvider.CreateScope();
                         var provider = scope.ServiceProvider;
+
+                        var data = Array.Empty<JsonElement>();
+                        if (source != null && source.Length > 0)
+                        {
+                            data = source.Take(source.Length - 1).ToArray();
+
+                            //处理 Http Header
+                            Common.MergeHttpHeaderToHttpContext(provider, source.Last());
+                        }
+
                         var instance = GetInstance(provider, method.DeclaringType);
                         if (instance == null)
-                            throw new Exception($"faild to get {method.DeclaringType?.FullName} instance");
+                            throw new Exception($"fail to get {method.DeclaringType?.FullName} instance");
 
-                        var pars = new List<dynamic>();
+                        var param = new List<dynamic>();
                         var methodPars = method.GetParameters();
                         for (var i = 0; i < methodPars.Length; i++)
                         {
-                            pars.Add(_serializerProvider.Deserialize(data?.Length >= i + 1 ? data[i].GetRawText() : null, methodPars[i].ParameterType));
+                            param.Add(_serializerProvider.Deserialize(data?.Length >= i + 1 ? data[i].GetRawText() : null, methodPars[i].ParameterType));
                         }
 
-                        var result = method.Invoke(instance, pars.ToArray());
-
-                        var isAsync = method.ReturnType.Name == "Task" || method.ReturnType.BaseType?.Name == "Task";
-                        if (isAsync)
+                        var result = method.Invoke(instance, param.ToArray());
+                        var isTask = method.ReturnType.Name == "Task" || method.ReturnType.BaseType?.Name == "Task";
+                        if (isTask)
                         {
                             var task = result as Task ?? throw new ArgumentException(nameof(result));
                             await task.ConfigureAwait(false);
                             result = task.GetType().GetProperty("Result")?.GetValue(task, null);
                         }
-
+                        
                         return new RpcResult(result is string
                             ? result.ToString()
                             : _serializerProvider.Serialize(result));
@@ -83,33 +92,38 @@ namespace Mic.EventBus.RabbitMQ
                 {
                     using var scope = _eventBusProvider.ServiceProvider.CreateScope();
                     var provider = scope.ServiceProvider;
+
+                    //处理 Http Header
+                    Common.MergeHttpHeaderToHttpContext(provider, data);
+
+                    //获取方法实例
                     var instance = GetInstance(provider, method.DeclaringType);
                     if (instance == null)
-                        throw new Exception($"faild to get {method.DeclaringType?.FullName} instance");
+                        throw new Exception($"fail to get {method.DeclaringType?.FullName} instance");
 
-                    var pars = new List<dynamic>();
+                    var param = new List<dynamic>();
                     var methodPar = method.GetParameters().FirstOrDefault();
                     if (methodPar != null && data.Data != null)
                     {
                         if (methodPar.ParameterType == typeof(string))
                         {
-                            pars.Add(data.Data.ToString());
+                            param.Add(data.Data.ToString());
                         }
                         else
                         {
-                            pars.Add(_serializerProvider.Deserialize(data.Data.ToString(), methodPar.ParameterType));
+                            param.Add(_serializerProvider.Deserialize(data.Data.ToString(), methodPar.ParameterType));
                         }
                     }
 
-                    var result = method.Invoke(instance, pars.ToArray());
-
+                    var result = method.Invoke(instance, param.ToArray());
                     var isAsync = method.ReturnType.Name == "Task" || method.ReturnType.BaseType?.Name == "Task";
                     if (isAsync)
                     {
                         var task = result as Task ?? throw new ArgumentException(nameof(result));
                         await task.ConfigureAwait(false);
                     }
-                });
+
+                }, tag.Broadcast);
             }
 
             await Task.CompletedTask;

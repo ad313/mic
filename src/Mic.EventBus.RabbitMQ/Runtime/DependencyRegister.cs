@@ -100,12 +100,14 @@ namespace Mic.EventBus.RabbitMQ.Runtime
 
             SubscriberMethodList = dicMethod.Select(d => d.Value).ToList();
 
-            var first = SubscriberMethodList.Select(d => d.GetCustomAttribute<SubscriberAttribute>().GetFormatKey()).GroupBy(d => d)
-                .ToDictionary(d => d.Key, d => d.Count()).OrderByDescending(d => d.Value)
-                .FirstOrDefault();
+            foreach (var grouping in SubscriberMethodList.GroupBy(d => d.GetCustomAttribute<SubscriberAttribute>().GetFormatKey()))
+            {
+                if (grouping.Count() <= 1) continue;
 
-            if (first.Value > 1)
-                throw new ArgumentException($"Subscriber Key 重复：{first.Key}");
+                if (grouping.All(d => d.GetCustomAttribute<SubscriberAttribute>().Broadcast)) continue;
+
+                throw new ArgumentException($"Subscriber Key 重复：{string.Join("、", grouping.Select(d => d.DeclaringType?.FullName + "." + d.Name))} - {grouping.Key}");
+            }
         }
     }
 }

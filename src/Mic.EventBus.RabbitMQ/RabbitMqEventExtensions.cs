@@ -2,6 +2,7 @@
 using Mic.EventBus.RabbitMQ.Core.Abstractions;
 using Mic.EventBus.RabbitMQ.Core.Implements;
 using Mic.EventBus.RabbitMQ.Runtime;
+using Microsoft.AspNetCore.Http;
 using System;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -35,6 +36,7 @@ namespace Microsoft.Extensions.DependencyInjection
             service.AddSingleton<ISerializerProvider, SerializerProvider>();
             service.AddTransient<RabbitMqClientProvider>();
             service.AddSingleton<IEventBusProvider, RabbitMqEventBusProvider>();
+            service.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             //init rpc
             new DependencyRegister().RegisterServices();
@@ -58,6 +60,7 @@ namespace Microsoft.Extensions.DependencyInjection
             service.AddSingleton<ISerializerProvider, SerializerProvider>();
             service.AddTransient<RabbitMqClientProvider>();
             service.AddSingleton<IEventBusProvider, RabbitMqEventBusProvider>();
+            service.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             //init rpc
             new DependencyRegister().RegisterServices();

@@ -3,7 +3,7 @@
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<Version>2.0.0</Version>
+		<Version>2.1.0</Version>
 		<Description>基于 RabbitMQ 的 EventBus；IEventBusProvider rabbitmq 新增延迟队列和rpc调用；</Description>
 		<Copyright>Copyright © ad313</Copyright>
 		<Authors>ad313</Authors>
@@ -12,6 +12,7 @@
 		<PackageTags>Mic.EventBus.RabbitMQ</PackageTags>
 		<PackageReleaseNotes>
 			基于 RabbitMQ 的 EventBus：普通发布订阅；广播模式；队列模式；添加 RpcServer 和Subscriber 标签，加在方法是自动订阅。添加RpcClient 实现Rpc调用。
+			如果是通过http请求发起的发布事件，则会自动传递 http header
 		</PackageReleaseNotes>
 		<DocumentationFile>Mic.EventBus.RabbitMQ.xml</DocumentationFile>
 	</PropertyGroup>
@@ -22,12 +23,14 @@
 		<NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.ObjectPool" Version="7.0.11" />
-		<PackageReference Include="RabbitMQ.Client" Version="6.2.1" />
-		<PackageReference Include="System.Text.Json" Version="7.0.3" />
-		<PackageReference Include="System.Threading.Channels" Version="7.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.34" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.ObjectPool" Version="8.0.0" />
+		<PackageReference Include="RabbitMQ.Client" Version="6.7.0" />
+		<PackageReference Include="System.Text.Json" Version="8.0.0" />
+		<PackageReference Include="System.Threading.Channels" Version="8.0.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Mic\Mic.csproj" />
